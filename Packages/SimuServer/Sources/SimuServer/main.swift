@@ -6,47 +6,133 @@ let app = Application(env)
 defer {
   app.shutdown()
 }
-app.lifecycle.use(NgrokLifecycleHandler())
 try configure(app)
+app.lifecycle.use(NgrokLifecycleHandler())
 try app.start()
 
-struct NgrokLifecycleHandler : LifecycleHandler {
+class NgrokLifecycleHandler : LifecycleHandler {
+  let serverName = "hello"
+  let bucketName = "4WwQUN9AZrppSyLkbzidgo"
   let ngrokProcess : Process
+  var port : Int? = nil
+  var isShutdown : Bool = false
+  let decoder = JSONDecoder()
+  let encoder = JSONEncoder()
   
   init () {
     let ngrokProcess = Process ()
     ngrokProcess.executableURL = URL(fileURLWithPath: "/opt/homebrew/bin/ngrok")
     self.ngrokProcess = ngrokProcess
+    self.ngrokProcess.terminationHandler = self.processTerminated(_:)
   }
   
-  func saveTunnel () throws {
-    let serverName = "hello"
-    let bucketName = "4WwQUN9AZrppSyLkbzidgo"
-
-    let decoder = JSONDecoder()
-    ngrokProcess.arguments = ["http", app.http.server.shared.configuration.port.description]
-    try ngrokProcess.run()
-
-    let response = try app.http.client.shared.get(url: NgrokUrlParser.defaultApiURL.absoluteString).flatMapThrowing { response -> NgrokTunnelResponse? in
+  func createTunnel () throws -> NgrokTunnel? {
+    guard let port = self.port else {
+      return nil
+    }
+    //let data = try encoder.encode(NgrokTunnelRequest(port: port))
+    
+    return try app.client.post(.init(stringLiteral: NgrokUrlParser.defaultApiURL.absoluteString), content: NgrokTunnelRequest(port: port)).flatMapThrowing { clientResponse in
+      print(clientResponse.body.map(String.init))
+     return try clientResponse.content.decode(NgrokTunnel.self)
+    }.wait()
+  }
+  func processTerminated (_ process: Process) {
+    guard !isShutdown else {
+      return
+    }
+    
+    let response = try? app.http.client.shared.get(url: NgrokUrlParser.defaultApiURL.absoluteString).flatMapThrowing { [self] response -> NgrokTunnelResponse? in
       guard let body = response.body else {
         return nil
       }
       
       return try decoder.decode(NgrokTunnelResponse.self, from: body)
     }.wait()
-
-    if let url = response?.tunnels.first?.public_url {
-      print(url)
-      let status = try app.http.client.shared.post(url: "https://kvdb.io/\(bucketName)/\(serverName)", body: .string(url.absoluteString)).wait().status
-      print(status)
+    
+    guard let response = response, let port = self.port else {
+      return
+    }
+    
+    guard let tunnel = response.tunnels.first else {
+      do {
+        let tunnel = try self.createTunnel()
+        guard let tunnel = tunnel else {
+          return
+        }
+        try self.saveResponse(tunnel)
+      } catch {
+        dump(error)
+      }
+      return
+    }
+    if tunnel.config.addr.port == port {
+      do {
+        let status = try app.http.client.shared.post(url: "https://kvdb.io/\(bucketName)/\(serverName)", body: .string(tunnel.public_url.absoluteString)).wait().status
+        print(status)
+      } catch {
+        dump(error)
+      }
+    } else {
+      do {
+        try app.http.client.shared.delete(url: NgrokUrlParser.defaultApiURL.appendingPathComponent(tunnel.name).absoluteString).wait()
+        let tunnel = try self.createTunnel()
+        guard let tunnel = tunnel else {
+          return
+        }
+        try self.saveResponse(tunnel)
+        //try self.startTunnel()
+      } catch {
+        dump(error)
+      }
+      
     }
   }
-  func didBoot(_ application: Application) throws {
-    try self.saveTunnel()
+  
+  fileprivate func saveResponse(_ tunnel: NgrokTunnel) throws {
+    let url = tunnel.public_url
+      let status = try app.http.client.shared.post(url: "https://kvdb.io/\(bucketName)/\(serverName)", body: .string(url.absoluteString)).wait().status
+      print(status)
     
   }
-  func shutdown(_ application: Application) {
+  
+  fileprivate func startTunnel() throws {
+    guard let port = port else {
+      return
+    }
+    ngrokProcess.arguments = ["http", port.description]
+    
+    try ngrokProcess.run()
+    
+    
+    let response = try app.http.client.shared.get(url: NgrokUrlParser.defaultApiURL.absoluteString).flatMapThrowing { response -> NgrokTunnelResponse? in
+      guard let body = response.body else {
+        return nil
+      }
+      
+      return try self.decoder.decode(NgrokTunnelResponse.self, from: body)
+    }.wait()
+    
+    guard let tunnel = response?.tunnels.first else {
+      return
+    }
+    try saveResponse(tunnel)
+  }
+  
+   func saveTunnel (_ application: Application) throws {
+
+    let port = application.http.server.shared.configuration.port
+    self.port = port
+    try startTunnel()
+  }
+   func didBoot(_ application: Application) throws {
+    try self.saveTunnel(application)
+    
+  }
+   func shutdown(_ application: Application) {
+    
     self.ngrokProcess.terminate()
+    self.isShutdown = true
   }
   
 }
