@@ -11,6 +11,8 @@ let package = Package(
         .executable(
             name: "SimuServer",
             targets: ["SimuServer"]),
+        .library(name: "Sublimination", targets: ["Sublimination"]),
+        .library(name: "Ngrokit", targets: ["Ngrokit"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -25,6 +27,12 @@ let package = Package(
             dependencies: [
               .product(name: "Vapor", package: "vapor")
             ]),
+      .target(name: "Ngrokit"),
+      .target(name: "Sublimination",
+              dependencies: [
+                "Ngrokit",
+                .product(name: "Vapor", package: "vapor")
+              ]),
         .testTarget(
             name: "SimuServerTests",
             dependencies: ["SimuServer"]),

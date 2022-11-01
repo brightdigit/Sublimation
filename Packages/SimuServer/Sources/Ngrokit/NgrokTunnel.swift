@@ -6,9 +6,8 @@
 //
 
 import Foundation
-import Vapor
 
-public struct NgrokTunnelRequest : Content {
+public struct NgrokTunnelRequest : Codable {
   internal init(addr: String, proto: String, name: String) {
     self.addr = addr
     self.proto = proto
@@ -29,9 +28,9 @@ public struct NgrokTunnelConfiguration : Codable {
   let inspect : Bool
 }
 public struct NgrokTunnel: Codable {
-  let name : String
+  public let name : String
   // swiftlint:disable:next identifier_name
-  let public_url: URL
-  let config : NgrokTunnelConfiguration
+  public let public_url: URL
+  public let config : NgrokTunnelConfiguration
 
 }
