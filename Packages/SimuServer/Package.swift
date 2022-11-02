@@ -28,11 +28,10 @@ let package = Package(
             dependencies: [
               .product(name: "Vapor", package: "vapor")
             ]),
-      .target(name: "Ngrokit"),
+      .target(name: "Ngrokit", dependencies: ["Prch"]),
       .target(name: "Sublimination",
               dependencies: [
                 "Ngrokit",
-                "Prch",
                 .product(name: "Vapor", package: "vapor")
               ]),
         .testTarget(

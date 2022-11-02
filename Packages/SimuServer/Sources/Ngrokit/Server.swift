@@ -1,37 +1,33 @@
-import Vapor
-import Ngrokit
+//
+//  File.swift
+//  
+//
+//  Created by Leo Dion on 11/1/22.
+//
 
-protocol NgrokServer {
-  var terminationHandler: (@Sendable (Process) -> Void)? {
-    get
-    set
-  }
-}
+import Foundation
+
 class NgrokLifecycleHandler : LifecycleHandler {
   let serverName = "hello"
   let bucketName = "4WwQUN9AZrppSyLkbzidgo"
-  let ngrokServer : NgrokServer
-  //let ngrokProcess : Process
+  let ngrokProcess : Process
   var port : Int? = nil
   var isShutdown : Bool = false
   let decoder = JSONDecoder()
   let encoder = JSONEncoder()
   
   
-  init (ngrokServer: NgrokServer) {
-    self.ngrokServer = ngrokServer
+  init () {
     let ngrokProcess = Process ()
-//    ngrokProcess.executableURL = URL(fileURLWithPath: "/opt/homebrew/bin/ngrok")
-//    self.ngrokProcess = ngrokProcess
-    //ngrokProcess.terminationHandler = self.processTerminated(_:)
-    self.ngrokServer.terminationHandler = self.processTerminated(_:)
+    ngrokProcess.executableURL = URL(fileURLWithPath: "/opt/homebrew/bin/ngrok")
+    self.ngrokProcess = ngrokProcess
+    self.ngrokProcess.terminationHandler = self.processTerminated(_:)
   }
   
   func createTunnel () throws -> NgrokTunnel? {
     guard let port = self.port else {
       return nil
     }
-    
     //let data = try encoder.encode(NgrokTunnelRequest(port: port))
     
     return try app.client.post(.init(stringLiteral: NgrokUrlParser.defaultApiURL.absoluteString), content: NgrokTunnelRequest(port: port)).flatMapThrowing { clientResponse in
@@ -125,17 +121,15 @@ class NgrokLifecycleHandler : LifecycleHandler {
 
     let port = application.http.server.shared.configuration.port
     self.port = port
-     self.ngrokServer.startTunnel(forPort: port)
+    try startTunnel()
   }
    func didBoot(_ application: Application) throws {
-     
     try self.saveTunnel(application)
     
   }
    func shutdown(_ application: Application) {
     
-    //self.ngrokProcess.terminate()
-     self.ngrokServer.shutdown()
+    self.ngrokProcess.terminate()
     self.isShutdown = true
   }
   
