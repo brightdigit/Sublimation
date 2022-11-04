@@ -18,10 +18,34 @@ public enum Ngrok {
     public let decoder : ResponseDecoder = JSONDecoder()
     
     public var encoder : RequestEncoder = JSONEncoder()
+    
+    public enum Error : Swift.Error {
+      case tunnelNotFound
+    }
   }
   
-  public enum Error : Swift.Error {
-    case tunnelNotFound
+  
+  public struct CLI {
+    let executableURL : URL
+    
+    public enum RunError : Error {
+      case earlyTermination(Process.TerminationReason?)
+    }
+    public func http(port: Int, timeout: DispatchTime) async throws {
+      let process = Process()
+      let semaphore = DispatchSemaphore(value: 0)
+      process.executableURL = executableURL
+      process.terminationHandler = { process in
+        semaphore.signal()
+      }
+      try process.run()
+      try await withCheckedThrowingContinuation { continuation in
+        let result : Result<Void, Error>
+        let semaphoreResult = semaphore.wait(timeout: timeout)
+        result = semaphoreResult == .success ? .failure(RunError.earlyTermination(process.terminationReason)) : .success(())
+        continuation.resume(with: result)
+      }
+    }
   }
 }
 
@@ -105,7 +129,7 @@ public struct StopTunnelResponse : Response {
   
   public typealias SuccessType = Void
   
-  public typealias FailureType = Ngrok.Error
+  public typealias FailureType = Ngrok.API.Error
   
   public typealias APIType = Ngrok.API
   
