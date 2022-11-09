@@ -1,37 +1,121 @@
 import Vapor
-import Sublimation
+import Ngrokit
+import Prch
+import PrchVapor
 
-var env = try Environment.detect()
-try LoggingSystem.bootstrap(from: &env)
-let app = Application(env)
-defer {
-  app.shutdown()
+enum NgrokServerError : Error {
+  case clientNotSetup
+  case noTunnelFound
 }
-try configure(app)
-app.lifecycle.use(NgrokLifecycleHandler())
-try app.start()
+class NgrokCLIAPIServer : NgrokServer {
 
-//
-//class NgrokLifecycleHandler : LifecycleHandler {
+  let cli = Ngrok.CLI(executableURL:
+      .init(fileURLWithPath:  "/opt/homebrew/bin/ngrok"))
+  var client : Prch.Client<SessionClient, Ngrok.API>?
+ 
+  func setupClient(_ client: Vapor.Client) {
+    self.client = Prch.Client(api: Ngrok.API(), session: SessionClient(client: client))
+  }
+  
+  var terminationHandler: (@Sendable (Process) -> Void)? {
+    get {
+      fatalError()
+    }
+    
+    set {
+      
+    }
+  }
+  
+  func startHttp(port: Int) async throws {
+    let client : Prch.Client<SessionClient, Ngrok.API>
+    do {
+      try await cli.http(port: port, timeout: .now() + 1.0)
+      return
+    } catch Ngrok.CLI.RunError.earlyTermination(_, let errorCode) where errorCode == 108 {
+      guard let ourClient = self.client else {
+        throw NgrokServerError.clientNotSetup
+      }
+      client = ourClient
+    } catch {
+      throw error
+    }
+    
+    let tunnels = try await client.request(ListTunnelsRequest()).get().response.get().tunnels
+    
+    if let oldTunnel = tunnels.first {      
+      try await client.request(StopTunnelRequest(name: oldTunnel.name)).get().response.get()
+    }
+    
+    let tunnel = try await  client.request(StartTunnelRequest(body: .init(port: port))).get().response.get()
+    
+    print(tunnel.public_url)
+  }
+}
+
+public protocol NgrokServer {
+  var terminationHandler: (@Sendable (Process) -> Void)? {
+    get
+    set
+  }
+  
+  func startHttp (port: Int) async throws
+  func setupClient(_ client: Vapor.Client)
+}
+
+public class NgrokLifecycleHandler : LifecycleHandler {
+  public init() {
+    self.server = NgrokCLIAPIServer()
+  }
+  public init(server: NgrokServer) {
+    self.server = server
+  }
+  
+  let server : NgrokServer
+  
+  public func didBoot(_ application: Application) throws {
+    
+    server.setupClient(application.client)
+    let port = application.http.server.shared.configuration.port
+
+    _Concurrency.Task {
+      do {
+        try await self.server.startHttp(port: port)
+      } catch {
+        dump(error)
+      }
+    }
+    
+  }
+  
+  public func shutdown(_ application: Application) {
+    
+  }
+}
 //  let serverName = "hello"
 //  let bucketName = "4WwQUN9AZrppSyLkbzidgo"
-//  let ngrokProcess : Process
+//  let ngrokServer : NgrokServer
+//  //let ngrokProcess : Process
 //  var port : Int? = nil
 //  var isShutdown : Bool = false
 //  let decoder = JSONDecoder()
 //  let encoder = JSONEncoder()
 //
-//  init () {
+//
+//  init (ngrokServer: NgrokServer) {
+//    self.ngrokServer = ngrokServer
 //    let ngrokProcess = Process ()
-//    ngrokProcess.executableURL = URL(fileURLWithPath: "/opt/homebrew/bin/ngrok")
-//    self.ngrokProcess = ngrokProcess
-//    self.ngrokProcess.terminationHandler = self.processTerminated(_:)
+////    ngrokProcess.executableURL = URL(fileURLWithPath: "/opt/homebrew/bin/ngrok")
+////    self.ngrokProcess = ngrokProcess
+//    //ngrokProcess.terminationHandler = self.processTerminated(_:)
+//    self.ngrokServer.terminationHandler = self.processTerminated(_:)
 //  }
 //
 //  func createTunnel () throws -> NgrokTunnel? {
 //    guard let port = self.port else {
 //      return nil
 //    }
+//
 //    //let data = try encoder.encode(NgrokTunnelRequest(port: port))
 //
 //    return try app.client.post(.init(stringLiteral: NgrokUrlParser.defaultApiURL.absoluteString), content: NgrokTunnelRequest(port: port)).flatMapThrowing { clientResponse in
@@ -125,20 +209,18 @@ try app.start()
 //
 //    let port = application.http.server.shared.configuration.port
 //    self.port = port
-//    try startTunnel()
+//     self.ngrokServer.startTunnel(forPort: port)
 //  }
 //   func didBoot(_ application: Application) throws {
+//
 //    try self.saveTunnel(application)
 //
 //  }
 //   func shutdown(_ application: Application) {
 //
-//    self.ngrokProcess.terminate()
+//    //self.ngrokProcess.terminate()
+//     self.ngrokServer.shutdown()
 //    self.isShutdown = true
 //  }
 //
-//}
 
-
-
-try app.running?.onStop.wait()
