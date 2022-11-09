@@ -9,6 +9,15 @@ enum NgrokServerError : Error {
   case clientNotSetup
   case noTunnelFound
 }
+
+protocol ServiceRepository {
+  
+}
+public protocol NgrokServerDelegate {
+  func server(_ server: NgrokServer, updatedTunnel tunnel: NgrokTunnel)
+  func server(_ server: NgrokServer, errorDidOccur error: Error)
+  func server(_ server: NgrokServer, failedWithError error: Error)
+}
 class NgrokCLIAPIServer : NgrokServer {
   
   let cli = Ngrok.CLI(executableURL:
@@ -22,6 +31,9 @@ class NgrokCLIAPIServer : NgrokServer {
     }
   }
   
+  
+  var delegate : NgrokServerDelegate?
+  
   func setupLogger(_ logger: Logger) {
     self.logger = logger
   }
@@ -31,13 +43,7 @@ class NgrokCLIAPIServer : NgrokServer {
       return
     }
     
-    _Concurrency.Task {
-      do {
-        dump(try await self.startHttp(port: port))
-      } catch {
-        dump(error)
-      }
-    }
+    self.startHttpTunnel(port: port)
   }
   
   func setupClient(_ client: Vapor.Client) {    
@@ -46,6 +52,19 @@ class NgrokCLIAPIServer : NgrokServer {
   
   public enum TunnelError : Error{
     case noTunnelCreated
+  }
+  
+  func startHttpTunnel(port: Int) {
+    Task {
+      let tunnel : NgrokTunnel
+      do {
+         tunnel = try await self.startHttp(port: port)
+      } catch {
+        self.delegate?.server(self, failedWithError: error)
+        return
+      }
+      self.delegate?.server(self, updatedTunnel: tunnel)
+    }
   }
   
   func startHttp(port: Int) async throws -> NgrokTunnel {
@@ -93,39 +112,105 @@ class NgrokCLIAPIServer : NgrokServer {
   }
 }
 
-public protocol NgrokServer {
+public protocol NgrokServer : AnyObject {
   
-  func startHttp (port: Int) async throws -> NgrokTunnel
+  func startHttpTunnel (port: Int)
   func setupClient(_ client: Vapor.Client)
   func setupLogger(_ logger: Logger)
+  var delegate : NgrokServerDelegate? { get set }
 }
 
-public class NgrokLifecycleHandler : LifecycleHandler {
+extension NgrokServer {
+  func startTunnelFor(application: Application, withDelegate delegate: NgrokServerDelegate) {
+    self.delegate = delegate
+    self.setupClient(application.client)
+    self.setupLogger(application.logger)
+    let port = application.http.server.shared.configuration.port
+    self.startHttpTunnel(port: port)
+  }
+}
+
+public protocol TunnelRepository {
+  associatedtype Key
+  func setupClient(_ client: Vapor.Client)
+  func saveURL(_ url: URL, withKey key: Key) async throws
+  func tunnel(forKey key: Key) async throws -> URL?
+}
+
+public class KeyDBTunnelRepository : TunnelRepository {
+  internal init(client: Vapor.Client? = nil, bucketName: String) {
+    self.client = client
+    self.bucketName = bucketName
+  }
+  
+  var client : Vapor.Client?
+  let bucketName : String
+  public func setupClient(_ client: Vapor.Client) {
+    self.client = client
+  }
+  public func tunnel(forKey key: String) async throws -> URL? {
+    guard let client = self.client else {
+      preconditionFailure()
+    }
+    
+    return try await client.get("https://kvdb.io/\(bucketName)/\(key)").body.map(String.init(buffer:)).flatMap(URL.init(string:))
+    
+  }
+  public func saveURL(_ url: URL, withKey key: String) async throws {
+    guard let client = self.client else {
+      preconditionFailure()
+    }
+    _ = try await client.post("https://kvdb.io/\(bucketName)/\(key)", beforeSend: { request in
+      request.body = .init(string: url.absoluteString)
+    })
+  }
+  public typealias Key = String
+  
+  
+}
+
+public class NgrokLifecycleHandler<TunnelRepositoryType : TunnelRepository> : LifecycleHandler, NgrokServerDelegate where TunnelRepositoryType.Key == String {
+  public func server(_ server: NgrokServer, updatedTunnel tunnel: Ngrokit.NgrokTunnel) {
+    self.tunnelRepo
+  }
+  
+  public func server(_ server: NgrokServer, errorDidOccur error: Error) {
+    
+  }
+  
+  public func server(_ server: NgrokServer, failedWithError error: Error) {
+    
+  }
+  
   public init() {
     self.server = NgrokCLIAPIServer()
+    fatalError()
   }
-  public init(server: NgrokServer) {
+  public init(server: NgrokServer, repo: TunnelRepositoryType) {
     self.server = server
+    self.tunnelRepo = repo
   }
   
   let server : NgrokServer
+  let tunnelRepo : TunnelRepositoryType
   
   
   public func didBoot(_ application: Application) throws {
+//
+//    server.setupClient(application.client)
+//    server.setupLogger(application.logger)
+//    let port = application.http.server.shared.configuration.port
     
-    server.setupClient(application.client)
-    server.setupLogger(application.logger)
-    let port = application.http.server.shared.configuration.port
+    self.server.startTunnelFor(application: application, withDelegate: self)
     
-    
-    Task {
-      do {
-        let tunnel = try await self.server.startHttp(port: port)
-        application.logger.notice("Tunnel started on \(tunnel.public_url)")
-      } catch {
-        dump(error)
-      }
-    }
+//    Task {
+//      do {
+//        let tunnel = try await self.server.startHttp(port: port)
+//        application.logger.notice("Tunnel started on \(tunnel.public_url)")
+//      } catch {
+//        dump(error)
+//      }
+//    }
     
   }
   

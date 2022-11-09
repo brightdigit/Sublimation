@@ -8,7 +8,7 @@ defer {
   app.shutdown()
 }
 try configure(app)
-app.lifecycle.use(NgrokLifecycleHandler())
+app.lifecycle.use(NgrokLifecycleHandler<KeyDBTunnelRepository>())
 try app.start()
 
 //
