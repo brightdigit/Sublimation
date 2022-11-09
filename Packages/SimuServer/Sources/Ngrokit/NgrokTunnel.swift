@@ -8,6 +8,31 @@
 import Foundation
 import Prch
 
+extension FileHandle {
+  
+  
+  func parseNgrokErrorCode() throws -> Int? {
+    
+    guard let data = try self.readToEnd() else {
+      return nil
+    }
+    
+    guard let text = String(data: data, encoding: .utf8) else {
+      throw Ngrok.CLI.RunError.invalidErrorData(data)
+    }
+    
+    guard let match = Ngrok.CLI.errorRegex.firstMatch(in: text, range: .init(location: 0, length: text.count)), match.numberOfRanges > 0 else {
+      return nil
+    }
+    
+    
+    guard let range = Range(match.range(at: 1), in: text) else {
+      return nil
+    }
+          return Int(text[range])
+        
+  }
+}
 public enum Ngrok {
   public struct API : Prch.API {
     public static let defaultBaseURL = URL(staticString: "http://127.0.0.1:4040")
@@ -32,6 +57,7 @@ public enum Ngrok {
   
   
   public struct CLI {
+    static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
     public init(executableURL: URL) {
       self.executableURL = executableURL
     }
@@ -39,9 +65,17 @@ public enum Ngrok {
     let executableURL : URL
     
     public enum RunError : Error {
-      case earlyTermination(Process.TerminationReason?, Int?)
+      case earlyTermination(Process.TerminationReason, Int?)
+      case invalidErrorData(Data)
     }
-    public func http(port: Int, timeout: DispatchTime) async throws {
+    
+    private func processTerminated(_ process: Process) {
+      
+    }
+    
+    
+    public func http(port: Int, timeout: DispatchTime) async throws -> Process {
+      
       let process = Process()
       let pipe = Pipe()
       let semaphore = DispatchSemaphore(value: 0)
@@ -52,29 +86,22 @@ public enum Ngrok {
         semaphore.signal()
       }
       try process.run()
-      try await withCheckedThrowingContinuation { continuation in
-        let result : Result<Void, Error>
-        let errorCode : Int?
+      return try await withCheckedThrowingContinuation { continuation in
         let semaphoreResult = semaphore.wait(timeout: timeout)
-        let data = try! pipe.fileHandleForReading.readToEnd()
-        if let text = data.flatMap{String(data: $0, encoding: .utf8)} {
-          let regex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
-          if let match = regex.firstMatch(in: text, range: .init(location: 0, length: text.count)) {
-            
-            if let range = Range(match.range(at: 1), in: text) {
-              let errorCodeString = text[range]
-              errorCode = Int(errorCodeString)
-            } else {
-              errorCode = nil
-            }
-          } else {
-            errorCode = nil
-          }
-        } else {
-          errorCode = nil
+        guard semaphoreResult == .success else {
+          process.terminationHandler = nil
+          continuation.resume(returning: process)
+          return
         }
-        result = semaphoreResult == .success ? .failure(RunError.earlyTermination(process.terminationReason, errorCode)) : .success(())
-        continuation.resume(with: result)
+        let errorCode : Int?
+        
+        do {
+          errorCode = try pipe.fileHandleForReading.parseNgrokErrorCode()
+        } catch {
+          continuation.resume(with: .failure(error))
+          return
+        }
+        continuation.resume(with: .failure(RunError.earlyTermination(process.terminationReason, errorCode)))
       }
     }
   }

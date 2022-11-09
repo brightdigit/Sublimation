@@ -3,64 +3,101 @@ import Ngrokit
 import Prch
 import PrchVapor
 
+typealias PrchTask = Prch.Task
+typealias Task = _Concurrency.Task
 enum NgrokServerError : Error {
   case clientNotSetup
   case noTunnelFound
 }
 class NgrokCLIAPIServer : NgrokServer {
-
+  
   let cli = Ngrok.CLI(executableURL:
       .init(fileURLWithPath:  "/opt/homebrew/bin/ngrok"))
-  var client : Prch.Client<SessionClient, Ngrok.API>?
- 
-  func setupClient(_ client: Vapor.Client) {
-    self.client = Prch.Client(api: Ngrok.API(), session: SessionClient(client: client))
-  }
-  
-  var terminationHandler: (@Sendable (Process) -> Void)? {
-    get {
-      fatalError()
-    }
-    
-    set {
-      
+  var prchClient : Prch.Client<SessionClient, Ngrok.API>!
+  var port : Int?
+  var logger : Logger!
+  var ngrokProcess : Process? {
+    didSet {
+      self.ngrokProcess?.terminationHandler = self.ngrokProcessTerminated
     }
   }
   
-  func startHttp(port: Int) async throws {
-    let client : Prch.Client<SessionClient, Ngrok.API>
-    do {
-      try await cli.http(port: port, timeout: .now() + 1.0)
+  func setupLogger(_ logger: Logger) {
+    self.logger = logger
+  }
+  
+  func ngrokProcessTerminated(_ process: Process) {
+    guard let port = self.port else {
       return
-    } catch Ngrok.CLI.RunError.earlyTermination(_, let errorCode) where errorCode == 108 {
-      guard let ourClient = self.client else {
-        throw NgrokServerError.clientNotSetup
+    }
+    
+    _Concurrency.Task {
+      do {
+        dump(try await self.startHttp(port: port))
+      } catch {
+        dump(error)
       }
-      client = ourClient
-    } catch {
-      throw error
+    }
+  }
+  
+  func setupClient(_ client: Vapor.Client) {    
+    self.prchClient = Prch.Client(api: Ngrok.API(), session: SessionClient(client: client))
+  }
+  
+  public enum TunnelError : Error{
+    case noTunnelCreated
+  }
+  
+  func startHttp(port: Int) async throws -> NgrokTunnel {
+    self.port = port
+    self.logger.debug("Starting Ngrok Tunnel...")
+    let tunnels: [NgrokTunnel]
+    
+    
+    if let firstCallTunnels = try? await self.prchClient.request(ListTunnelsRequest()).get().response.get().tunnels {
+      tunnels = firstCallTunnels
+    } else {      
+      do {
+        let ngrokProcess = try await cli.http(port: port, timeout: .now() + 1.0)
+        
+        guard let tunnel = try await self.prchClient.request(ListTunnelsRequest()).get().response.get().tunnels.first else {
+          ngrokProcess.terminate()
+          throw TunnelError.noTunnelCreated
+        }
+        self.ngrokProcess = ngrokProcess
+        self.logger.debug("Created Ngrok Process...")
+        return tunnel
+      } catch Ngrok.CLI.RunError.earlyTermination(_, let errorCode) where errorCode == 108 {
+        self.logger.debug("Ngrok Process Already Created.")
+      } catch {
+        self.logger.debug("Error thrown: \(error.localizedDescription)")
+        throw error
+      }
+      
+      self.logger.debug("Listing Tunnels")
+      tunnels = try await prchClient.request(ListTunnelsRequest()).get().response.get().tunnels
     }
     
-    let tunnels = try await client.request(ListTunnelsRequest()).get().response.get().tunnels
     
-    if let oldTunnel = tunnels.first {      
-      try await client.request(StopTunnelRequest(name: oldTunnel.name)).get().response.get()
+    
+    if let oldTunnel = tunnels.first {
+      self.logger.debug("Deleting Existing Tunnel: \(oldTunnel.public_url) ")
+      try await prchClient.request(StopTunnelRequest(name: oldTunnel.name)).get().response.get()
     }
     
-    let tunnel = try await  client.request(StartTunnelRequest(body: .init(port: port))).get().response.get()
+    self.logger.debug("Creating Tunnel...")
+    let tunnel = try await prchClient.request(StartTunnelRequest(body: .init(port: port))).get().response.get()
     
-    print(tunnel.public_url)
+    return tunnel
+    //let status = try app.http.client.shared.post(url: "https://kvdb.io/\(bucketName)/\(serverName)", body: .string(tunnel.public_url.absoluteString)).wait().status
   }
 }
 
 public protocol NgrokServer {
-  var terminationHandler: (@Sendable (Process) -> Void)? {
-    get
-    set
-  }
   
-  func startHttp (port: Int) async throws
+  func startHttp (port: Int) async throws -> NgrokTunnel
   func setupClient(_ client: Vapor.Client)
+  func setupLogger(_ logger: Logger)
 }
 
 public class NgrokLifecycleHandler : LifecycleHandler {
@@ -73,14 +110,18 @@ public class NgrokLifecycleHandler : LifecycleHandler {
   
   let server : NgrokServer
   
+  
   public func didBoot(_ application: Application) throws {
     
     server.setupClient(application.client)
+    server.setupLogger(application.logger)
     let port = application.http.server.shared.configuration.port
-
-    _Concurrency.Task {
+    
+    
+    Task {
       do {
-        try await self.server.startHttp(port: port)
+        let tunnel = try await self.server.startHttp(port: port)
+        application.logger.notice("Tunnel started on \(tunnel.public_url)")
       } catch {
         dump(error)
       }
