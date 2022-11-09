@@ -10,6 +10,12 @@ import Prch
 
 public enum Ngrok {
   public struct API : Prch.API {
+    public static let defaultBaseURL = URL(staticString: "http://127.0.0.1:4040")
+    public init(baseURL: URL = Self.defaultBaseURL, encoder: RequestEncoder = JSONEncoder()) {
+      self.baseURL = baseURL
+      self.encoder = encoder
+    }
+    
     
     public let baseURL: URL
     
@@ -26,23 +32,48 @@ public enum Ngrok {
   
   
   public struct CLI {
+    public init(executableURL: URL) {
+      self.executableURL = executableURL
+    }
+    
     let executableURL : URL
     
     public enum RunError : Error {
-      case earlyTermination(Process.TerminationReason?)
+      case earlyTermination(Process.TerminationReason?, Int?)
     }
     public func http(port: Int, timeout: DispatchTime) async throws {
       let process = Process()
+      let pipe = Pipe()
       let semaphore = DispatchSemaphore(value: 0)
       process.executableURL = executableURL
+      process.arguments = ["http", port.description]
+      process.standardError = pipe
       process.terminationHandler = { process in
         semaphore.signal()
       }
       try process.run()
       try await withCheckedThrowingContinuation { continuation in
         let result : Result<Void, Error>
+        let errorCode : Int?
         let semaphoreResult = semaphore.wait(timeout: timeout)
-        result = semaphoreResult == .success ? .failure(RunError.earlyTermination(process.terminationReason)) : .success(())
+        let data = try! pipe.fileHandleForReading.readToEnd()
+        if let text = data.flatMap{String(data: $0, encoding: .utf8)} {
+          let regex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
+          if let match = regex.firstMatch(in: text, range: .init(location: 0, length: text.count)) {
+            
+            if let range = Range(match.range(at: 1), in: text) {
+              let errorCodeString = text[range]
+              errorCode = Int(errorCodeString)
+            } else {
+              errorCode = nil
+            }
+          } else {
+            errorCode = nil
+          }
+        } else {
+          errorCode = nil
+        }
+        result = semaphoreResult == .success ? .failure(RunError.earlyTermination(process.terminationReason, errorCode)) : .success(())
         continuation.resume(with: result)
       }
     }
@@ -79,6 +110,7 @@ public struct ListTunnelsResponse : Response {
 
 public struct ListTunnelsRequest : Request {
   
+  public init () {}
   
   public typealias ResponseType = ListTunnelsResponse
   
@@ -97,7 +129,7 @@ public struct ListTunnelsRequest : Request {
   
 }
 
-public struct StateTunnelResponse : Response {
+public struct StartTunnelResponse : Response {
   public let response: ClientResult<NgrokTunnel, Never>
   
   public typealias SuccessType = NgrokTunnel
@@ -152,21 +184,60 @@ public struct StopTunnelResponse : Response {
   
 }
 public struct StopTunnelRequest : Request {
+  public init(name: String) {
+    self.name = name
+  }
+  
   public typealias ResponseType = StopTunnelResponse
   
-  public var method: String
+  public let method: String = "DELETE"
   
-  public var path: String
+  public var path: String {
+    "api/tunnels/\(name)"
+  }
   
-  public var queryParameters: [String : Any]
+  public let queryParameters = [String : Any]()
   
-  public var headers: [String : String]
+  public let  headers = [String : String] ()
   
-  public var encodeBody: ((Prch.RequestEncoder) throws -> Data)?
+  public var encodeBody: ((Prch.RequestEncoder) throws -> Data)? {
+    return nil
+  }
   
-  public var name: String
+  public let name: String
   
   
+}
+
+public struct StartTunnelRequest : Request {
+
+  
+  public init(body: NgrokTunnelRequest) {
+    self.body = body
+  }
+  
+  public typealias ResponseType = StartTunnelResponse
+  
+  public let method: String = "POST"
+  
+  public let path: String = "/api/tunnels"
+  
+  public let queryParameters: [String : Any] = [:]
+  
+  public let headers: [String : String] = [
+    "Content-Type" : "application/json"
+  ]
+  
+  func bodyEncoder (_ encoder: Prch.RequestEncoder) throws -> Data {
+    try encoder.encode(self.body)
+  }
+  public var encodeBody: ((Prch.RequestEncoder) throws -> Data)? {
+    return self.bodyEncoder(_:)
+  }
+  
+  public let name: String = ""
+  
+  public let body : NgrokTunnelRequest
 }
 
 public struct NgrokTunnelRequest : Codable {

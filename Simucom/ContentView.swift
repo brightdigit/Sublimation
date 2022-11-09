@@ -20,7 +20,7 @@ struct ContentView: View {
         .task {
           let data : Data
           do {
-            (data, _) = try await URLSession.shared.data(from: URL(string: "http://127.0.0.1:8080")!)
+            (data, _) = try await URLSession.shared.data(from: URL(string: "https://02c0-2600-1702-4050-7d30-33-5781-bba3-62a4.ngrok.io")!)
           } catch {
             print(error)
             return
