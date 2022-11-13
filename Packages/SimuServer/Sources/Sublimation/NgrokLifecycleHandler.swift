@@ -8,6 +8,8 @@ typealias Task = _Concurrency.Task
 enum NgrokServerError : Error {
   case clientNotSetup
   case noTunnelFound
+  case invalidURL
+  case cantSaveTunnel
 }
 
 protocol ServiceRepository {
@@ -132,46 +134,171 @@ extension NgrokServer {
 
 public protocol TunnelRepository {
   associatedtype Key
-  func setupClient(_ client: Vapor.Client)
-  func saveURL(_ url: URL, withKey key: Key) async throws
   func tunnel(forKey key: Key) async throws -> URL?
 }
 
-public class KeyDBTunnelRepository : TunnelRepository {
-  internal init(client: Vapor.Client? = nil, bucketName: String) {
+public protocol WritableTunnelRepository : TunnelRepository {
+  func setupClient<TunnelClientType : TunnelClient>(_ client: TunnelClientType) where TunnelClientType.Key == Self.Key
+  func saveURL(_ url: URL, withKey key: Key) async throws
+}
+
+public protocol TunnelClient {
+  associatedtype Key
+  func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL
+  func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws
+}
+
+extension TunnelClient {
+  func eraseToAnyClient() -> AnyTunnelClient<Key> {
+    return AnyTunnelClient(client: self)
+  }
+}
+
+public struct AnyTunnelClient<Key> : TunnelClient {
+  private init(client: Any, _getValue: @escaping (Key, String) async throws -> URL, _saveValue: @escaping (URL, Key, String) async throws -> Void) {
+    self.client = client
+    self._getValue = _getValue
+    self._saveValue = _saveValue
+  }
+  
+  public init<TunnelClientType : TunnelClient>(client : TunnelClientType) where TunnelClientType.Key == Self.Key {
+    self.init(client: client, _getValue: client.getValue(ofKey:fromBucket:), _saveValue: client.saveValue(_:withKey:inBucket:))
+  }
+  
+  let client : Any
+  let _getValue : ( Key,  String) async throws -> URL
+  let _saveValue : (URL, Key, String) async throws -> Void
+  
+  public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
+    try await self._getValue(key, bucketName)
+  }
+  
+  public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
+    try await self._saveValue(value, key, bucketName)
+  }
+  
+  
+}
+
+
+public struct URLSessionClient<Key> : TunnelClient {
+  let session : URLSession
+  public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
+    let data = try await session.data(from: Kvdb.url(forKey: key, atBucket: bucketName)).0
+    
+    guard let url = String(data: data, encoding: .utf8).flatMap(URL.init(string:)) else {
+      throw NgrokServerError.invalidURL
+    }
+    
+    return url
+    
+  }
+  
+  public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
+    var request = URLRequest(url: Kvdb.url(forKey: key, atBucket: bucketName))
+    request.httpBody = value.absoluteString.data(using: .utf8)
+    guard let response = try await session.data(for: request).1 as? HTTPURLResponse else {
+      throw NgrokServerError.cantSaveTunnel
+    }
+    guard response.statusCode / 100 == 2 else {
+      throw NgrokServerError.cantSaveTunnel
+    }
+  }
+  
+  
+}
+
+public struct VaporTunnelClient<Key> : TunnelClient {
+  internal init(client: Vapor.Client, keyType: Key.Type) {
+    self.client = client
+  }
+  
+  let client : Vapor.Client
+  
+  public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
+    let url = try await client.get("https://kvdb.io/\(bucketName)/\(key)").body.map(String.init(buffer:)).flatMap(URL.init(string:))
+    
+    guard let url = url else {
+      throw NgrokServerError.invalidURL
+    }
+    return url
+  }
+  
+  public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
+    
+    _ = try await client.post("https://kvdb.io/\(bucketName)/\(key)", beforeSend: { request in
+      request.body = .init(string: value.absoluteString)
+  })
+                              }
+  
+  
+}
+
+
+public enum Kvdb {
+  
+  public static let baseURI : URI = "https://kvdb.io/"
+  
+  public static let baseURL : URL = URL(staticString: baseURI.string)
+  
+  public static func uri<Key>(forKey key: Key, atBucket bucketName : String) -> URI {
+    var uri = baseURI
+    uri.path = "\(bucketName)/\(key)"
+    return uri
+  }
+  
+  public static func url<Key>(forKey key: Key, atBucket bucketName : String) -> URL {
+    return baseURL.appendingPathComponent("\(bucketName)/\(key)")
+  }
+  
+  
+}
+public class KeyDBTunnelRepository<Key>: WritableTunnelRepository {
+ 
+  
+
+  
+  internal init(client: AnyTunnelClient<Key>? = nil, bucketName: String) {
     self.client = client
     self.bucketName = bucketName
   }
   
-  var client : Vapor.Client?
+  var client : AnyTunnelClient<Key>?
   let bucketName : String
-  public func setupClient(_ client: Vapor.Client) {
-    self.client = client
+  public func setupClient<TunnelClientType : TunnelClient>(_ client: TunnelClientType) where TunnelClientType.Key == Key {
+    self.client = client.eraseToAnyClient()
   }
-  public func tunnel(forKey key: String) async throws -> URL? {
+  public func tunnel(forKey key: Key) async throws -> URL? {
     guard let client = self.client else {
       preconditionFailure()
     }
+    return try await client.getValue(ofKey: key, fromBucket: bucketName)
     
-    return try await client.get("https://kvdb.io/\(bucketName)/\(key)").body.map(String.init(buffer:)).flatMap(URL.init(string:))
+//    return try await client.get("https://kvdb.io/\(bucketName)/\(key)").body.map(String.init(buffer:)).flatMap(URL.init(string:))
     
   }
-  public func saveURL(_ url: URL, withKey key: String) async throws {
+  public func saveURL(_ url: URL, withKey key: Key) async throws {
     guard let client = self.client else {
       preconditionFailure()
     }
-    _ = try await client.post("https://kvdb.io/\(bucketName)/\(key)", beforeSend: { request in
-      request.body = .init(string: url.absoluteString)
-    })
+    try await client.saveValue(url, withKey: key, inBucket: bucketName)
+//    _ = try await client.post("https://kvdb.io/\(bucketName)/\(key)", beforeSend: { request in
+//      request.body = .init(string: url.absoluteString)
+//    })
   }
-  public typealias Key = String
   
   
 }
 
-public class NgrokLifecycleHandler<TunnelRepositoryType : TunnelRepository> : LifecycleHandler, NgrokServerDelegate where TunnelRepositoryType.Key == String {
+public class NgrokLifecycleHandler<TunnelRepositoryType : WritableTunnelRepository> : LifecycleHandler, NgrokServerDelegate {
   public func server(_ server: NgrokServer, updatedTunnel tunnel: Ngrokit.NgrokTunnel) {
-    self.tunnelRepo
+    Task {
+      do {
+        try await self.tunnelRepo.saveURL(tunnel.public_url, withKey: self.key)
+      } catch {
+        self.logger?.error("Unable to save url to repository: \(error.localizedDescription)")
+      }
+    }
   }
   
   public func server(_ server: NgrokServer, errorDidOccur error: Error) {
@@ -182,27 +309,31 @@ public class NgrokLifecycleHandler<TunnelRepositoryType : TunnelRepository> : Li
     
   }
   
-  public init() {
-    self.server = NgrokCLIAPIServer()
-    fatalError()
-  }
-  public init(server: NgrokServer, repo: TunnelRepositoryType) {
+
+  public init(server: NgrokServer, repo: TunnelRepositoryType, key: TunnelRepositoryType.Key) {
     self.server = server
     self.tunnelRepo = repo
+    self.key = key
   }
   
   let server : NgrokServer
   let tunnelRepo : TunnelRepositoryType
-  
+  let key: TunnelRepositoryType.Key
+  var logger : Logger?
   
   public func didBoot(_ application: Application) throws {
 //
 //    server.setupClient(application.client)
 //    server.setupLogger(application.logger)
 //    let port = application.http.server.shared.configuration.port
-    
+    self.logger = application.logger
     self.server.startTunnelFor(application: application, withDelegate: self)
-    
+    self.tunnelRepo.setupClient(
+      VaporTunnelClient(
+        client:  application.client,
+        keyType: TunnelRepositoryType.Key.self
+      ).eraseToAnyClient()
+    )
 //    Task {
 //      do {
 //        let tunnel = try await self.server.startHttp(port: port)
@@ -216,6 +347,13 @@ public class NgrokLifecycleHandler<TunnelRepositoryType : TunnelRepository> : Li
   
   public func shutdown(_ application: Application) {
     
+  }
+}
+
+public extension NgrokLifecycleHandler {
+  convenience init<Key>(bucketName: String, key: Key) where TunnelRepositoryType == KeyDBTunnelRepository<Key> {
+
+    self.init(server: NgrokCLIAPIServer(), repo: .init(bucketName: bucketName), key: key)
   }
 }
 //  let serverName = "hello"
