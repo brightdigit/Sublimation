@@ -6,5 +6,5 @@
 //
 
 public struct NgrokTunnelResponse: Codable {
-  let tunnels: [NgrokTunnel]
+  public let tunnels: [NgrokTunnel]
 }
