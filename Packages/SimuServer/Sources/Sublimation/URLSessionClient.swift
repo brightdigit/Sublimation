@@ -1,9 +1,17 @@
 import Foundation
 
+extension URL : KVdbURLConstructable {
+  public init(kvDBBase: String, keyBucketPath: String) {
+    self = URL(string: kvDBBase)!.appendingPathComponent(keyBucketPath)
+  }
+}
+
 public struct URLSessionClient<Key> : TunnelClient {
   let session : URLSession
   public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
-    let data = try await session.data(from: Kvdb.url(forKey: key, atBucket: bucketName)).0
+    let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
+    //KVdb.url(forKey: key, atBucket: bucketName)
+    let data = try await session.data(from: url).0
     
     guard let url = String(data: data, encoding: .utf8).flatMap(URL.init(string:)) else {
       throw NgrokServerError.invalidURL
@@ -14,7 +22,8 @@ public struct URLSessionClient<Key> : TunnelClient {
   }
   
   public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
-    var request = URLRequest(url: Kvdb.url(forKey: key, atBucket: bucketName))
+    let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
+    var request = URLRequest(url: url)
     request.httpBody = value.absoluteString.data(using: .utf8)
     guard let response = try await session.data(for: request).1 as? HTTPURLResponse else {
       throw NgrokServerError.cantSaveTunnel

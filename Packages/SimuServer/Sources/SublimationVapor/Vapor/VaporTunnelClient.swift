@@ -1,5 +1,12 @@
 import Vapor
 import Foundation
+
+extension URI : KVdbURLConstructable {
+  public init(kvDBBase: String, keyBucketPath: String) {
+    self.init(string: kvDBBase)
+    self.path = keyBucketPath
+  }
+}
 public struct VaporTunnelClient<Key> : TunnelClient {
   internal init(client: Vapor.Client, keyType: Key.Type) {
     self.client = client
@@ -8,7 +15,8 @@ public struct VaporTunnelClient<Key> : TunnelClient {
   let client : Vapor.Client
   
   public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
-    let url = try await client.get("https://kvdb.io/\(bucketName)/\(key)").body.map(String.init(buffer:)).flatMap(URL.init(string:))
+    let uri = KVdb.construct(URI.self, forKey: key, atBucket: bucketName)
+    let url = try await client.get(uri).body.map(String.init(buffer:)).flatMap(URL.init(string:))
     
     guard let url = url else {
       throw NgrokServerError.invalidURL
@@ -17,8 +25,8 @@ public struct VaporTunnelClient<Key> : TunnelClient {
   }
   
   public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
-    
-    _ = try await client.post("https://kvdb.io/\(bucketName)/\(key)", beforeSend: { request in
+    let uri = KVdb.construct(URI.self, forKey: key, atBucket: bucketName)
+    _ = try await client.post(uri, beforeSend: { request in
       request.body = .init(string: value.absoluteString)
   })
                               }

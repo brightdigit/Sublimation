@@ -12,6 +12,7 @@ let package = Package(
             name: "SimuServer",
             targets: ["SimuServer"]),
         .library(name: "Sublimation", targets: ["Sublimation"]),
+        .library(name: "SublimationVapor", targets: ["SublimationVapor"]),
         .library(name: "Ngrokit", targets: ["Ngrokit"])
     ],
     dependencies: [
@@ -27,13 +28,14 @@ let package = Package(
       .executableTarget(
             name: "SimuServer",
             dependencies: [
-              "Sublimation",
+              "SublimationVapor",
               .product(name: "Vapor", package: "vapor")
             ]),
       .target(name: "Ngrokit", dependencies: ["Prch"]),
-      .target(name: "Sublimation",
+      .target(name: "Sublimation"),
+      .target(name: "SublimationVapor",
               dependencies: [
-                "Ngrokit","PrchVapor",
+                "Ngrokit","PrchVapor", "Sublimation",
                 .product(name: "Vapor", package: "vapor")
               ]),
         .testTarget(
