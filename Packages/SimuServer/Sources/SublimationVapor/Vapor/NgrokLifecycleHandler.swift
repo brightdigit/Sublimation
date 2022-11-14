@@ -63,7 +63,7 @@ public class NgrokLifecycleHandler<TunnelRepositoryType : WritableTunnelReposito
 }
 
 public extension NgrokLifecycleHandler {
-  convenience init<Key>(bucketName: String, key: Key) where TunnelRepositoryType == KeyDBTunnelRepository<Key> {
+  convenience init<Key>(bucketName: String, key: Key) where TunnelRepositoryType == KVdbTunnelRepository<Key> {
 
     self.init(server: NgrokCLIAPIServer(), repo: .init(bucketName: bucketName), key: key)
   }

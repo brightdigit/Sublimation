@@ -1,16 +1,10 @@
 import Foundation
 
-extension URL : KVdbURLConstructable {
-  public init(kvDBBase: String, keyBucketPath: String) {
-    self = URL(string: kvDBBase)!.appendingPathComponent(keyBucketPath)
-  }
-}
 
 public struct URLSessionClient<Key> : TunnelClient {
   let session : URLSession
   public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
-    //KVdb.url(forKey: key, atBucket: bucketName)
     let data = try await session.data(from: url).0
     
     guard let url = String(data: data, encoding: .utf8).flatMap(URL.init(string:)) else {

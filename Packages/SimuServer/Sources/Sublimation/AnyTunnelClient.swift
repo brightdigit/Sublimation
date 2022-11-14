@@ -1,11 +1,5 @@
 import Foundation
 
-public extension TunnelClient {
-  func eraseToAnyClient() -> AnyTunnelClient<Key> {
-    return AnyTunnelClient(client: self)
-  }
-}
-
 public struct AnyTunnelClient<Key> : TunnelClient {
   private init(client: Any, _getValue: @escaping (Key, String) async throws -> URL, _saveValue: @escaping (URL, Key, String) async throws -> Void) {
     self.client = client
@@ -28,6 +22,4 @@ public struct AnyTunnelClient<Key> : TunnelClient {
   public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
     try await self._saveValue(value, key, bucketName)
   }
-  
-  
 }

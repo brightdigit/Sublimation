@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Sublimation
 
 struct ContentView: View {
   @State var serverResponse : String = ""
@@ -18,9 +19,13 @@ struct ContentView: View {
         }
         .padding()
         .task {
+          
           let data : Data
           do {
-            (data, _) = try await URLSession.shared.data(from: URL(string: "https://02c0-2600-1702-4050-7d30-33-5781-bba3-62a4.ngrok.io")!)
+            guard let url = try await KVdb.url(withKey: "hello", atBucket: "4WwQUN9AZrppSyLkbzidgo") else {
+              return
+            }
+            (data, _) = try await URLSession.shared.data(from: url)
           } catch {
             print(error)
             return

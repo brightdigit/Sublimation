@@ -1,9 +1,4 @@
 import Foundation
-public protocol KVdbURLConstructable {
-  init(kvDBBase : String, keyBucketPath: String)
-}
-
-
 
 public enum KVdb {
   public static let baseString = "https://kvdb.io/"
@@ -17,5 +12,10 @@ public enum KVdb {
       kvDBBase: Self.baseString,
       keyBucketPath: Self.path(forKey: key, atBucket: bucketName)
     )
+  }
+  
+  public static func url<Key>(withKey key: Key, atBucket bucketName: String, using session: URLSession = .shared) async throws -> URL? {
+    let repository = KVdbTunnelRepository<Key>(client: URLSessionClient<Key>(session: session), bucketName: bucketName)
+    return try await repository.tunnel(forKey: key)
   }
 }
