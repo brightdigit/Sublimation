@@ -2,13 +2,7 @@ import Vapor
 import Foundation
 import Sublimation
 
-extension URI : KVdbURLConstructable {
-  public init(kvDBBase: String, keyBucketPath: String) {
-    self.init(string: kvDBBase)
-    self.path = keyBucketPath
-  }
-}
-public struct VaporTunnelClient<Key> : TunnelClient {
+public struct VaporTunnelClient<Key> : KVdbTunnelClient {
   internal init(client: Vapor.Client, keyType: Key.Type) {
     self.client = client
   }

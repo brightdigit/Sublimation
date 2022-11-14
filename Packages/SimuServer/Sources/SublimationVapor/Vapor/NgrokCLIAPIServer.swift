@@ -6,9 +6,21 @@ import Vapor
 import class Prch.Client
 
 class NgrokCLIAPIServer : NgrokServer {
+  internal init(cli: Ngrok.CLI, prchClient: Client<SessionClient, Ngrok.API>? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, delegate: NgrokServerDelegate? = nil) {
+    self.cli = cli
+    self.prchClient = prchClient
+    self.port = port
+    self.logger = logger
+    self.ngrokProcess = ngrokProcess
+    self.delegate = delegate
+  }
   
-  let cli = Ngrok.CLI(executableURL:
-      .init(fileURLWithPath:  "/opt/homebrew/bin/ngrok"))
+  public convenience init (ngrokPath: String, prchClient: Client<SessionClient, Ngrok.API>? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, delegate: NgrokServerDelegate? = nil) {
+    self.init(cli: .init(executableURL: .init(fileURLWithPath: ngrokPath)), prchClient: prchClient, port: port, logger: logger, ngrokProcess: ngrokProcess, delegate: delegate)
+  }
+  
+  
+  let cli :Ngrok.CLI
   var prchClient : Prch.Client<SessionClient, Ngrok.API>!
   var port : Int?
   var logger : Logger!
@@ -95,6 +107,5 @@ class NgrokCLIAPIServer : NgrokServer {
     let tunnel = try await prchClient.request(StartTunnelRequest(body: .init(port: port))).get().response.get()
     
     return tunnel
-    //let status = try app.http.client.shared.post(url: "https://kvdb.io/\(bucketName)/\(serverName)", body: .string(tunnel.public_url.absoluteString)).wait().status
   }
 }

@@ -8,7 +8,7 @@ defer {
   app.shutdown()
 }
 try configure(app)
-app.lifecycle.use(NgrokLifecycleHandler<KeyDBTunnelRepository>(
+app.lifecycle.use(NgrokLifecycleHandler(
   bucketName: "4WwQUN9AZrppSyLkbzidgo", key: "hello"
 ))
 try app.start()

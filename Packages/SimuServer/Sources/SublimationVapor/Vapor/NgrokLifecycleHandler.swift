@@ -34,10 +34,6 @@ public class NgrokLifecycleHandler<TunnelRepositoryType : WritableTunnelReposito
   var logger : Logger?
   
   public func didBoot(_ application: Application) throws {
-//
-//    server.setupClient(application.client)
-//    server.setupLogger(application.logger)
-//    let port = application.http.server.shared.configuration.port
     self.logger = application.logger
     self.server.startTunnelFor(application: application, withDelegate: self)
     self.tunnelRepo.setupClient(
@@ -46,26 +42,16 @@ public class NgrokLifecycleHandler<TunnelRepositoryType : WritableTunnelReposito
         keyType: TunnelRepositoryType.Key.self
       ).eraseToAnyClient()
     )
-//    Task {
-//      do {
-//        let tunnel = try await self.server.startHttp(port: port)
-//        application.logger.notice("Tunnel started on \(tunnel.public_url)")
-//      } catch {
-//        dump(error)
-//      }
-//    }
-    
   }
   
   public func shutdown(_ application: Application) {
-    
   }
 }
 
 public extension NgrokLifecycleHandler {
   convenience init<Key>(bucketName: String, key: Key) where TunnelRepositoryType == KVdbTunnelRepository<Key> {
 
-    self.init(server: NgrokCLIAPIServer(), repo: .init(bucketName: bucketName), key: key)
+    self.init(server: NgrokCLIAPIServer(ngrokPath: "/opt/homebrew/bin/ngrok"), repo: .init(bucketName: bucketName), key: key)
   }
 }
 

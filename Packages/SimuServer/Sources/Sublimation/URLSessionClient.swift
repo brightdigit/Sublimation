@@ -1,7 +1,7 @@
 import Foundation
 
 
-public struct URLSessionClient<Key> : TunnelClient {
+public struct URLSessionClient<Key> : KVdbTunnelClient {
   let session : URLSession
   public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)

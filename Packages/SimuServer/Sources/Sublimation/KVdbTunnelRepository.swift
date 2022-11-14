@@ -1,20 +1,25 @@
 import Foundation
 
 public class KVdbTunnelRepository<Key>: WritableTunnelRepository {
-  internal init(client: AnyTunnelClient<Key>? = nil, bucketName: String) {
+  internal init(client: AnyKVdbTunnelClient<Key>? = nil, bucketName: String) {
     self.client = client
     self.bucketName = bucketName
   }
   
-  public init<TunnelClientType : TunnelClient>(client: TunnelClientType, bucketName: String) where TunnelClientType.Key == Key {
+  public init( bucketName: String) {
+    self.client = nil
+    self.bucketName = bucketName
+  }
+  
+  public init<TunnelClientType : KVdbTunnelClient>(client: TunnelClientType, bucketName: String) where TunnelClientType.Key == Key {
     self.client = client.eraseToAnyClient()
     self.bucketName = bucketName
   }
   
-  var client : AnyTunnelClient<Key>?
+  var client : AnyKVdbTunnelClient<Key>?
   let bucketName : String
   
-  public func setupClient<TunnelClientType : TunnelClient>(_ client: TunnelClientType) where TunnelClientType.Key == Key {
+  public func setupClient<TunnelClientType : KVdbTunnelClient>(_ client: TunnelClientType) where TunnelClientType.Key == Key {
     self.client = client.eraseToAnyClient()
   }
   
