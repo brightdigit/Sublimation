@@ -21,9 +21,15 @@ public struct VaporTunnelClient<Key> : KVdbTunnelClient {
   
   public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
     let uri = KVdb.construct(URI.self, forKey: key, atBucket: bucketName)
-    _ = try await client.post(uri, beforeSend: { request in
+    let response = try await client.post(uri, beforeSend: { request in
       request.body = .init(string: value.absoluteString)
   })
+    
+    if (response.statusCode ?? 0) / 100 == 2 {
+      return
+    }
+    
+    throw NgrokServerError.cantSaveTunnel(response.statusCode, response.data)
                               }
   
   

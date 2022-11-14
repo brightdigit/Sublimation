@@ -14,7 +14,7 @@ public enum KVdb {
     )
   }
   
-  public static func url<Key>(withKey key: Key, atBucket bucketName: String, using session: URLSession = .shared) async throws -> URL? {
+  public static func url<Key>(withKey key: Key, atBucket bucketName: String, using session: URLSession = .ephemeral()) async throws -> URL? {
     let repository = KVdbTunnelRepository<Key>(client: URLSessionClient<Key>(session: session), bucketName: bucketName)
     return try await repository.tunnel(forKey: key)
   }

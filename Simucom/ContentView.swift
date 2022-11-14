@@ -27,7 +27,6 @@ struct ContentView: View {
             }
             (data, _) = try await URLSession.shared.data(from: url)
           } catch {
-            print(error)
             return
           }
           guard let serverResponse = String(data: data, encoding: .utf8) else {

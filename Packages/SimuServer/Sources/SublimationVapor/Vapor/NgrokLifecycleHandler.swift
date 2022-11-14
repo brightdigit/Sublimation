@@ -9,7 +9,9 @@ public class NgrokLifecycleHandler<TunnelRepositoryType : WritableTunnelReposito
         try await self.tunnelRepo.saveURL(tunnel.public_url, withKey: self.key)
       } catch {
         self.logger?.error("Unable to save url to repository: \(error.localizedDescription)")
+        return
       }
+      self.logger?.notice("Saved url \(tunnel.public_url) to repository with key \(self.key)")
     }
   }
   
