@@ -1,6 +1,6 @@
 import Foundation
 
-extension TunnelClient {
+public extension TunnelClient {
   func eraseToAnyClient() -> AnyTunnelClient<Key> {
     return AnyTunnelClient(client: self)
   }

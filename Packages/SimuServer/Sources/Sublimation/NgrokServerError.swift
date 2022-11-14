@@ -1,5 +1,5 @@
 
-enum NgrokServerError : Error {
+public enum NgrokServerError : Error {
   case clientNotSetup
   case noTunnelFound
   case invalidURL

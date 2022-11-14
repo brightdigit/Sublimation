@@ -1,5 +1,6 @@
 import Vapor
 import Foundation
+import Sublimation
 
 extension URI : KVdbURLConstructable {
   public init(kvDBBase: String, keyBucketPath: String) {

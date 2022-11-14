@@ -5,7 +5,7 @@ public class KeyDBTunnelRepository<Key>: WritableTunnelRepository {
   
 
   
-  internal init(client: AnyTunnelClient<Key>? = nil, bucketName: String) {
+  public  init(client: AnyTunnelClient<Key>? = nil, bucketName: String) {
     self.client = client
     self.bucketName = bucketName
   }
