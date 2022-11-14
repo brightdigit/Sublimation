@@ -17,7 +17,6 @@
 		B30BAB9A2910171000665344 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B30BAB992910171000665344 /* Assets.xcassets */; };
 		B30BAB9D2910171000665344 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B30BAB9C2910171000665344 /* Preview Assets.xcassets */; };
 		B3E161A7292257D700518FB3 /* Sublimation in Frameworks */ = {isa = PBXBuildFile; productRef = B3E161A6292257D700518FB3 /* Sublimation */; };
-		B3E161A9292257DD00518FB3 /* Sublimation in Frameworks */ = {isa = PBXBuildFile; productRef = B3E161A8292257DD00518FB3 /* Sublimation */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,7 +54,8 @@
 		B30BAB972910170F00665344 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B30BAB992910171000665344 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B30BAB9C2910171000665344 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		B30BABA82910181B00665344 /* SimuServer */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = SimuServer; sourceTree = "<group>"; };
+		B3E161AA2922E6EF00518FB3 /* Sublimation */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Sublimation; sourceTree = "<group>"; };
+		B3E161AD2922E79600518FB3 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +63,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3E161A9292257DD00518FB3 /* Sublimation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,7 +80,6 @@
 		B30BAB772910170E00665344 = {
 			isa = PBXGroup;
 			children = (
-				B30BABA7291017DC00665344 /* Packages */,
 				B30BAB822910170E00665344 /* Simucom */,
 				B30BAB942910170F00665344 /* Simucom Watch App */,
 				B30BAB812910170E00665344 /* Products */,
@@ -136,17 +134,11 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		B30BABA7291017DC00665344 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				B30BABA82910181B00665344 /* SimuServer */,
-			);
-			path = Packages;
-			sourceTree = "<group>";
-		};
 		B3E161A5292257D700518FB3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B3E161AD2922E79600518FB3 /* Package.swift */,
+				B3E161AA2922E6EF00518FB3 /* Sublimation */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -170,7 +162,6 @@
 			);
 			name = Simucom;
 			packageProductDependencies = (
-				B3E161A8292257DD00518FB3 /* Sublimation */,
 			);
 			productName = Simucom;
 			productReference = B30BAB802910170E00665344 /* Simucom.app */;
@@ -555,10 +546,6 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		B3E161A6292257D700518FB3 /* Sublimation */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Sublimation;
-		};
-		B3E161A8292257DD00518FB3 /* Sublimation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Sublimation;
 		};
