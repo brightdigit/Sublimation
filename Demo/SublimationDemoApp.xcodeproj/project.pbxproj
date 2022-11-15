@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B3020FD12923E5D70080243A /* Sublimation in Frameworks */ = {isa = PBXBuildFile; productRef = B3020FD02923E5D70080243A /* Sublimation */; };
+		B3020FD32923E5DF0080243A /* Sublimation in Frameworks */ = {isa = PBXBuildFile; productRef = B3020FD22923E5DF0080243A /* Sublimation */; };
+		B3020FD52923E8B70080243A /* SublimationDemoConfiguration in Frameworks */ = {isa = PBXBuildFile; productRef = B3020FD42923E8B70080243A /* SublimationDemoConfiguration */; };
+		B3020FD72923E8BD0080243A /* SublimationDemoConfiguration in Frameworks */ = {isa = PBXBuildFile; productRef = B3020FD62923E8BD0080243A /* SublimationDemoConfiguration */; };
 		B3641FFA29231A7200A483BA /* SublimationDemoAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3641FF929231A7200A483BA /* SublimationDemoAppApp.swift */; };
 		B3641FFC29231A7200A483BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3641FFB29231A7200A483BA /* ContentView.swift */; };
 		B3641FFE29231A7400A483BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3641FFD29231A7400A483BA /* Assets.xcassets */; };
@@ -43,6 +47,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B3020FCE2923E5B20080243A /* Sublimation */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Sublimation; path = ..; sourceTree = "<group>"; };
 		B3641FF629231A7200A483BA /* SublimationDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SublimationDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3641FF929231A7200A483BA /* SublimationDemoAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SublimationDemoAppApp.swift; sourceTree = "<group>"; };
 		B3641FFB29231A7200A483BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -61,6 +66,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3020FD72923E8BD0080243A /* SublimationDemoConfiguration in Frameworks */,
+				B3020FD12923E5D70080243A /* Sublimation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,19 +75,38 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3020FD52923E8B70080243A /* SublimationDemoConfiguration in Frameworks */,
+				B3020FD32923E5DF0080243A /* Sublimation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B3020FCD2923E5B20080243A /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				B3020FCE2923E5B20080243A /* Sublimation */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		B3020FCF2923E5D70080243A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B3641FED29231A7200A483BA = {
 			isa = PBXGroup;
 			children = (
+				B3020FCD2923E5B20080243A /* Packages */,
 				B364201D29231B0000A483BA /* SublimationDemoServer */,
 				B3641FF829231A7200A483BA /* SublimationDemoApp */,
 				B364200A29231A7400A483BA /* SublimationDemoApp Watch App */,
 				B3641FF729231A7200A483BA /* Products */,
+				B3020FCF2923E5D70080243A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -149,6 +175,10 @@
 				B364200929231A7400A483BA /* PBXTargetDependency */,
 			);
 			name = SublimationDemoApp;
+			packageProductDependencies = (
+				B3020FD02923E5D70080243A /* Sublimation */,
+				B3020FD62923E8BD0080243A /* SublimationDemoConfiguration */,
+			);
 			productName = SublimationDemoApp;
 			productReference = B3641FF629231A7200A483BA /* SublimationDemoApp.app */;
 			productType = "com.apple.product-type.application";
@@ -166,6 +196,10 @@
 			dependencies = (
 			);
 			name = "SublimationDemoApp Watch App";
+			packageProductDependencies = (
+				B3020FD22923E5DF0080243A /* Sublimation */,
+				B3020FD42923E8B70080243A /* SublimationDemoConfiguration */,
+			);
 			productName = "SublimationDemoApp Watch App";
 			productReference = B364200629231A7400A483BA /* SublimationDemoApp Watch App.app */;
 			productType = "com.apple.product-type.application";
@@ -526,6 +560,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B3020FD02923E5D70080243A /* Sublimation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Sublimation;
+		};
+		B3020FD22923E5DF0080243A /* Sublimation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Sublimation;
+		};
+		B3020FD42923E8B70080243A /* SublimationDemoConfiguration */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SublimationDemoConfiguration;
+		};
+		B3020FD62923E8BD0080243A /* SublimationDemoConfiguration */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SublimationDemoConfiguration;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B3641FEE29231A7200A483BA /* Project object */;
 }
