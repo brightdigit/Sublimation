@@ -11,12 +11,9 @@ defer {
 app.get { req async in
     "You're connected"
 }
-
-app.get("hello") { req async -> String in
-    "Hello, world!"
-}
 app.lifecycle.use(NgrokLifecycleHandler(
+  ngrokPath: Configuration.ngrokPath,
   bucketName: Configuration.bucketName,
   key: Configuration.key
 ))
-try app.start()
+try app.run()

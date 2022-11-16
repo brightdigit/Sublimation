@@ -7,8 +7,9 @@
 
 import Foundation
 
-let yourBucketName : String? = "4WwQUN9AZrppSyLkbzidgo"
-let yourKey : String? = "hello"
+let yourBucketName : String? = nil
+let yourKey : String? = nil
+let yourNgrokPath : String = "/opt/homebrew/bin/ngrok"
 
 public enum Configuration {
   public static var bucketName : String {
@@ -23,5 +24,9 @@ public enum Configuration {
       preconditionFailure("Please go to \(#filePath) and enter your key from kvdb.io.")
     }
     return key
+  }
+  
+  public static var ngrokPath : String {
+    return yourNgrokPath
   }
 }
