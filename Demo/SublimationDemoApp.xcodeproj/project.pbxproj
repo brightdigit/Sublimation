@@ -7,37 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B30BAB842910170E00665344 /* SimucomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30BAB832910170E00665344 /* SimucomApp.swift */; };
-		B30BAB862910170E00665344 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30BAB852910170E00665344 /* ContentView.swift */; };
-		B30BAB882910170F00665344 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B30BAB872910170F00665344 /* Assets.xcassets */; };
-		B30BAB8B2910170F00665344 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B30BAB8A2910170F00665344 /* Preview Assets.xcassets */; };
-		B30BAB912910170F00665344 /* Simucom Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B30BAB902910170F00665344 /* Simucom Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		B30BAB962910170F00665344 /* SimucomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30BAB952910170F00665344 /* SimucomApp.swift */; };
-		B30BAB982910170F00665344 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30BAB972910170F00665344 /* ContentView.swift */; };
-		B30BAB9A2910171000665344 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B30BAB992910171000665344 /* Assets.xcassets */; };
-		B30BAB9D2910171000665344 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B30BAB9C2910171000665344 /* Preview Assets.xcassets */; };
-		B3E161A7292257D700518FB3 /* Sublimation in Frameworks */ = {isa = PBXBuildFile; productRef = B3E161A6292257D700518FB3 /* Sublimation */; };
-		B3E161A9292257DD00518FB3 /* Sublimation in Frameworks */ = {isa = PBXBuildFile; productRef = B3E161A8292257DD00518FB3 /* Sublimation */; };
+		B3020FD12923E5D70080243A /* Sublimation in Frameworks */ = {isa = PBXBuildFile; productRef = B3020FD02923E5D70080243A /* Sublimation */; };
+		B3020FD32923E5DF0080243A /* Sublimation in Frameworks */ = {isa = PBXBuildFile; productRef = B3020FD22923E5DF0080243A /* Sublimation */; };
+		B3020FD52923E8B70080243A /* SublimationDemoConfiguration in Frameworks */ = {isa = PBXBuildFile; productRef = B3020FD42923E8B70080243A /* SublimationDemoConfiguration */; };
+		B3020FD72923E8BD0080243A /* SublimationDemoConfiguration in Frameworks */ = {isa = PBXBuildFile; productRef = B3020FD62923E8BD0080243A /* SublimationDemoConfiguration */; };
+		B3641FFA29231A7200A483BA /* SublimationDemoAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3641FF929231A7200A483BA /* SublimationDemoAppApp.swift */; };
+		B3641FFC29231A7200A483BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3641FFB29231A7200A483BA /* ContentView.swift */; };
+		B3641FFE29231A7400A483BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3641FFD29231A7400A483BA /* Assets.xcassets */; };
+		B364200129231A7400A483BA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B364200029231A7400A483BA /* Preview Assets.xcassets */; };
+		B364200729231A7400A483BA /* SublimationDemoApp Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B364200629231A7400A483BA /* SublimationDemoApp Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B364200C29231A7400A483BA /* SublimationDemoAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B364200B29231A7400A483BA /* SublimationDemoAppApp.swift */; };
+		B364200E29231A7400A483BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B364200D29231A7400A483BA /* ContentView.swift */; };
+		B364201029231A7500A483BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B364200F29231A7500A483BA /* Assets.xcassets */; };
+		B364201329231A7500A483BA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B364201229231A7500A483BA /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		B30BAB922910170F00665344 /* PBXContainerItemProxy */ = {
+		B364200829231A7400A483BA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B30BAB782910170E00665344 /* Project object */;
+			containerPortal = B3641FEE29231A7200A483BA /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = B30BAB8F2910170F00665344;
-			remoteInfo = "Simucom Watch App";
+			remoteGlobalIDString = B364200529231A7400A483BA;
+			remoteInfo = "SublimationDemoApp Watch App";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		B30BABA32910171000665344 /* Embed Watch Content */ = {
+		B364201929231A7500A483BA /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				B30BAB912910170F00665344 /* Simucom Watch App.app in Embed Watch Content */,
+				B364200729231A7400A483BA /* SublimationDemoApp Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -45,176 +47,182 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		B30BAB802910170E00665344 /* Simucom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Simucom.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B30BAB832910170E00665344 /* SimucomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimucomApp.swift; sourceTree = "<group>"; };
-		B30BAB852910170E00665344 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B30BAB872910170F00665344 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B30BAB8A2910170F00665344 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		B30BAB902910170F00665344 /* Simucom Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Simucom Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B30BAB952910170F00665344 /* SimucomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimucomApp.swift; sourceTree = "<group>"; };
-		B30BAB972910170F00665344 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B30BAB992910171000665344 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B30BAB9C2910171000665344 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		B30BABA82910181B00665344 /* SimuServer */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = SimuServer; sourceTree = "<group>"; };
+		B3020FCE2923E5B20080243A /* Sublimation */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Sublimation; path = ..; sourceTree = "<group>"; };
+		B3641FF629231A7200A483BA /* SublimationDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SublimationDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3641FF929231A7200A483BA /* SublimationDemoAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SublimationDemoAppApp.swift; sourceTree = "<group>"; };
+		B3641FFB29231A7200A483BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B3641FFD29231A7400A483BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B364200029231A7400A483BA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B364200629231A7400A483BA /* SublimationDemoApp Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SublimationDemoApp Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B364200B29231A7400A483BA /* SublimationDemoAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SublimationDemoAppApp.swift; sourceTree = "<group>"; };
+		B364200D29231A7400A483BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B364200F29231A7500A483BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B364201229231A7500A483BA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B364201D29231B0000A483BA /* SublimationDemoServer */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = SublimationDemoServer; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		B30BAB7D2910170E00665344 /* Frameworks */ = {
+		B3641FF329231A7200A483BA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3E161A9292257DD00518FB3 /* Sublimation in Frameworks */,
+				B3020FD72923E8BD0080243A /* SublimationDemoConfiguration in Frameworks */,
+				B3020FD12923E5D70080243A /* Sublimation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B30BAB8D2910170F00665344 /* Frameworks */ = {
+		B364200329231A7400A483BA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3E161A7292257D700518FB3 /* Sublimation in Frameworks */,
+				B3020FD52923E8B70080243A /* SublimationDemoConfiguration in Frameworks */,
+				B3020FD32923E5DF0080243A /* Sublimation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B30BAB772910170E00665344 = {
+		B3020FCD2923E5B20080243A /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				B30BABA7291017DC00665344 /* Packages */,
-				B30BAB822910170E00665344 /* Simucom */,
-				B30BAB942910170F00665344 /* Simucom Watch App */,
-				B30BAB812910170E00665344 /* Products */,
-				B3E161A5292257D700518FB3 /* Frameworks */,
+				B3020FCE2923E5B20080243A /* Sublimation */,
 			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
-		B30BAB812910170E00665344 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				B30BAB802910170E00665344 /* Simucom.app */,
-				B30BAB902910170F00665344 /* Simucom Watch App.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		B30BAB822910170E00665344 /* Simucom */ = {
-			isa = PBXGroup;
-			children = (
-				B30BAB832910170E00665344 /* SimucomApp.swift */,
-				B30BAB852910170E00665344 /* ContentView.swift */,
-				B30BAB872910170F00665344 /* Assets.xcassets */,
-				B30BAB892910170F00665344 /* Preview Content */,
-			);
-			path = Simucom;
-			sourceTree = "<group>";
-		};
-		B30BAB892910170F00665344 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				B30BAB8A2910170F00665344 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		B30BAB942910170F00665344 /* Simucom Watch App */ = {
-			isa = PBXGroup;
-			children = (
-				B30BAB952910170F00665344 /* SimucomApp.swift */,
-				B30BAB972910170F00665344 /* ContentView.swift */,
-				B30BAB992910171000665344 /* Assets.xcassets */,
-				B30BAB9B2910171000665344 /* Preview Content */,
-			);
-			path = "Simucom Watch App";
-			sourceTree = "<group>";
-		};
-		B30BAB9B2910171000665344 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				B30BAB9C2910171000665344 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		B30BABA7291017DC00665344 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				B30BABA82910181B00665344 /* SimuServer */,
-			);
-			path = Packages;
-			sourceTree = "<group>";
-		};
-		B3E161A5292257D700518FB3 /* Frameworks */ = {
+		B3020FCF2923E5D70080243A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		B3641FED29231A7200A483BA = {
+			isa = PBXGroup;
+			children = (
+				B3020FCD2923E5B20080243A /* Packages */,
+				B364201D29231B0000A483BA /* SublimationDemoServer */,
+				B3641FF829231A7200A483BA /* SublimationDemoApp */,
+				B364200A29231A7400A483BA /* SublimationDemoApp Watch App */,
+				B3641FF729231A7200A483BA /* Products */,
+				B3020FCF2923E5D70080243A /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		B3641FF729231A7200A483BA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B3641FF629231A7200A483BA /* SublimationDemoApp.app */,
+				B364200629231A7400A483BA /* SublimationDemoApp Watch App.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B3641FF829231A7200A483BA /* SublimationDemoApp */ = {
+			isa = PBXGroup;
+			children = (
+				B3641FF929231A7200A483BA /* SublimationDemoAppApp.swift */,
+				B3641FFB29231A7200A483BA /* ContentView.swift */,
+				B3641FFD29231A7400A483BA /* Assets.xcassets */,
+				B3641FFF29231A7400A483BA /* Preview Content */,
+			);
+			path = SublimationDemoApp;
+			sourceTree = "<group>";
+		};
+		B3641FFF29231A7400A483BA /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				B364200029231A7400A483BA /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		B364200A29231A7400A483BA /* SublimationDemoApp Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				B364200B29231A7400A483BA /* SublimationDemoAppApp.swift */,
+				B364200D29231A7400A483BA /* ContentView.swift */,
+				B364200F29231A7500A483BA /* Assets.xcassets */,
+				B364201129231A7500A483BA /* Preview Content */,
+			);
+			path = "SublimationDemoApp Watch App";
+			sourceTree = "<group>";
+		};
+		B364201129231A7500A483BA /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				B364201229231A7500A483BA /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B30BAB7F2910170E00665344 /* Simucom */ = {
+		B3641FF529231A7200A483BA /* SublimationDemoApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B30BABA42910171000665344 /* Build configuration list for PBXNativeTarget "Simucom" */;
+			buildConfigurationList = B364201A29231A7500A483BA /* Build configuration list for PBXNativeTarget "SublimationDemoApp" */;
 			buildPhases = (
-				B30BAB7C2910170E00665344 /* Sources */,
-				B30BAB7D2910170E00665344 /* Frameworks */,
-				B30BAB7E2910170E00665344 /* Resources */,
-				B30BABA32910171000665344 /* Embed Watch Content */,
+				B3641FF229231A7200A483BA /* Sources */,
+				B3641FF329231A7200A483BA /* Frameworks */,
+				B3641FF429231A7200A483BA /* Resources */,
+				B364201929231A7500A483BA /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				B30BAB932910170F00665344 /* PBXTargetDependency */,
+				B364200929231A7400A483BA /* PBXTargetDependency */,
 			);
-			name = Simucom;
+			name = SublimationDemoApp;
 			packageProductDependencies = (
-				B3E161A8292257DD00518FB3 /* Sublimation */,
+				B3020FD02923E5D70080243A /* Sublimation */,
+				B3020FD62923E8BD0080243A /* SublimationDemoConfiguration */,
 			);
-			productName = Simucom;
-			productReference = B30BAB802910170E00665344 /* Simucom.app */;
+			productName = SublimationDemoApp;
+			productReference = B3641FF629231A7200A483BA /* SublimationDemoApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B30BAB8F2910170F00665344 /* Simucom Watch App */ = {
+		B364200529231A7400A483BA /* SublimationDemoApp Watch App */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B30BABA02910171000665344 /* Build configuration list for PBXNativeTarget "Simucom Watch App" */;
+			buildConfigurationList = B364201629231A7500A483BA /* Build configuration list for PBXNativeTarget "SublimationDemoApp Watch App" */;
 			buildPhases = (
-				B30BAB8C2910170F00665344 /* Sources */,
-				B30BAB8D2910170F00665344 /* Frameworks */,
-				B30BAB8E2910170F00665344 /* Resources */,
+				B364200229231A7400A483BA /* Sources */,
+				B364200329231A7400A483BA /* Frameworks */,
+				B364200429231A7400A483BA /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "Simucom Watch App";
+			name = "SublimationDemoApp Watch App";
 			packageProductDependencies = (
-				B3E161A6292257D700518FB3 /* Sublimation */,
+				B3020FD22923E5DF0080243A /* Sublimation */,
+				B3020FD42923E8B70080243A /* SublimationDemoConfiguration */,
 			);
-			productName = "Simucom Watch App";
-			productReference = B30BAB902910170F00665344 /* Simucom Watch App.app */;
+			productName = "SublimationDemoApp Watch App";
+			productReference = B364200629231A7400A483BA /* SublimationDemoApp Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		B30BAB782910170E00665344 /* Project object */ = {
+		B3641FEE29231A7200A483BA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1410;
 				LastUpgradeCheck = 1410;
 				TargetAttributes = {
-					B30BAB7F2910170E00665344 = {
+					B3641FF529231A7200A483BA = {
 						CreatedOnToolsVersion = 14.1;
 					};
-					B30BAB8F2910170F00665344 = {
+					B364200529231A7400A483BA = {
 						CreatedOnToolsVersion = 14.1;
 					};
 				};
 			};
-			buildConfigurationList = B30BAB7B2910170E00665344 /* Build configuration list for PBXProject "Simucom" */;
+			buildConfigurationList = B3641FF129231A7200A483BA /* Build configuration list for PBXProject "SublimationDemoApp" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -222,69 +230,69 @@
 				en,
 				Base,
 			);
-			mainGroup = B30BAB772910170E00665344;
-			productRefGroup = B30BAB812910170E00665344 /* Products */;
+			mainGroup = B3641FED29231A7200A483BA;
+			productRefGroup = B3641FF729231A7200A483BA /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B30BAB7F2910170E00665344 /* Simucom */,
-				B30BAB8F2910170F00665344 /* Simucom Watch App */,
+				B3641FF529231A7200A483BA /* SublimationDemoApp */,
+				B364200529231A7400A483BA /* SublimationDemoApp Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		B30BAB7E2910170E00665344 /* Resources */ = {
+		B3641FF429231A7200A483BA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B30BAB8B2910170F00665344 /* Preview Assets.xcassets in Resources */,
-				B30BAB882910170F00665344 /* Assets.xcassets in Resources */,
+				B364200129231A7400A483BA /* Preview Assets.xcassets in Resources */,
+				B3641FFE29231A7400A483BA /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B30BAB8E2910170F00665344 /* Resources */ = {
+		B364200429231A7400A483BA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B30BAB9D2910171000665344 /* Preview Assets.xcassets in Resources */,
-				B30BAB9A2910171000665344 /* Assets.xcassets in Resources */,
+				B364201329231A7500A483BA /* Preview Assets.xcassets in Resources */,
+				B364201029231A7500A483BA /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		B30BAB7C2910170E00665344 /* Sources */ = {
+		B3641FF229231A7200A483BA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B30BAB862910170E00665344 /* ContentView.swift in Sources */,
-				B30BAB842910170E00665344 /* SimucomApp.swift in Sources */,
+				B3641FFC29231A7200A483BA /* ContentView.swift in Sources */,
+				B3641FFA29231A7200A483BA /* SublimationDemoAppApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B30BAB8C2910170F00665344 /* Sources */ = {
+		B364200229231A7400A483BA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B30BAB982910170F00665344 /* ContentView.swift in Sources */,
-				B30BAB962910170F00665344 /* SimucomApp.swift in Sources */,
+				B364200E29231A7400A483BA /* ContentView.swift in Sources */,
+				B364200C29231A7400A483BA /* SublimationDemoAppApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		B30BAB932910170F00665344 /* PBXTargetDependency */ = {
+		B364200929231A7400A483BA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B30BAB8F2910170F00665344 /* Simucom Watch App */;
-			targetProxy = B30BAB922910170F00665344 /* PBXContainerItemProxy */;
+			target = B364200529231A7400A483BA /* SublimationDemoApp Watch App */;
+			targetProxy = B364200829231A7400A483BA /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		B30BAB9E2910171000665344 /* Debug */ = {
+		B364201429231A7500A483BA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -342,7 +350,7 @@
 			};
 			name = Debug;
 		};
-		B30BAB9F2910171000665344 /* Release */ = {
+		B364201529231A7500A483BA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -393,26 +401,26 @@
 			};
 			name = Release;
 		};
-		B30BABA12910171000665344 /* Debug */ = {
+		B364201729231A7500A483BA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Simucom Watch App/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SublimationDemoApp Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = MLT7M394S7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Simucom;
+				INFOPLIST_KEY_CFBundleDisplayName = SublimationDemoApp;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.brightdigit.Simucom;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.BrightDigit.SublimationDemoApp;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brightdigit.Simucom.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BrightDigit.SublimationDemoApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -423,26 +431,26 @@
 			};
 			name = Debug;
 		};
-		B30BABA22910171000665344 /* Release */ = {
+		B364201829231A7500A483BA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Simucom Watch App/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SublimationDemoApp Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = MLT7M394S7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Simucom;
+				INFOPLIST_KEY_CFBundleDisplayName = SublimationDemoApp;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.brightdigit.Simucom;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.BrightDigit.SublimationDemoApp;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brightdigit.Simucom.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BrightDigit.SublimationDemoApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -454,7 +462,7 @@
 			};
 			name = Release;
 		};
-		B30BABA52910171000665344 /* Debug */ = {
+		B364201B29231A7500A483BA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -462,11 +470,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Simucom/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SublimationDemoApp/Preview Content\"";
 				DEVELOPMENT_TEAM = MLT7M394S7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Simucom;
+				INFOPLIST_KEY_CFBundleDisplayName = SublimationDemoApp;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -478,7 +486,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brightdigit.Simucom;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BrightDigit.SublimationDemoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -487,7 +495,7 @@
 			};
 			name = Debug;
 		};
-		B30BABA62910171000665344 /* Release */ = {
+		B364201C29231A7500A483BA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -495,11 +503,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Simucom/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SublimationDemoApp/Preview Content\"";
 				DEVELOPMENT_TEAM = MLT7M394S7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Simucom;
+				INFOPLIST_KEY_CFBundleDisplayName = SublimationDemoApp;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -511,7 +519,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brightdigit.Simucom;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BrightDigit.SublimationDemoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -524,29 +532,29 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B30BAB7B2910170E00665344 /* Build configuration list for PBXProject "Simucom" */ = {
+		B3641FF129231A7200A483BA /* Build configuration list for PBXProject "SublimationDemoApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B30BAB9E2910171000665344 /* Debug */,
-				B30BAB9F2910171000665344 /* Release */,
+				B364201429231A7500A483BA /* Debug */,
+				B364201529231A7500A483BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B30BABA02910171000665344 /* Build configuration list for PBXNativeTarget "Simucom Watch App" */ = {
+		B364201629231A7500A483BA /* Build configuration list for PBXNativeTarget "SublimationDemoApp Watch App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B30BABA12910171000665344 /* Debug */,
-				B30BABA22910171000665344 /* Release */,
+				B364201729231A7500A483BA /* Debug */,
+				B364201829231A7500A483BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B30BABA42910171000665344 /* Build configuration list for PBXNativeTarget "Simucom" */ = {
+		B364201A29231A7500A483BA /* Build configuration list for PBXNativeTarget "SublimationDemoApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B30BABA52910171000665344 /* Debug */,
-				B30BABA62910171000665344 /* Release */,
+				B364201B29231A7500A483BA /* Debug */,
+				B364201C29231A7500A483BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -554,15 +562,23 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B3E161A6292257D700518FB3 /* Sublimation */ = {
+		B3020FD02923E5D70080243A /* Sublimation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Sublimation;
 		};
-		B3E161A8292257DD00518FB3 /* Sublimation */ = {
+		B3020FD22923E5DF0080243A /* Sublimation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Sublimation;
+		};
+		B3020FD42923E8B70080243A /* SublimationDemoConfiguration */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SublimationDemoConfiguration;
+		};
+		B3020FD62923E8BD0080243A /* SublimationDemoConfiguration */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SublimationDemoConfiguration;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = B30BAB782910170E00665344 /* Project object */;
+	rootObject = B3641FEE29231A7200A483BA /* Project object */;
 }
