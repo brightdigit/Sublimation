@@ -4,7 +4,7 @@ if [ -z "$SRCROOT" ]; then
 	SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 	PACKAGE_DIR="${SCRIPT_DIR}/.."
 else
-	PACKAGE_DIR="${SRCROOT}/Packages/FloxBxKit" 	
+	PACKAGE_DIR="${SRCROOT}" 	
 fi
 
 if [ -z "$GITHUB_ACTION" ]; then

@@ -1,26 +1,18 @@
-//
-//  ContentView.swift
-//  SublimationDemoApp
-//
-//  Created by Leo Dion on 11/14/22.
-//
-
-import SwiftUI
 import Sublimation
 import SublimationDemoConfiguration
+import SwiftUI
 
 struct ContentView: View {
-  @State var serverResponse : String = ""
-  
-  enum DemoError : LocalizedError {
+  @State var serverResponse: String = ""
+
+  enum DemoError: LocalizedError {
     case noURLSetAt(String, String)
     case invalidStringData(Data)
     case invalidResponse(URLResponse)
     case httpErrorStatusCode(Int)
-    
+
     var errorDescription: String? {
       switch self {
-        
       case let .noURLSetAt(bucket, key):
         return "No URL Set at \(bucket) and \(key)"
       case let .invalidStringData(data):
@@ -32,14 +24,15 @@ struct ContentView: View {
       }
     }
   }
-  func getBaseURL (fromBucket bucketName: String, withKey key: String) async throws -> URL {
+
+  func getBaseURL(fromBucket bucketName: String, withKey key: String) async throws -> URL {
     guard let url = try await KVdb.url(withKey: key, atBucket: bucketName) else {
       throw DemoError.noURLSetAt(bucketName, key)
     }
     return url
   }
-  
-  func getServerResponse(from url: URL, using session: URLSession = .shared, encoding: String.Encoding = .utf8) async throws -> String {
+
+  func getServerResponse(from url: URL, using _: URLSession = .shared, encoding: String.Encoding = .utf8) async throws -> String {
     let (data, urlResponse) = try await URLSession.shared.data(from: url)
     guard let httpResponse = urlResponse as? HTTPURLResponse else {
       throw DemoError.invalidResponse(urlResponse)
@@ -52,32 +45,32 @@ struct ContentView: View {
     }
     return response
   }
-  
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-          Text(self.serverResponse)
-        }
-        .padding()
-        .task {
-          let serverResponse: String
-          do {
-            let url = try await self.getBaseURL(fromBucket: Configuration.bucketName, withKey: Configuration.key)
-            serverResponse = try await self.getServerResponse(from: url)
-          } catch {
-            serverResponse = error.localizedDescription
-          }
-          await MainActor.run {
-            self.serverResponse = serverResponse
-          }
-        }
+
+  var body: some View {
+    VStack {
+      Image(systemName: "globe")
+        .imageScale(.large)
+        .foregroundColor(.accentColor)
+      Text(self.serverResponse)
     }
+    .padding()
+    .task {
+      let serverResponse: String
+      do {
+        let url = try await self.getBaseURL(fromBucket: Configuration.bucketName, withKey: Configuration.key)
+        serverResponse = try await self.getServerResponse(from: url)
+      } catch {
+        serverResponse = error.localizedDescription
+      }
+      await MainActor.run {
+        self.serverResponse = serverResponse
+      }
+    }
+  }
 }
 
 struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+  static var previews: some View {
+    ContentView()
+  }
 }
