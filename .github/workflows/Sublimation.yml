@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         runs-on: [ubuntu-18.04, ubuntu-20.04]
-        swift-version: [5.5.2, 5.6.2, 5.7]
+        swift-version: [5.7]
         include:
           - runs-on: ubuntu-22.04
             swift-version: 5.7.1
@@ -66,16 +66,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - runs-on: macos-12
-            xcode: "/Applications/Xcode_13.3.app"
-            iOSVersion: 15.4
-            watchOSVersion: 8.5
-            watchName: "Apple Watch Series 7 - 41mm"
-          - runs-on: macos-12
-            xcode: "/Applications/Xcode_13.4.1.app"
-            iOSVersion: 15.5
-            watchOSVersion: 8.5  
-            watchName: "Apple Watch Series 7 - 41mm"
           - runs-on: macos-12
             xcode: "/Applications/Xcode_14.0.1.app"
             iOSVersion: "16.0"
