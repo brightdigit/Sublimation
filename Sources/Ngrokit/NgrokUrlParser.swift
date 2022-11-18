@@ -1,11 +1,8 @@
-//
-// NgrokUrlParser.swift
-// Copyright © 2022 Bright Digit, LLC.
-// All Rights Reserved.
-// Created by Leo G Dion.
-//
-
 import Foundation
+
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
 
 public struct NgrokUrlParser {
   public static let defaultApiURL = URL(string: "http://localhost:4040/api/tunnels")!

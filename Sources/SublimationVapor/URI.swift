@@ -1,10 +1,10 @@
-import Vapor
 import Foundation
 import Sublimation
+import Vapor
 
-extension URI : KVdbURLConstructable {
+extension URI: KVdbURLConstructable {
   public init(kvDBBase: String, keyBucketPath: String) {
     self.init(string: kvDBBase)
-    self.path = keyBucketPath
+    path = keyBucketPath
   }
 }

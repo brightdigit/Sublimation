@@ -1,5 +1,8 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
 
 public protocol KVdbTunnelClient {
   associatedtype Key
@@ -7,9 +10,8 @@ public protocol KVdbTunnelClient {
   func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws
 }
 
-
-public extension KVdbTunnelClient {
-  func eraseToAnyClient() -> AnyKVdbTunnelClient<Key> {
-    return AnyKVdbTunnelClient(client: self)
+extension KVdbTunnelClient {
+  public func eraseToAnyClient() -> AnyKVdbTunnelClient<Key> {
+    AnyKVdbTunnelClient(client: self)
   }
 }

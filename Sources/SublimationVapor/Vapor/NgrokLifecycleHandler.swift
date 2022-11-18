@@ -1,9 +1,13 @@
 import Ngrokit
-import Vapor
 import Sublimation
+import Vapor
 
-public class NgrokLifecycleHandler<TunnelRepositoryType : WritableTunnelRepository> : LifecycleHandler, NgrokServerDelegate {
-  public func server(_ server: NgrokServer, updatedTunnel tunnel: Ngrokit.NgrokTunnel) {
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
+public class NgrokLifecycleHandler<TunnelRepositoryType: WritableTunnelRepository>: LifecycleHandler, NgrokServerDelegate {
+  public func server(_: NgrokServer, updatedTunnel tunnel: Ngrokit.NgrokTunnel) {
     Task {
       do {
         try await self.tunnelRepo.saveURL(tunnel.public_url, withKey: self.key)
@@ -14,44 +18,38 @@ public class NgrokLifecycleHandler<TunnelRepositoryType : WritableTunnelReposito
       self.logger?.notice("Saved url \(tunnel.public_url) to repository with key \(self.key)")
     }
   }
-  
-  public func server(_ server: NgrokServer, errorDidOccur error: Error) {
-    
-  }
-  
-  public func server(_ server: NgrokServer, failedWithError error: Error) {
-    
-  }
-  
+
+  public func server(_: NgrokServer, errorDidOccur _: Error) {}
+
+  public func server(_: NgrokServer, failedWithError _: Error) {}
 
   public init(server: NgrokServer, repo: TunnelRepositoryType, key: TunnelRepositoryType.Key) {
     self.server = server
-    self.tunnelRepo = repo
+    tunnelRepo = repo
     self.key = key
   }
-  
-  let server : NgrokServer
-  let tunnelRepo : TunnelRepositoryType
+
+  let server: NgrokServer
+  let tunnelRepo: TunnelRepositoryType
   let key: TunnelRepositoryType.Key
-  var logger : Logger?
-  
+  var logger: Logger?
+
   public func didBoot(_ application: Application) throws {
-    self.logger = application.logger
-    self.server.startTunnelFor(application: application, withDelegate: self)
-    self.tunnelRepo.setupClient(
+    logger = application.logger
+    server.startTunnelFor(application: application, withDelegate: self)
+    tunnelRepo.setupClient(
       VaporTunnelClient(
-        client:  application.client,
+        client: application.client,
         keyType: TunnelRepositoryType.Key.self
       ).eraseToAnyClient()
     )
   }
-  
-  public func shutdown(_ application: Application) {
-  }
+
+  public func shutdown(_: Application) {}
 }
 
-public extension NgrokLifecycleHandler {
-  convenience init<Key>(
+extension NgrokLifecycleHandler {
+  public convenience init<Key>(
     ngrokPath: String,
     bucketName: String,
     key: Key
@@ -59,4 +57,3 @@ public extension NgrokLifecycleHandler {
     self.init(server: NgrokCLIAPIServer(ngrokPath: ngrokPath), repo: .init(bucketName: bucketName), key: key)
   }
 }
-
