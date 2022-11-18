@@ -5,6 +5,10 @@ import class Prch.Client
 import PrchVapor
 import Vapor
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 class NgrokCLIAPIServer: NgrokServer {
   internal init(cli: Ngrok.CLI, prchClient: Client<SessionClient, Ngrok.API>? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, delegate: NgrokServerDelegate? = nil) {
     self.cli = cli
@@ -29,7 +33,7 @@ class NgrokCLIAPIServer: NgrokServer {
     }
   }
 
-  var delegate: NgrokServerDelegate?
+  weak var delegate: NgrokServerDelegate?
 
   func setupLogger(_ logger: Logger) {
     self.logger = logger

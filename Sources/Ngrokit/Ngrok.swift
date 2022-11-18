@@ -1,6 +1,10 @@
 import Foundation
 import Prch
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public enum Ngrok {
   public struct API: Prch.API {
     public static let defaultBaseURL = URL(staticString: "http://127.0.0.1:4040")

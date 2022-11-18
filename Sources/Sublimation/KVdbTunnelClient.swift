@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public protocol KVdbTunnelClient {
   associatedtype Key
   func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL

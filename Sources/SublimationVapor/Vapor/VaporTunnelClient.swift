@@ -2,6 +2,10 @@ import Foundation
 import Sublimation
 import Vapor
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public struct VaporTunnelClient<Key>: KVdbTunnelClient {
   internal init(client: Vapor.Client, keyType _: Key.Type) {
     self.client = client

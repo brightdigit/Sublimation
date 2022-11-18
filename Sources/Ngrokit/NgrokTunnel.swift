@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public struct NgrokTunnel: Codable {
   public let name: String
   // swiftlint:disable:next identifier_name

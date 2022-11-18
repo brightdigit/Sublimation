@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public class KVdbTunnelRepository<Key>: WritableTunnelRepository {
   internal init(client: AnyKVdbTunnelClient<Key>? = nil, bucketName: String) {
     self.client = client

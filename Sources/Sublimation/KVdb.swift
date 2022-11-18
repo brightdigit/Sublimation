@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public enum KVdb {
   public static let baseString = "https://kvdb.io/"
 

@@ -1,4 +1,3 @@
-
 public struct NgrokTunnelRequest: Codable {
   internal init(addr: String, proto: String, name: String) {
     self.addr = addr

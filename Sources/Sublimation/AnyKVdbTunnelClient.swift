@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public struct AnyKVdbTunnelClient<Key>: KVdbTunnelClient {
   private init(client: Any, _getValue: @escaping (Key, String) async throws -> URL, _saveValue: @escaping (URL, Key, String) async throws -> Void) {
     self.client = client

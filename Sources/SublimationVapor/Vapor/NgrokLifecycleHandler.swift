@@ -2,6 +2,10 @@ import Ngrokit
 import Sublimation
 import Vapor
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public class NgrokLifecycleHandler<TunnelRepositoryType: WritableTunnelRepository>: LifecycleHandler, NgrokServerDelegate {
   public func server(_: NgrokServer, updatedTunnel tunnel: Ngrokit.NgrokTunnel) {
     Task {

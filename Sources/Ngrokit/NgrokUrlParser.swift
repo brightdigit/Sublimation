@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public struct NgrokUrlParser {
   public static let defaultApiURL = URL(string: "http://localhost:4040/api/tunnels")!
 

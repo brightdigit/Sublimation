@@ -118,5 +118,8 @@ excluded:
   - Tests
   - DerivedData
   - .build
+  - .swiftpm
+  - Demo/SublimationDemoServer/.build
+  - Demo/SublimationDemoServer/.swiftpm
 indentation_width:
   indentation_width: 2

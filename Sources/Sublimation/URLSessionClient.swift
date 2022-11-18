@@ -1,9 +1,51 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
+extension Result {
+  init(success: Success?, failure: Failure?) where Failure == Error {
+    if let failure = failure {
+      self = .failure(failure)
+    } else if let success = success {
+      self = .success(success)
+    } else {
+      self = .failure(EmptyError())
+    }
+  }
+
+  struct EmptyError: Error {}
+}
+
+extension Optional {
+  func flatTuple<OtherType>(_ other: OtherType?) -> (Wrapped, OtherType)? {
+    flatMap { wrapped in
+      other.map { (wrapped, $0) }
+    }
+  }
+}
+
 extension URLSession {
   public static func ephemeral() -> URLSession {
     URLSession(configuration: .ephemeral)
   }
+
+  #if canImport(FoundationNetworking)
+    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+      try await withCheckedThrowingContinuation { continuation in
+        self.dataTask(with: request)
+        let task = self.dataTask(with: request) { data, response, error in
+          continuation.resume(with: .init(success: data.flatTuple(response), failure: error))
+        }
+        task.resume()
+      }
+    }
+
+    func data(from url: URL) async throws -> (Data, URLResponse) {
+      try await data(for: .init(url: url))
+    }
+  #endif
 }
 
 public struct URLSessionClient<Key>: KVdbTunnelClient {
