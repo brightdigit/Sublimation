@@ -9,13 +9,16 @@ defer {
   app.shutdown()
 }
 
-app.get { req _ in
+app.get { _ in
   "You're connected"
 }
 
-app.lifecycle.use(NgrokLifecycleHandler(
-  ngrokPath: Configuration.ngrokPath,
-  bucketName: Configuration.bucketName,
-  key: Configuration.key
-))
+app.lifecycle.use(
+  SublimationLifecycleHandler(
+    ngrokPath: Configuration.ngrokPath,
+    bucketName: Configuration.bucketName,
+    key: Configuration.key
+  )
+)
+
 try app.run()

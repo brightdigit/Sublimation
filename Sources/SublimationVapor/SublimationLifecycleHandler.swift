@@ -6,7 +6,7 @@ import Vapor
   import FoundationNetworking
 #endif
 
-public class NgrokLifecycleHandler<TunnelRepositoryType: WritableTunnelRepository>: LifecycleHandler, NgrokServerDelegate {
+public class SublimationLifecycleHandler<TunnelRepositoryType: WritableTunnelRepository>: LifecycleHandler, NgrokServerDelegate {
   public func server(_: NgrokServer, updatedTunnel tunnel: Ngrokit.NgrokTunnel) {
     Task {
       do {
@@ -48,7 +48,7 @@ public class NgrokLifecycleHandler<TunnelRepositoryType: WritableTunnelRepositor
   public func shutdown(_: Application) {}
 }
 
-extension NgrokLifecycleHandler {
+extension SublimationLifecycleHandler {
   public convenience init<Key>(
     ngrokPath: String,
     bucketName: String,
