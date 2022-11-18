@@ -102,7 +102,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }}
       - name: Set Xcode Name
         run: echo "XCODE_NAME=$(basename -- ${{ matrix.xcode }} | sed 's/\.[^.]*$//' | cut -d'_' -f2)" >> $GITHUB_ENV
       - name: Setup Xcode
@@ -111,12 +111,12 @@ jobs:
         run: |
           brew update
           brew install mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }}
       - name: Build
         run: swift build
       - name: Lint
         run: ./scripts/lint.sh 
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }}
       - name: Dump PIF
         run: |
           swift package dump-pif > /dev/null
@@ -126,7 +126,6 @@ jobs:
             xcodebuild clean -scheme Sublimation -destination 'generic/platform=iOS' | grep -q "CLEAN SUCCEEDED" && SUCCESS=true
             ATTEMPT=$(($ATTEMPT+1))
           done
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
       - name: Run iOS target tests
         run:  xcodebuild build -scheme Sublimation -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13,OS=${{ matrix.iOSVersion }}'
       # - uses: sersoft-gmbh/swift-coverage-action@v2
