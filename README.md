@@ -25,9 +25,6 @@ Share your local development server easily with your Apple devices.
 [![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/Sublimation)](https://codeclimate.com/github/brightdigit/Sublimation)
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
-
-![Share your local development server easily with your Apple devices.](Assets/Readme-Sublimation.gif "Share your local development server easily with your Apple devices.")
-
 # Table of Contents
 
 * [Introduction](#introduction)
@@ -136,7 +133,7 @@ In your application target, you only need a reference to the `Sublimation` libra
 
 Now to pull the url saved by your service, all you have to call is:
 
-```
+```swift
 import Sublimation
 
 let baseURL = try await KVdb.url(withKey: key, atBucket: bucketName)
