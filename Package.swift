@@ -1,11 +1,11 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 5.5.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
   name: "Sublimation",
-  platforms: [.macOS(.v12), .iOS(.v14), .watchOS(.v6)],
+  platforms: [.macOS(.v11), .iOS(.v14), .watchOS(.v6)],
   products: [
     .library(name: "Sublimation", targets: ["Sublimation"]),
     .library(name: "SublimationVapor", targets: ["SublimationVapor"]),
