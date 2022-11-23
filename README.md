@@ -90,7 +90,7 @@ To integrate **Sublimation** into your Vapor app using SPM, specify it in your P
 let package = Package(
   ...
   dependencies: [
-    .package(url: "https://github.com/brightdigit/Sublimation.git", from: "0.2.0")
+    .package(url: "https://github.com/brightdigit/Sublimation.git", from: "0.1.0")
   ],
   targets: [
       .target(
