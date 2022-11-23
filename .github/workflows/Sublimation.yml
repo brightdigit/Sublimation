@@ -112,7 +112,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }} && ${{ matrix.xcode = '/Applications/Xcode_14.1.app' }}
+        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }} && ${{ matrix.xcode == '/Applications/Xcode_14.1.app' }}
       - name: Set Xcode Name
         run: echo "XCODE_NAME=$(basename -- ${{ matrix.xcode }} | sed 's/\.[^.]*$//' | cut -d'_' -f2)" >> $GITHUB_ENV
       - name: Setup Xcode
@@ -121,12 +121,12 @@ jobs:
         run: |
           brew update
           brew install mint
-        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }} && ${{ matrix.xcode = '/Applications/Xcode_14.1.app' }}
+        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }} && ${{ matrix.xcode == '/Applications/Xcode_14.1.app' }}
       - name: Build
         run: swift build
       - name: Lint
         run: ./scripts/lint.sh 
-        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }} && ${{ matrix.xcode = '/Applications/Xcode_14.1.app' }}
+        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }} && ${{ matrix.xcode == '/Applications/Xcode_14.1.app' }}
       - name: Dump PIF
         run: |
           swift package dump-pif > /dev/null
