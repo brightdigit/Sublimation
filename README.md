@@ -28,6 +28,7 @@ Share your local development server easily with your Apple devices.
 # Table of Contents
 
 * [Introduction](#introduction)
+   * [Requirements](#requirements)
    * [Using Ngrok](#using-ngrok)
    * [Using the Cloud for Meta-Server Access](#using-the-cloud-for-meta-server-access)
 * [Features](#features)
@@ -40,6 +41,19 @@ Share your local development server easily with your Apple devices.
 # Introduction
 
 When you are developing a full stack Swift application, you want to easily test and debug your application on both the device (iPhone, Apple Watch, iPad, etc...) as well as your development server. If you are using simulator then setting your host server to `localhost` will work but often we need to test on an actual device. You can either be an IT expert your local network's DNS or you can use Sublimation to easily connect your local server to your device.
+
+## Requirements 
+
+**Apple Platforms**
+
+- Xcode 13.3 or later
+- Swift 5.5.2 or later
+- iOS 14 / watchOS 6 / tvOS 14 / macOS 12 or later deployment targets
+
+**Linux**
+
+- Ubuntu 18.04 or later
+- Swift 5.5.2 or later
 
 ## Using Ngrok
 
