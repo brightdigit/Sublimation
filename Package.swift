@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
   name: "Sublimation",
-  platforms: [.macOS(.v12), .iOS(.v14), .watchOS(.v6)],
+  platforms: [.macOS(.v11), .iOS(.v14), .watchOS(.v6)],
   products: [
     .library(name: "Sublimation", targets: ["Sublimation"]),
     .library(name: "SublimationVapor", targets: ["SublimationVapor"]),
