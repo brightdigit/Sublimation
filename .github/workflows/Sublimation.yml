@@ -101,6 +101,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - name: Cache mint
+        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }} && ${{ matrix.xcode == '/Applications/Xcode_14.1.app' }}
         id: cache-mint
         uses: actions/cache@v3
         env:
@@ -112,22 +113,22 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }} && ${{ matrix.xcode == '/Applications/Xcode_14.1.app' }}
       - name: Set Xcode Name
         run: echo "XCODE_NAME=$(basename -- ${{ matrix.xcode }} | sed 's/\.[^.]*$//' | cut -d'_' -f2)" >> $GITHUB_ENV
       - name: Setup Xcode
         run: sudo xcode-select -s ${{ matrix.xcode }}/Contents/Developer
       - name: Install mint
+        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }} && ${{ matrix.xcode == '/Applications/Xcode_14.1.app' }}
         run: |
           brew update
           brew install mint
-        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }} && ${{ matrix.xcode == '/Applications/Xcode_14.1.app' }}
       - name: Build
         run: swift build
       - name: Lint
         run: ./scripts/lint.sh 
         if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }} && ${{ matrix.xcode == '/Applications/Xcode_14.1.app' }}
       - name: Dump PIF
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
         run: |
           swift package dump-pif > /dev/null
           MAX_ATTEMPT=3
@@ -136,7 +137,6 @@ jobs:
             xcodebuild clean -scheme Sublimation -destination 'generic/platform=iOS' | grep -q "CLEAN SUCCEEDED" && SUCCESS=true
             ATTEMPT=$(($ATTEMPT+1))
           done
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
       - name: Run iOS target tests
         run:  xcodebuild build -scheme Sublimation -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13,OS=${{ matrix.iOSVersion }}'
       # - uses: sersoft-gmbh/swift-coverage-action@v2
