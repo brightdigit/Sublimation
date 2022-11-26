@@ -3,12 +3,12 @@ import SublimationDemoConfiguration
 import SwiftUI
 
 extension View {
-  func taskPolyfill (_ action: @escaping @Sendable () async -> Void) -> some View {
+  func taskPolyfill(_ action: @escaping @Sendable() async -> Void) -> some View {
     if #available(iOS 15.0, *) {
       return self.task(action)
     } else {
-      return self.onAppear{
-        Task{
+      return onAppear {
+        Task {
           await action()
         }
       }

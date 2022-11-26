@@ -31,21 +31,29 @@ extension URLSession {
     URLSession(configuration: .ephemeral)
   }
 
-  #if canImport(FoundationNetworking)
-    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
-      try await withCheckedThrowingContinuation { continuation in
-        self.dataTask(with: request)
-        let task = self.dataTask(with: request) { data, response, error in
-          continuation.resume(with: .init(success: data.flatTuple(response), failure: error))
-        }
-        task.resume()
+  func dataAsync(for request: URLRequest) async throws -> (Data, URLResponse) {
+    #if !canImport(FoundationNetworking)
+      if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
+        return try await self.data(for: request)
       }
-    }
+    #endif
 
-    func data(from url: URL) async throws -> (Data, URLResponse) {
-      try await data(for: .init(url: url))
+    return try await withCheckedThrowingContinuation { continuation in
+      let task = self.dataTask(with: request) { data, response, error in
+        continuation.resume(with: .init(success: data.flatTuple(response), failure: error))
+      }
+      task.resume()
     }
-  #endif
+  }
+
+  func dataAsync(from url: URL) async throws -> (Data, URLResponse) {
+    #if !canImport(FoundationNetworking)
+      if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
+        return try await data(for: .init(url: url))
+      }
+    #endif
+    return try await dataAsync(for: .init(url: url))
+  }
 }
 
 public struct URLSessionClient<Key>: KVdbTunnelClient {
@@ -57,7 +65,7 @@ public struct URLSessionClient<Key>: KVdbTunnelClient {
   public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
 
-    let data = try await session.data(from: url).0
+    let data = try await session.dataAsync(from: url).0
 
     guard let url = String(data: data, encoding: .utf8).flatMap(URL.init(string:)) else {
       throw NgrokServerError.invalidURL
@@ -70,7 +78,7 @@ public struct URLSessionClient<Key>: KVdbTunnelClient {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
     var request = URLRequest(url: url)
     request.httpBody = value.absoluteString.data(using: .utf8)
-    let (data, response) = try await session.data(for: request)
+    let (data, response) = try await session.dataAsync(for: request)
     guard let httpResponse = response as? HTTPURLResponse else {
       throw NgrokServerError.cantSaveTunnel(nil, nil)
     }
