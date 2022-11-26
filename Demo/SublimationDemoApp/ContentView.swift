@@ -2,6 +2,20 @@ import Sublimation
 import SublimationDemoConfiguration
 import SwiftUI
 
+extension View {
+  func taskPolyfill(_ action: @escaping @Sendable() async -> Void) -> some View {
+    if #available(iOS 15.0, *) {
+      return self.task(action)
+    } else {
+      return onAppear {
+        Task {
+          await action()
+        }
+      }
+    }
+  }
+}
+
 struct ContentView: View {
   @State var serverResponse: String = ""
 
@@ -54,7 +68,7 @@ struct ContentView: View {
       Text(self.serverResponse)
     }
     .padding()
-    .task {
+    .taskPolyfill {
       let serverResponse: String
       do {
         let url = try await self.getBaseURL(fromBucket: Configuration.bucketName, withKey: Configuration.key)
