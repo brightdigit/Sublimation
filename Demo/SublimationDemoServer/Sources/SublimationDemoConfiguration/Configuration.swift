@@ -1,7 +1,7 @@
 import Foundation
 
-let yourBucketName: String? = nil
-let yourKey: String? = nil
+let yourBucketName: String? = "4WwQUN9AZrppSyLkbzidgo"
+let yourKey: String? = "hello"
 let yourNgrokPath: String = "/opt/homebrew/bin/ngrok"
 
 public enum Configuration {

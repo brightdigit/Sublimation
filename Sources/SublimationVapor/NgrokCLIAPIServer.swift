@@ -10,12 +10,14 @@ import Vapor
 #endif
 
 class NgrokCLIAPIServer: NgrokServer {
-  internal init(cli: Ngrok.CLI, prchClient: Client<SessionClient, Ngrok.API>? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, delegate: NgrokServerDelegate? = nil) {
+  internal init(cli: Ngrok.CLI, prchClient: Client<SessionClient, Ngrok.API>? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, clientSearchTimeoutNanoseconds: UInt64 = NSEC_PER_SEC / 5, cliProcessTimeout: DispatchTimeInterval = .seconds(2), delegate: NgrokServerDelegate? = nil) {
     self.cli = cli
     self.prchClient = prchClient
     self.port = port
     self.logger = logger
     self.ngrokProcess = ngrokProcess
+    self.cliProcessTimeout = cliProcessTimeout
+    self.clientSearchTimeoutNanoseconds = clientSearchTimeoutNanoseconds
     self.delegate = delegate
   }
 
@@ -24,6 +26,8 @@ class NgrokCLIAPIServer: NgrokServer {
   }
 
   let cli: Ngrok.CLI
+  let clientSearchTimeoutNanoseconds: UInt64
+  let cliProcessTimeout: DispatchTimeInterval
   var prchClient: Prch.Client<SessionClient, Ngrok.API>!
   var port: Int?
   var logger: Logger!
@@ -68,17 +72,42 @@ class NgrokCLIAPIServer: NgrokServer {
     }
   }
 
+  public func waitForTaskCompletion<R>(
+    withTimeoutInNanoseconds timeout: UInt64,
+    _ task: @escaping () async -> R
+  ) async -> R? {
+    await withTaskGroup(of: R?.self) { group in
+      await withUnsafeContinuation { continuation in
+        group.addTask {
+          continuation.resume()
+          return await task()
+        }
+      }
+      group.addTask {
+        await Task.yield()
+        try? await Task.sleep(nanoseconds: timeout)
+        return nil
+      }
+      defer { group.cancelAll() }
+      return await group.next()!
+    }
+  }
+
   func startHttp(port: Int) async throws -> NgrokTunnel {
     self.port = port
     self.logger.debug("Starting Ngrok Tunnel...")
     let tunnels: [NgrokTunnel]
 
-    if let firstCallTunnels = try? await self.prchClient.request(ListTunnelsRequest()).get().response.get().tunnels {
+    let result = await waitForTaskCompletion(withTimeoutInNanoseconds: self.clientSearchTimeoutNanoseconds) {
+      try? await self.prchClient.request(ListTunnelsRequest()).get().response.get().tunnels
+    }?.flatMap { $0 }
+
+    if let firstCallTunnels = result {
       tunnels = firstCallTunnels
     } else {
       do {
-        let ngrokProcess = try await cli.http(port: port, timeout: .now() + 1.0)
-
+        self.logger.debug("Starting New Ngrok Client")
+        let ngrokProcess = try await cli.http(port: port, timeout: .now() + self.cliProcessTimeout)
         guard let tunnel = try await self.prchClient.request(ListTunnelsRequest()).get().response.get().tunnels.first else {
           ngrokProcess.terminate()
           throw TunnelError.noTunnelCreated
