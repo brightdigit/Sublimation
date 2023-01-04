@@ -9,7 +9,7 @@ Share your local development server easily with your Apple devices.
 [![Twitter](https://img.shields.io/badge/twitter-@brightdigit-blue.svg?style=flat)](http://twitter.com/brightdigit)
 ![GitHub](https://img.shields.io/github/license/brightdigit/Sublimation)
 ![GitHub issues](https://img.shields.io/github/issues/brightdigit/Sublimation)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/brightdigit/Sublimation/Sublimation?label=actions&logo=github)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/brightdigit/Sublimation/Sublimation.yml?label=actions&logo=github&?branch=main)
 
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimation%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/brightdigit/Sublimation)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimation%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/brightdigit/Sublimation)
