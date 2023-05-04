@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
   name: "Sublimation",
-  platforms: [.macOS(.v11), .iOS(.v14), .watchOS(.v6)],
+  platforms: [.macOS(.v12), .iOS(.v14), .watchOS(.v7)],
   products: [
     .library(name: "Sublimation", targets: ["Sublimation"]),
     .library(name: "SublimationVapor", targets: ["SublimationVapor"]),
@@ -15,8 +15,8 @@ let package = Package(
     // Dependencies declare other packages that this package depends on.
     // .package(url: /* package url */, from: "1.0.0"),
     .package(url: "https://github.com/vapor/vapor.git", from: "4.66.0"),
-    .package(url: "https://github.com/brightdigit/Prch.git", from: "0.2.1"),
-    .package(url: "https://github.com/brightdigit/PrchVapor.git", from: "0.2.0-beta.2")
+    .package(url: "https://github.com/brightdigit/Prch.git", branch: "floxbx"),
+    .package(url: "https://github.com/brightdigit/PrchVapor.git", branch: "prch2")
   ],
   targets: [
     .target(name: "Ngrokit", dependencies: ["Prch"]),

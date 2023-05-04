@@ -1,14 +1,24 @@
 import Foundation
-import Prch
+import PrchModel
 
-public struct StopTunnelRequest: Request {
+public struct StopTunnelRequest: ServiceCall {
+  public typealias SuccessType = Empty
+  
+  public typealias BodyType = Empty
+  
+  public var parameters: [String : String] {
+    [:]
+  }
+  
+  public static var requiresCredentials: Bool {
+    return false
+  }
+  
   public init(name: String) {
     self.name = name
   }
 
-  public typealias ResponseType = StopTunnelResponse
-
-  public let method: String = "DELETE"
+  public let method = RequestMethod.DELETE
 
   public var path: String {
     "api/tunnels/\(name)"
@@ -18,9 +28,9 @@ public struct StopTunnelRequest: Request {
 
   public let headers = [String: String]()
 
-  public var encodeBody: ((Prch.RequestEncoder) throws -> Data)? {
-    nil
-  }
+//  public var encodeBody: ((Prch.RequestEncoder) throws -> Data)? {
+//    nil
+//  }
 
   public let name: String
 }

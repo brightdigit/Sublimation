@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/swift-server/async-http-client.git",
         "state": {
           "branch": null,
-          "revision": "5bee16a79922e3efcb5cea06ecd27e6f8048b56b",
-          "version": "1.13.1"
+          "revision": "333e60cc90f52973f7ee29cd8e3a7f6adfe79f4e",
+          "version": "1.17.0"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/vapor/async-kit.git",
         "state": {
           "branch": null,
-          "revision": "3be4b6418d1e8b835b0b1a1bee06b249faa4da5f",
-          "version": "1.14.0"
+          "revision": "a61da00d404ec91d12766f1b9aac7d90777b484d",
+          "version": "1.17.0"
         }
       },
       {
@@ -41,27 +41,27 @@
         "package": "Prch",
         "repositoryURL": "https://github.com/brightdigit/Prch.git",
         "state": {
-          "branch": null,
-          "revision": "600b49cc7a77271ea3d2a9f9e449be081562a087",
-          "version": "0.2.1"
+          "branch": "floxbx",
+          "revision": "7023fbef4bd93e0f92170b9d503874bd9c0c2fec",
+          "version": null
         }
       },
       {
         "package": "PrchNIO",
         "repositoryURL": "https://github.com/brightdigit/PrchNIO.git",
         "state": {
-          "branch": null,
-          "revision": "337d0b2f77b0c4ad5b5b3bad6768a9ecd70b003c",
-          "version": "0.2.0-beta.1"
+          "branch": "prch2",
+          "revision": "d43f4ae2e6925d40754ad2d86ad298883f87eddb",
+          "version": null
         }
       },
       {
         "package": "PrchVapor",
         "repositoryURL": "https://github.com/brightdigit/PrchVapor.git",
         "state": {
-          "branch": null,
-          "revision": "8c19c645f9c2763014885e42a42096ae61da636b",
-          "version": "0.2.0-beta.2"
+          "branch": "prch2",
+          "revision": "601392a94b99282117b1811a39945ac1fc3b25d7",
+          "version": null
         }
       },
       {
@@ -141,8 +141,8 @@
         "repositoryURL": "https://github.com/apple/swift-nio.git",
         "state": {
           "branch": null,
-          "revision": "edfceecba13d68c1c993382806e72f7e96feaa86",
-          "version": "2.44.0"
+          "revision": "e0cc6dd6ffa8e6a6f565938acd858b24e47902d0",
+          "version": "2.50.0"
         }
       },
       {
@@ -195,8 +195,8 @@
         "repositoryURL": "https://github.com/vapor/vapor.git",
         "state": {
           "branch": null,
-          "revision": "a037bbf91b081ce4f91cbef5a917f8f7844d3daa",
-          "version": "4.67.2"
+          "revision": "f4b00a5350238fe896d865d96d64f12fcbbeda95",
+          "version": "4.76.0"
         }
       },
       {

@@ -1,30 +1,43 @@
 import Foundation
 import Prch
+import PrchModel
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
+public protocol API {
+  var baseURLComponents : URLComponents { get }
+  var headers : [ String : String ] { get }
+  var authorizationManager : any AuthorizationManager { get }
+  var coder : any Coder { get }
+}
+
+
 public enum Ngrok {
-  public struct API: Prch.API {
-    public static let defaultBaseURL = URL(staticString: "http://127.0.0.1:4040")
-    public init(baseURL: URL = Self.defaultBaseURL, encoder: RequestEncoder = JSONEncoder()) {
-      self.baseURL = baseURL
-      self.encoder = encoder
-    }
-
-    public let baseURL: URL
-
-    public let headers = [String: String]()
-
-    public let decoder: ResponseDecoder = JSONDecoder()
-
-    public var encoder: RequestEncoder = JSONEncoder()
-
-    public enum Error: Swift.Error {
-      case tunnelNotFound
-    }
-  }
+//  public struct API {
+//    public init(coder: any Coder<Data> = JSONCoder(encoder: .init(), decoder: .init()), authorizationManager: (any AuthorizationManager)? = nil, baseURLComponents: URLComponents = Self.defaultBaseURLComponents) {
+//      self.coder = coder
+//      self.authorizationManager = authorizationManager ?? NullAuthorizationManager()
+//      self.baseURLComponents = baseURLComponents
+//    }
+//    
+//    
+//    public var coder: any Coder<Data>
+//    
+//    public var authorizationManager: any AuthorizationManager
+//    
+//    public static let defaultBaseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
+//
+//
+//    public let baseURLComponents: URLComponents
+//
+//    public let headers = [String: String]()
+//
+//    public enum Error: Swift.Error {
+//      case tunnelNotFound
+//    }
+//  }
 
   public struct CLI {
     static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")

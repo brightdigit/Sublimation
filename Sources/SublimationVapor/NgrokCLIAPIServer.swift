@@ -1,16 +1,93 @@
 import Foundation
 import Ngrokit
 
-import class Prch.Client
+//import class Prch.Client
 import PrchVapor
 import Vapor
-
+import Prch
+import PrchModel
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
+public struct NullAuthorizationManager<AuthorizationType> : AuthorizationManager {
+  public func fetch() async throws -> AuthorizationType? {
+    return nil
+  }
+  
+  public typealias AuthorizationType = AuthorizationType
+  
+  
+}
+
+enum NgrokDefaults {
+    public static let defaultBaseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
+  
+}
+class NgrokService<SessionType : Prch.Session> : Service where SessionType.ResponseType.DataType == Data {
+  var authorizationManager: any SessionAuthenticationManager {
+    return self._authorizationManager
+  }
+  
+  var coder: any PrchModel.Coder<SessionType.ResponseType.DataType> {
+    return self._coder
+  }
+  
+  internal init(session: SessionType) {
+    self.session = session
+    self.baseURLComponents = NgrokDefaults.defaultBaseURLComponents
+    //self.authorizationManager = authorizationManager ?? NullAuthorizationManager()
+    self.headers = [:]
+  }
+  
+
+  @available(macOS 13.0.0, *)
+  internal init(session: SessionType, coder: (any Coder<Data>)? = nil, baseURLComponents: URLComponents = NgrokDefaults.defaultBaseURLComponents , headers: [String : String] = [:]) {
+    self.session = session
+    self.baseURLComponents = baseURLComponents
+    //self.authorizationManager = authorizationManager ?? NullAuthorizationManager()
+    self.headers = headers
+  }
+  
+  var session: SessionType
+  
+  let _coder: some Coder<SessionType.ResponseType.DataType> = JSONCoder(encoder: .init(), decoder: .init())
+  
+  
+  
+  var baseURLComponents: URLComponents
+  
+  let _authorizationManager = NullAuthorizationManager<SessionType.AuthorizationType>()
+  
+  var headers: [String : String]
+  
+  
+}
+//
+//class Client<SessionType : Prch.Session> : Service {
+//  var authorizationManager: any AuthorizationManager
+//  
+//  let coder: any Coder<Data>
+//  
+//  let session: SessionType
+//  
+//  let baseURLComponents: URLComponents
+//  
+//  
+//  let headers: [String : String]
+//  
+//  init(authorizationManager: any SessionAuthenticationManager, coder: any Coder<Data>, session: SessionType, baseURLComponents: URLComponents, headers: [String : String]) {
+//    self.authorizationManager = authorizationManager
+//    self.coder = coder
+//    self.session = session
+//    self.baseURLComponents = baseURLComponents
+//    self.headers = headers
+//  }
+//
+//}
+
 class NgrokCLIAPIServer: NgrokServer {
-  internal init(cli: Ngrok.CLI, prchClient: Client<SessionClient, Ngrok.API>? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, clientSearchTimeoutNanoseconds: UInt64 = NSEC_PER_SEC / 5, cliProcessTimeout: DispatchTimeInterval = .seconds(2), delegate: NgrokServerDelegate? = nil) {
+  internal init(cli: Ngrok.CLI, prchClient: (any Service)? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, clientSearchTimeoutNanoseconds: UInt64 = NSEC_PER_SEC / 5, cliProcessTimeout: DispatchTimeInterval = .seconds(2), delegate: NgrokServerDelegate? = nil) {
     self.cli = cli
     self.prchClient = prchClient
     self.port = port
@@ -21,14 +98,14 @@ class NgrokCLIAPIServer: NgrokServer {
     self.delegate = delegate
   }
 
-  public convenience init(ngrokPath: String, prchClient: Client<SessionClient, Ngrok.API>? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, delegate: NgrokServerDelegate? = nil) {
+  public convenience init(ngrokPath: String, prchClient: (any Service)? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, delegate: NgrokServerDelegate? = nil) {
     self.init(cli: .init(executableURL: .init(fileURLWithPath: ngrokPath)), prchClient: prchClient, port: port, logger: logger, ngrokProcess: ngrokProcess, delegate: delegate)
   }
 
   let cli: Ngrok.CLI
   let clientSearchTimeoutNanoseconds: UInt64
   let cliProcessTimeout: DispatchTimeInterval
-  var prchClient: Prch.Client<SessionClient, Ngrok.API>!
+  var prchClient: (any Service)!
   var port: Int?
   var logger: Logger!
   var ngrokProcess: Process? {
@@ -52,7 +129,8 @@ class NgrokCLIAPIServer: NgrokServer {
   }
 
   func setupClient(_ client: Vapor.Client) {
-    self.prchClient = Prch.Client(api: Ngrok.API(), session: SessionClient(client: client))
+    let service = NgrokService(session: SessionClient(client: client))
+    self.prchClient = service
   }
 
   public enum TunnelError: Error {
@@ -99,7 +177,7 @@ class NgrokCLIAPIServer: NgrokServer {
     let tunnels: [NgrokTunnel]
 
     let result = await waitForTaskCompletion(withTimeoutInNanoseconds: self.clientSearchTimeoutNanoseconds) {
-      try? await self.prchClient.request(ListTunnelsRequest()).get().response.get().tunnels
+      try? await self.prchClient.request(ListTunnelsRequest()).tunnels
     }?.flatMap { $0 }
 
     if let firstCallTunnels = result {
@@ -108,7 +186,7 @@ class NgrokCLIAPIServer: NgrokServer {
       do {
         self.logger.debug("Starting New Ngrok Client")
         let ngrokProcess = try await cli.http(port: port, timeout: .now() + self.cliProcessTimeout)
-        guard let tunnel = try await self.prchClient.request(ListTunnelsRequest()).get().response.get().tunnels.first else {
+        guard let tunnel = try await self.prchClient.request(ListTunnelsRequest()).tunnels.first else {
           ngrokProcess.terminate()
           throw TunnelError.noTunnelCreated
         }
@@ -123,16 +201,16 @@ class NgrokCLIAPIServer: NgrokServer {
       }
 
       self.logger.debug("Listing Tunnels")
-      tunnels = try await prchClient.request(ListTunnelsRequest()).get().response.get().tunnels
+      tunnels = try await prchClient.request(ListTunnelsRequest()).tunnels
     }
 
     if let oldTunnel = tunnels.first {
       self.logger.debug("Deleting Existing Tunnel: \(oldTunnel.public_url) ")
-      try await prchClient.request(StopTunnelRequest(name: oldTunnel.name)).get().response.get()
+      try await prchClient.request(StopTunnelRequest(name: oldTunnel.name))
     }
 
     self.logger.debug("Creating Tunnel...")
-    let tunnel = try await prchClient.request(StartTunnelRequest(body: .init(port: port))).get().response.get()
+    let tunnel = try await prchClient.request(StartTunnelRequest(body: .init(port: port)))
 
     return tunnel
   }
