@@ -20,7 +20,7 @@ public struct StartTunnelRequest: ServiceCall {
 
   public var method: PrchModel.RequestMethod = .POST
 
-  public let path: String = "/api/tunnels"
+  public let path: String = "api/tunnels"
   
   public var parameters: [String : String] = [:]
 
