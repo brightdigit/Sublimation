@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:brightdigit/PrchVapor.git
+	branch = prch2
+	commit = 601392a94b99282117b1811a39945ac1fc3b25d7
+	parent = b594ad5b5b7f32a16c8bb291baa1c8b5869ea2e8
+	method = merge
+	cmdver = 0.4.6
