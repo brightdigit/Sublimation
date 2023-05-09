@@ -38,33 +38,6 @@
         }
       },
       {
-        "package": "Prch",
-        "repositoryURL": "https://github.com/brightdigit/Prch.git",
-        "state": {
-          "branch": "floxbx",
-          "revision": "7023fbef4bd93e0f92170b9d503874bd9c0c2fec",
-          "version": null
-        }
-      },
-      {
-        "package": "PrchNIO",
-        "repositoryURL": "https://github.com/brightdigit/PrchNIO.git",
-        "state": {
-          "branch": "prch2",
-          "revision": "d43f4ae2e6925d40754ad2d86ad298883f87eddb",
-          "version": null
-        }
-      },
-      {
-        "package": "PrchVapor",
-        "repositoryURL": "https://github.com/brightdigit/PrchVapor.git",
-        "state": {
-          "branch": "prch2",
-          "revision": "601392a94b99282117b1811a39945ac1fc3b25d7",
-          "version": null
-        }
-      },
-      {
         "package": "routing-kit",
         "repositoryURL": "https://github.com/vapor/routing-kit.git",
         "state": {

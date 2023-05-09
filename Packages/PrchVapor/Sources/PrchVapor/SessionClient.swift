@@ -25,7 +25,7 @@ public struct SessionClient: Prch.Session {
     withBaseURL baseURLComponents: URLComponents,
     withHeaders headers: [String: String],
     authorizationManager: any AuthorizationManager<URLSessionAuthorization>,
-    usingEncoder encoder: any Coder<Data>
+    usingEncoder encoder: any Encoder<Data>
   ) async throws -> ClientResponse {
     var componenents = baseURLComponents
     componenents.path = "/\(request.path)"

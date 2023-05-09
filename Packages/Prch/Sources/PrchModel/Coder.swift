@@ -1,7 +1,5 @@
-public protocol Coder<DataType> {
+public protocol Decoder<DataType> {
   associatedtype DataType
-
-  func encode<CodableType: Encodable>(_ value: CodableType) throws -> DataType
 
   func decode<CodableType: Decodable>(
     _: CodableType.Type,
@@ -10,7 +8,13 @@ public protocol Coder<DataType> {
     throws -> CodableType
 }
 
-extension Coder {
+public protocol Encoder<DataType> {
+  associatedtype DataType
+
+  func encode<CodableType: Encodable>(_ value: CodableType) throws -> DataType
+}
+
+extension Decoder {
   public func decodeContent<CodableType: ContentDecodable>(
     _: CodableType.Type,
     from data: DataType

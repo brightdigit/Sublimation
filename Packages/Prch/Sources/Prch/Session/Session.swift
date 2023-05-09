@@ -11,6 +11,6 @@ public protocol Session<RequestType> {
     withBaseURL baseURLComponents: URLComponents,
     withHeaders headers: [String: String],
     authorizationManager: any AuthorizationManager<AuthorizationType>,
-    usingEncoder encoder: any Coder<ResponseType.DataType>
+    usingEncoder encoder: any Encoder<ResponseType.DataType>
   ) async throws -> ResponseType
 }

@@ -10,7 +10,7 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/swift-server/async-http-client.git", from: "1.17.0"),
-    .package(url: "https://github.com/brightdigit/Prch", branch: "floxbx")
+    .package(path: "../Prch")
   ],
   targets: [
     .target(name: "PrchNIO", dependencies: ["Prch", .product(name: "AsyncHTTPClient", package: "async-http-client")]),

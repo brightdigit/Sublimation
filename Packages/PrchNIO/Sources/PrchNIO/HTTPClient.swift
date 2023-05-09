@@ -5,7 +5,7 @@ import Prch
 import PrchModel
 
 extension HTTPClient : Session {
-  public func data<RequestType>(request: RequestType, withBaseURL baseURLComponents: URLComponents, withHeaders headers: [String : String], authorizationManager: any AuthorizationManager<AuthorizationType>, usingEncoder encoder: any Coder<Data>) async throws -> Response where RequestType : PrchModel.ServiceCall {
+  public func data<RequestType>(request: RequestType, withBaseURL baseURLComponents: URLComponents, withHeaders headers: [String : String], authorizationManager: any AuthorizationManager<AuthorizationType>, usingEncoder encoder: any Encoder<Data>) async throws -> Response where RequestType : PrchModel.ServiceCall {
     var componenents = baseURLComponents
     componenents.queryItems = request.parameters.map(URLQueryItem.init)
 

@@ -22,47 +22,67 @@ public struct NullAuthorizationManager<AuthorizationType> : AuthorizationManager
 
 enum NgrokDefaults {
     public static let defaultBaseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
+}
+
+protocol NgrokServiceProtocol : ServiceProtocol where API == Ngrok.API {
   
 }
-class NgrokService<SessionType : Prch.Session> : Service where SessionType.ResponseType.DataType == Data {
-  var authorizationManager: any SessionAuthenticationManager {
-    return self._authorizationManager
-  }
-  
-  var coder: any PrchModel.Coder<SessionType.ResponseType.DataType> {
-    return self._coder
-  }
-  
+
+class NgrokService<SessionType : Prch.Session> : Service, NgrokServiceProtocol where SessionType.ResponseType.DataType == Ngrok.API.DataType {
+
   internal init(session: SessionType) {
     self.session = session
-    self.baseURLComponents = NgrokDefaults.defaultBaseURLComponents
-    //self.authorizationManager = authorizationManager ?? NullAuthorizationManager()
-    self.headers = [:]
   }
   
-
-  @available(macOS 13.0.0, *)
-  internal init(session: SessionType, coder: (any Coder<Data>)? = nil, baseURLComponents: URLComponents = NgrokDefaults.defaultBaseURLComponents , headers: [String : String] = [:]) {
-    self.session = session
-    self.baseURLComponents = baseURLComponents
-    //self.authorizationManager = authorizationManager ?? NullAuthorizationManager()
-    self.headers = headers
+  
+  let session: SessionType
+  
+  
+  var authorizationManager: any SessionAuthenticationManager {
+    return NullAuthorizationManager()
   }
   
-  var session: SessionType
-  
-  let _coder: some Coder<SessionType.ResponseType.DataType> = JSONCoder(encoder: .init(), decoder: .init())
-  
-  
-  
-  var baseURLComponents: URLComponents
-  
-  let _authorizationManager = NullAuthorizationManager<SessionType.AuthorizationType>()
-  
-  var headers: [String : String]
-  
-  
+  typealias API = Ngrok.API
 }
+//class NgrokService<SessionType : Prch.Session> : Service where SessionType.ResponseType.DataType == Data {
+//  var authorizationManager: any SessionAuthenticationManager {
+//    return self._authorizationManager
+//  }
+//
+//  var coder: any PrchModel.Coder<SessionType.ResponseType.DataType> {
+//    return self._coder
+//  }
+//
+//  internal init(session: SessionType) {
+//    self.session = session
+//    self.baseURLComponents = NgrokDefaults.defaultBaseURLComponents
+//    //self.authorizationManager = authorizationManager ?? NullAuthorizationManager()
+//    self.headers = [:]
+//  }
+//
+//
+//  @available(macOS 13.0.0, *)
+//  internal init(session: SessionType, coder: (any Coder<Data>)? = nil, baseURLComponents: URLComponents = NgrokDefaults.defaultBaseURLComponents , headers: [String : String] = [:]) {
+//    self.session = session
+//    self.baseURLComponents = baseURLComponents
+//    //self.authorizationManager = authorizationManager ?? NullAuthorizationManager()
+//    self.headers = headers
+//  }
+//
+//  var session: SessionType
+//
+//  let _coder: some Coder<SessionType.ResponseType.DataType> = JSONCoder(encoder: .init(), decoder: .init())
+//
+//
+//
+//  var baseURLComponents: URLComponents
+//
+//  let _authorizationManager = NullAuthorizationManager<SessionType.AuthorizationType>()
+//
+//  var headers: [String : String]
+//
+//
+//}
 //
 //class Client<SessionType : Prch.Session> : Service {
 //  var authorizationManager: any AuthorizationManager
@@ -87,9 +107,9 @@ class NgrokService<SessionType : Prch.Session> : Service where SessionType.Respo
 //}
 
 class NgrokCLIAPIServer: NgrokServer {
-  internal init(cli: Ngrok.CLI, prchClient: (any Service)? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, clientSearchTimeoutNanoseconds: UInt64 = NSEC_PER_SEC / 5, cliProcessTimeout: DispatchTimeInterval = .seconds(2), delegate: NgrokServerDelegate? = nil) {
+  internal init(cli: Ngrok.CLI, prchClient: (any NgrokServiceProtocol)? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, clientSearchTimeoutNanoseconds: UInt64 = NSEC_PER_SEC / 5, cliProcessTimeout: DispatchTimeInterval = .seconds(2), delegate: NgrokServerDelegate? = nil) {
     self.cli = cli
-    self.prchClient = prchClient
+    self._prchClient = prchClient
     self.port = port
     self.logger = logger
     self.ngrokProcess = ngrokProcess
@@ -98,14 +118,14 @@ class NgrokCLIAPIServer: NgrokServer {
     self.delegate = delegate
   }
 
-  public convenience init(ngrokPath: String, prchClient: (any Service)? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, delegate: NgrokServerDelegate? = nil) {
+  public convenience init(ngrokPath: String, prchClient: (any NgrokServiceProtocol)? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, delegate: NgrokServerDelegate? = nil) {
     self.init(cli: .init(executableURL: .init(fileURLWithPath: ngrokPath)), prchClient: prchClient, port: port, logger: logger, ngrokProcess: ngrokProcess, delegate: delegate)
   }
 
   let cli: Ngrok.CLI
   let clientSearchTimeoutNanoseconds: UInt64
   let cliProcessTimeout: DispatchTimeInterval
-  var prchClient: (any Service)!
+  var _prchClient: (any NgrokServiceProtocol)?
   var port: Int?
   var logger: Logger!
   var ngrokProcess: Process? {
@@ -127,10 +147,17 @@ class NgrokCLIAPIServer: NgrokServer {
 
     self.startHttpTunnel(port: port)
   }
+  
+  var prchClient : any NgrokServiceProtocol {
+    guard let client = _prchClient  else {
+      fatalError()
+    }
+    return client
+  }
 
   func setupClient(_ client: Vapor.Client) {
     let service = NgrokService(session: SessionClient(client: client))
-    self.prchClient = service
+    self._prchClient = service
   }
 
   public enum TunnelError: Error {
@@ -176,7 +203,7 @@ class NgrokCLIAPIServer: NgrokServer {
     self.logger.debug("Starting Ngrok Tunnel...")
     let tunnels: [NgrokTunnel]
 
-    let result = await waitForTaskCompletion(withTimeoutInNanoseconds: self.clientSearchTimeoutNanoseconds) {
+    let result = await waitForTaskCompletion(withTimeoutInNanoseconds: self.clientSearchTimeoutNanoseconds) {      
       try? await self.prchClient.request(ListTunnelsRequest()).tunnels
     }?.flatMap { $0 }
 

@@ -1,9 +1,9 @@
 extension Array: ContentDecodable
   where Element: ContentDecodable & Decodable, Element.DecodableType == Element {
-  public static func decode<CoderType>(
-    _ data: CoderType.DataType,
-    using coder: CoderType
-  ) throws -> [Element.DecodableType] where CoderType: Coder {
+  public static func decode<DecoderType, DataType>(
+    _ data: DataType,
+    using coder: DecoderType
+  ) throws -> [Element.DecodableType] where DecoderType: Decoder<DataType> {
     try coder.decode([Element.DecodableType].self, from: data)
   }
 

@@ -7,6 +7,8 @@ public struct StartTunnelRequest: ServiceCall {
   
   public typealias BodyType = NgrokTunnelRequest
   
+  public typealias API = Ngrok.API
+  
   
   
   public static var requiresCredentials: Bool {

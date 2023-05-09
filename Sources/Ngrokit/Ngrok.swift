@@ -6,15 +6,21 @@ import PrchModel
   import FoundationNetworking
 #endif
 
-public protocol API {
-  var baseURLComponents : URLComponents { get }
-  var headers : [ String : String ] { get }
-  var authorizationManager : any AuthorizationManager { get }
-  var coder : any Coder { get }
-}
-
-
 public enum Ngrok {
+  
+  public enum API : BaseAPI {
+    public static let encoder: any PrchModel.Encoder<Data> = JSONEncoder()
+    
+    public static let decoder: any PrchModel.Decoder<Data> = JSONDecoder()
+    
+    public typealias DataType = Data
+    
+    public static let baseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
+    
+    public static let headers: [String : String] = [:]
+    
+    
+  }
 //  public struct API {
 //    public init(coder: any Coder<Data> = JSONCoder(encoder: .init(), decoder: .init()), authorizationManager: (any AuthorizationManager)? = nil, baseURLComponents: URLComponents = Self.defaultBaseURLComponents) {
 //      self.coder = coder

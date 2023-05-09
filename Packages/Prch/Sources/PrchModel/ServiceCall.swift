@@ -1,9 +1,9 @@
 import Foundation
-import PrchModel
 
 public protocol ServiceCall {
   associatedtype SuccessType: ContentDecodable
   associatedtype BodyType: ContentEncodable
+  associatedtype API
   var path: String { get }
   var parameters: [String: String] { get }
   var method: RequestMethod { get }

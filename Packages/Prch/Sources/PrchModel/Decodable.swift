@@ -11,7 +11,7 @@ extension Decodable
   public static func decode<CoderType>(
     _ data: CoderType.DataType,
     using coder: CoderType
-  ) throws -> Self where CoderType: Coder {
+  ) throws -> Self where CoderType: Decoder {
     try coder.decode(Self.self, from: data)
   }
 }
