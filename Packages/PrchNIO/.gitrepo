@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:brightdigit/PrchNIO.git
+	branch = prch2
+	commit = d3d0bc4a4902a0e6cdfd40899d50cba916ff5060
+	parent = e6a63bab4193d80f9e8ff71f8a5a39d74b2addca
+	method = merge
+	cmdver = 0.4.6
