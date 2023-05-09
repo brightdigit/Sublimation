@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:brightdigit/PrchNIO.git
 	branch = prch2
-	commit = d3d0bc4a4902a0e6cdfd40899d50cba916ff5060
-	parent = e6a63bab4193d80f9e8ff71f8a5a39d74b2addca
+	commit = 891879ba9c124b623fb4dad6cad9bdd306fd90af
+	parent = a6cc665813a18c17f180ac6016cc90606ed84b39
 	method = merge
 	cmdver = 0.4.6
