@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:brightdigit/Prch.git
+	branch = floxbx-clients
+	commit = 3ecfabc1461a8234bde5b198425ec3bb938fc715
+	parent = 1289beaab6b22d80761f206519cf6d38f50cd951
+	method = merge
+	cmdver = 0.4.6
