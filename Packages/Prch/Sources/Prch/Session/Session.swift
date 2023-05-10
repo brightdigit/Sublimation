@@ -1,7 +1,7 @@
 import Foundation
 import PrchModel
 
-public protocol Session{
+public protocol Session {
   associatedtype RequestDataType
   associatedtype ResponseType: SessionResponse
   associatedtype AuthorizationType

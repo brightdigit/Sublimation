@@ -2,7 +2,6 @@ import Prch
 import PrchModel
 import XCTest
 
-
 extension Dictionary where Key == String, Value == String {
   static func random(withCount count: Int) -> Self {
     Dictionary(uniqueKeysWithValues: (0 ..< count).map { _ in
@@ -56,33 +55,29 @@ struct MockSessionResponse: SessionResponse {
   let statusCode: Int
 }
 
-struct MockCreds : SessionAuthorization {
-  var httpHeaders: [String : String] {
-    return [:]
+struct MockCreds: SessionAuthorization {
+  var httpHeaders: [String: String] {
+    [:]
   }
 }
 
 class MockSession: Session {
-  func data<RequestType>(request: RequestType, withBaseURL baseURLComponents: URLComponents, withHeaders headers: [String : String], authorizationManager: any AuthorizationManager<AuthorizationType>, usingEncoder encoder: any Encoder<Data>) async throws -> MockSessionResponse where RequestType : PrchModel.ServiceCall {
+  func data<RequestType>(request: RequestType, withBaseURL _: URLComponents, withHeaders _: [String: String], authorizationManager _: any AuthorizationManager<AuthorizationType>, usingEncoder _: any Encoder<Data>) async throws -> MockSessionResponse where RequestType: PrchModel.ServiceCall {
     passedRequest = request
     return MockSessionResponse(data: data, statusCode: statusCode)
   }
-  
-
-  
 
   typealias RequestDataType = Data
-  
+
   typealias AuthorizationType = SessionAuthorization
-  
+
   let statusCode: Int = .random(in: 100 ... 999)
   let data: Data = .random()
   var passedRequest: (any ServiceCall)?
-  func data<RequestType : ServiceCall>(request: RequestType, withBaseURL _: URLComponents, withHeaders _: [String: String], authorization _: MockCreds?, usingEncoder _: any Encoder<Data>) async throws -> MockSessionResponse {
+  func data<RequestType: ServiceCall>(request: RequestType, withBaseURL _: URLComponents, withHeaders _: [String: String], authorization _: MockCreds?, usingEncoder _: any Encoder<Data>) async throws -> MockSessionResponse {
     passedRequest = request
     return MockSessionResponse(data: data, statusCode: statusCode)
   }
-
 
   typealias ResponseType = MockSessionResponse
 }
@@ -95,29 +90,24 @@ struct MockBody: ContentEncodable, Codable, Equatable {
   let id: UUID
 }
 
-struct MockAPI : BaseAPI {
+struct MockAPI: BaseAPI {
   let baseURLComponents: URLComponents
-  
-  let headers: [String : String]
-  
-  let encoder: any Encoder<Data>
-  
-  let decoder: any Decoder<Data>
-  
-  typealias RequestDataType = Data
-  
-  typealias ResponseDataType = Data
-  
 
-  
-  
+  let headers: [String: String]
+
+  let encoder: any Encoder<Data>
+
+  let decoder: any Decoder<Data>
+
+  typealias RequestDataType = Data
+
+  typealias ResponseDataType = Data
 }
 
 struct MockSessionGenericRequest: ServiceCall, Equatable {
   typealias API = MockAPI
-  
-  
-  internal init(body: MockBody, path: String, parameters: [String: String], method: PrchModel.RequestMethod, headers: [String: String], requiresCredentials: Bool) {
+
+  internal init(body: MockBody, path: String, parameters: [String: String], method: PrchModel.RequestMethod, headers: [String: String], requiresCredentials _: Bool) {
     self.body = body
     self.path = path
     self.parameters = parameters
@@ -134,13 +124,13 @@ struct MockSessionGenericRequest: ServiceCall, Equatable {
   var path: String
 
   var parameters: [String: String]
-  
+
   var method: PrchModel.RequestMethod
 
   var headers: [String: String]
 
   static var requiresCredentials: Bool {
-    return false
+    false
   }
 
   func isValidStatusCode(_: Int) -> Bool {
@@ -149,33 +139,31 @@ struct MockSessionGenericRequest: ServiceCall, Equatable {
   }
 }
 
-struct MockAuthenticationManager : AuthorizationManager {
-  let value : MockCreds?
+struct MockAuthenticationManager: AuthorizationManager {
+  let value: MockCreds?
   func fetch() async throws -> SessionAuthorization? {
-    return value
+    value
   }
-  
+
   typealias AuthorizationType = SessionAuthorization
-  
-  
 }
 
-class MockService : Service {
+class MockService: Service {
   internal init(api: MockAPI, session: MockSession, authorizationManager: any SessionAuthenticationManager) {
     self.api = api
     self.session = session
     self.authorizationManager = authorizationManager
   }
-  
-  internal convenience init (baseURLComponents: URLComponents, headers : [String : String], creds: MockCreds?, session: MockSession, coder: MockerCoder) {
+
+  internal convenience init(baseURLComponents: URLComponents, headers: [String: String], creds: MockCreds?, session: MockSession, coder: MockerCoder) {
     let api = MockAPI(baseURLComponents: baseURLComponents, headers: headers, encoder: coder, decoder: coder)
     let manager = MockAuthenticationManager(value: creds)
     self.init(api: api, session: session, authorizationManager: manager)
   }
-  
+
   typealias SessionType = MockSession
   typealias API = MockAPI
-  
+
   var api: MockAPI
   var session: MockSession
   var authorizationManager: any SessionAuthenticationManager
