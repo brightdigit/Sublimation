@@ -2,14 +2,6 @@ import Foundation
 
 
 
-public protocol StaticBaseAPI : BaseAPI {
-  associatedtype RequestDataType
-  associatedtype ResponseDataType
- static var baseURLComponents: URLComponents { get }
- static var headers: [String: String] { get }
-  static var encoder: any Encoder<RequestDataType> { get }
-  static var decoder: any Decoder<ResponseDataType> { get }
-}
 
 
 public protocol BaseAPI {

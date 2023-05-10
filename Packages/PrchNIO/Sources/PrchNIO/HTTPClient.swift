@@ -39,7 +39,7 @@ extension HTTPClient : Session {
   
   public typealias ResponseType = Response
   
-  public typealias AuthorizationType = URLSessionAuthorization
+  public typealias AuthorizationType = SessionAuthorization
   
   
 }

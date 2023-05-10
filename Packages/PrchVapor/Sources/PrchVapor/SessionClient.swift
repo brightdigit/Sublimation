@@ -13,7 +13,7 @@ public struct SessionClient: Prch.Session {
   
   public typealias ResponseType = ClientResponse
   
-  public typealias AuthorizationType = URLSessionAuthorization
+  public typealias AuthorizationType = SessionAuthorization
   
   let client: Vapor.Client
   
@@ -24,7 +24,7 @@ public struct SessionClient: Prch.Session {
     request: RequestType,
     withBaseURL baseURLComponents: URLComponents,
     withHeaders headers: [String: String],
-    authorizationManager: any AuthorizationManager<URLSessionAuthorization>,
+    authorizationManager: any AuthorizationManager<SessionAuthorization>,
     usingEncoder encoder: any Encoder<Data>
   ) async throws -> ClientResponse {
     var componenents = baseURLComponents

@@ -5,26 +5,27 @@ import PrchModel
   import FoundationNetworking
 #endif
 
+
+public struct NullAuthorizationManager<AuthorizationType> : AuthorizationManager {
+  public func fetch() async throws -> AuthorizationType? {
+    return nil
+  }
+  
+  public typealias AuthorizationType = AuthorizationType
+  
+  
+
+  public init () {
+    
+  }
+  
+}
+
 public protocol AuthorizationManager<AuthorizationType> {
   associatedtype AuthorizationType
   func fetch() async throws -> AuthorizationType?
 }
 
-public struct StaticBaseAPIContainer<API : StaticBaseAPI> : BaseAPI {
-  
-  public var baseURLComponents: URLComponents {
-    return API.baseURLComponents
-  }
-  public var headers: [String: String] {
-  return API.headers
-}
-  public var encoder: any Encoder<API.RequestDataType> {
-  return API.encoder
-}
-  public var decoder: any Decoder<API.ResponseDataType> {
-  return API.decoder
-}
-}
 
 public protocol Service<SessionType>: ServiceProtocol {
   typealias SessionAuthenticationManager =
@@ -36,15 +37,8 @@ public protocol Service<SessionType>: ServiceProtocol {
   var api : API { get }
 }
 
-public protocol StaticAPIService : Service  {
-  associatedtype StaticAPI : StaticBaseAPI
-}
 
-extension StaticAPIService where API == StaticBaseAPIContainer<StaticAPI> {
-  public var api: API {
-    return StaticBaseAPIContainer()
-  }
-}
+
 
 extension Service {
   public func request<RequestType>(

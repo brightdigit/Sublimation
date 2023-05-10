@@ -10,15 +10,6 @@ import PrchModel
   import FoundationNetworking
 #endif
 
-public struct NullAuthorizationManager<AuthorizationType> : AuthorizationManager {
-  public func fetch() async throws -> AuthorizationType? {
-    return nil
-  }
-  
-  public typealias AuthorizationType = AuthorizationType
-  
-  
-}
 
 enum NgrokDefaults {
     public static let defaultBaseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
@@ -28,9 +19,8 @@ protocol NgrokServiceProtocol : ServiceProtocol where API == Ngrok.API {
   
 }
 
-class NgrokService<SessionType : Prch.Session> : Service, NgrokServiceProtocol
-where SessionType.ResponseType.DataType == Ngrok.API.ResponseDataType,
-        SessionType.RequestDataType == Ngrok.API.RequestDataType {
+class NgrokService<SessionType : Prch.Session> : Service, NgrokServiceProtocol where SessionType.ResponseType.DataType == Ngrok.API.ResponseDataType,
+                                                                                           SessionType.RequestDataType == Ngrok.API.RequestDataType {
 
   
 
@@ -47,6 +37,10 @@ where SessionType.ResponseType.DataType == Ngrok.API.ResponseDataType,
   }
   
   typealias API = Ngrok.API
+  
+  var api: Ngrok.API {
+    Ngrok.API.shared
+  }
 }
 //class NgrokService<SessionType : Prch.Session> : Service where SessionType.ResponseType.DataType == Data {
 //  var authorizationManager: any SessionAuthenticationManager {
@@ -207,7 +201,9 @@ class NgrokCLIAPIServer: NgrokServer {
     self.logger.debug("Starting Ngrok Tunnel...")
     let tunnels: [NgrokTunnel]
 
-    let result = await waitForTaskCompletion(withTimeoutInNanoseconds: self.clientSearchTimeoutNanoseconds) {      
+    let result = await waitForTaskCompletion(withTimeoutInNanoseconds: self.clientSearchTimeoutNanoseconds) {
+      
+      //self.prchClient.request(ListTunnelsRequest())
       try? await self.prchClient.request(ListTunnelsRequest()).tunnels
     }?.flatMap { $0 }
 

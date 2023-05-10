@@ -8,18 +8,18 @@ import PrchModel
 
 public enum Ngrok {
   
-  public enum API : BaseAPI {
-    public static let encoder: any PrchModel.Encoder<Data> = JSONEncoder()
+  public struct API : BaseAPI {
+    public let encoder: any PrchModel.Encoder<Data> = JSONEncoder()
     
-    public static let decoder: any PrchModel.Decoder<Data> = JSONDecoder()
+    public let decoder: any PrchModel.Decoder<Data> = JSONDecoder()
     
     public typealias DataType = Data
     
-    public static let baseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
+    public let baseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
     
-    public static let headers: [String : String] = [:]
+    public let headers: [String : String] = [:]
     
-    
+    public static let shared : API = .init()
   }
 //  public struct API {
 //    public init(coder: any Coder<Data> = JSONCoder(encoder: .init(), decoder: .init()), authorizationManager: (any AuthorizationManager)? = nil, baseURLComponents: URLComponents = Self.defaultBaseURLComponents) {
