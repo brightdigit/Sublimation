@@ -1,5 +1,5 @@
 import Foundation
 
-public protocol URLSessionAuthorization {
+public protocol SessionAuthorization {
   var httpHeaders: [String: String] { get }
 }

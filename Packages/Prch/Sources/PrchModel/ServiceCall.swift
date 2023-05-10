@@ -1,13 +1,24 @@
 import Foundation
 
 
+
+public protocol StaticBaseAPI : BaseAPI {
+  associatedtype RequestDataType
+  associatedtype ResponseDataType
+ static var baseURLComponents: URLComponents { get }
+ static var headers: [String: String] { get }
+  static var encoder: any Encoder<RequestDataType> { get }
+  static var decoder: any Decoder<ResponseDataType> { get }
+}
+
+
 public protocol BaseAPI {
   associatedtype RequestDataType
   associatedtype ResponseDataType
-  static var baseURLComponents: URLComponents { get }
-  static var headers: [String: String] { get }
-  static var encoder: any Encoder<RequestDataType> { get }
-  static var decoder: any Decoder<ResponseDataType> { get }
+  var baseURLComponents: URLComponents { get }
+  var headers: [String: String] { get }
+  var encoder: any Encoder<RequestDataType> { get }
+  var decoder: any Decoder<ResponseDataType> { get }
 }
 
 
@@ -24,6 +35,8 @@ public protocol ServiceCall {
   func isValidStatusCode(_ statusCode: Int) -> Bool
 }
 
+
+
 extension ServiceCall {
   public func isValidStatusCode(_ statusCode: Int) -> Bool {
     statusCode / 100 == 2
@@ -31,29 +44,29 @@ extension ServiceCall {
 }
 
 extension ServiceCall {
-  public func resolveEncoder<DataType>()  -> any Encoder<DataType> where API : BaseAPI, API.RequestDataType == DataType {
+  public func resolveEncoder<DataType>(with api: API)  -> any Encoder<DataType> where API : BaseAPI, API.RequestDataType == DataType {
     if #available(macOS 13.0.0, iOS 16.0, *) {
         if let custom = self as? any CustomServiceEncoding<DataType> {
           return custom.encoder
         } else {
-          return  API.encoder
+          return  api.encoder
         }
       } else {
-        return  API.encoder
+        return  api.encoder
       }
   }
 }
 
 extension ServiceCall {
-  public func resolveDecoder<DataType>()  -> any Decoder<DataType> where API : BaseAPI, API.ResponseDataType == DataType {
+  public func resolveDecoder<DataType>(with api: API)  -> any Decoder<DataType> where API : BaseAPI, API.ResponseDataType == DataType {
     if #available(macOS 13.0.0, iOS 16.0, *) {
         if let custom = self as? any CustomServiceDecoding<DataType> {
           return custom.decoder
         } else {
-          return  API.decoder
+          return  api.decoder
         }
       } else {
-        return  API.decoder
+        return  api.decoder
       }
   }
 }

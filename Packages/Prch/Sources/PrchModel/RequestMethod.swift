@@ -1,4 +1,4 @@
-public enum RequestMethod: String {
+public enum RequestMethod: String, CaseIterable {
   case POST
   case GET
   case PUT

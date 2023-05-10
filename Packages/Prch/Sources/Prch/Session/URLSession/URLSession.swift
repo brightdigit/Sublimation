@@ -13,7 +13,7 @@ extension URLSession: Session {
     request: RequestType,
     withBaseURL baseURLComponents: URLComponents,
     withHeaders headers: [String: String],
-    authorizationManager: any AuthorizationManager<URLSessionAuthorization>,
+    authorizationManager: any AuthorizationManager<SessionAuthorization>,
     usingEncoder encoder: any Encoder<Data>
   ) async throws -> URLSession.Response
     where RequestType: ServiceCall {

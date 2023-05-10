@@ -1,14 +1,13 @@
 import Foundation
 import PrchModel
 
-public protocol Session<RequestType> {
+public protocol Session{
   associatedtype RequestDataType
-  associatedtype RequestType
   associatedtype ResponseType: SessionResponse
   associatedtype AuthorizationType
 
-  func data<RequestType: ServiceCall>(
-    request: RequestType,
+  func data<CallType: ServiceCall>(
+    request: CallType,
     withBaseURL baseURLComponents: URLComponents,
     withHeaders headers: [String: String],
     authorizationManager: any AuthorizationManager<AuthorizationType>,
