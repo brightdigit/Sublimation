@@ -24,3 +24,15 @@ extension ServiceCall where BodyType == Empty {
     .value
   }
 }
+
+@available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
+public protocol CustomServiceEncoding<DataType> {
+  associatedtype DataType
+  var encoder: any Encoder<DataType> { get }
+}
+
+@available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
+public protocol CustomServiceDecoding<DataType> {
+  associatedtype DataType
+  var decoder: any Decoder<DataType> { get }
+}

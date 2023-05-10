@@ -28,7 +28,11 @@ protocol NgrokServiceProtocol : ServiceProtocol where API == Ngrok.API {
   
 }
 
-class NgrokService<SessionType : Prch.Session> : Service, NgrokServiceProtocol where SessionType.ResponseType.DataType == Ngrok.API.DataType {
+class NgrokService<SessionType : Prch.Session> : Service, NgrokServiceProtocol
+where SessionType.ResponseType.DataType == Ngrok.API.ResponseDataType,
+        SessionType.RequestDataType == Ngrok.API.RequestDataType {
+
+  
 
   internal init(session: SessionType) {
     self.session = session

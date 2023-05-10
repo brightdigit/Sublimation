@@ -13,7 +13,7 @@ public protocol AuthorizationManager<AuthorizationType> {
 public protocol Service<SessionType>: ServiceProtocol {
   typealias SessionAuthenticationManager =
     AuthorizationManager<SessionType.AuthorizationType>
-  associatedtype SessionType: Session where SessionType.ResponseType.DataType == API.DataType
+  associatedtype SessionType: Session where SessionType.ResponseType.DataType == API.ResponseDataType
 // var baseURLComponents: URLComponents { get }
   var authorizationManager: any SessionAuthenticationManager { get }
   var session: SessionType { get }
@@ -23,24 +23,37 @@ public protocol Service<SessionType>: ServiceProtocol {
 }
 
 public protocol BaseAPI {
-  associatedtype DataType
+  associatedtype RequestDataType
+  associatedtype ResponseDataType
   static var baseURLComponents: URLComponents { get }
   static var headers: [String: String] { get }
-  static var encoder: any Encoder<DataType> { get }
-  static var decoder: any Decoder<DataType> { get }
+  static var encoder: any Encoder<RequestDataType> { get }
+  static var decoder: any Decoder<ResponseDataType> { get }
 }
 
 extension Service {
   public func request<RequestType>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType.DecodableType
-    where RequestType: ServiceCall, RequestType.API == Self.API {
+  where RequestType: ServiceCall, RequestType.API == Self.API, SessionType.RequestDataType == Self.API.RequestDataType {
+      
+    let encoder : any Encoder<API.RequestDataType>
+    
+    if #available(macOS 13.0.0, iOS 16.0, *) {
+        if let custom = request as? any CustomServiceEncoding<API.RequestDataType> {
+          encoder = custom.encoder
+        } else {
+          encoder = API.encoder
+        }
+      } else {
+        encoder = API.encoder
+      }
     let response = try await session.data(
       request: request,
       withBaseURL: API.baseURLComponents,
       withHeaders: API.headers,
       authorizationManager: authorizationManager,
-      usingEncoder: API.encoder
+      usingEncoder: encoder
     )
 
     guard request.isValidStatusCode(response.statusCode) else {

@@ -34,7 +34,7 @@ public struct VaporTunnelClient<Key>: KVdbTunnelClient {
       request.body = .init(string: value.absoluteString)
     }).get()
 
-    if (response.statusCode ?? 0) / 100 == 2 {
+    if response.statusCode / 100 == 2 {
       return
     }
 
