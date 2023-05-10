@@ -22,45 +22,26 @@ public protocol Service<SessionType>: ServiceProtocol {
 //  var decoder: any Decoder<SessionType.ResponseType.DataType> { get }
 }
 
-public protocol BaseAPI {
-  associatedtype RequestDataType
-  associatedtype ResponseDataType
-  static var baseURLComponents: URLComponents { get }
-  static var headers: [String: String] { get }
-  static var encoder: any Encoder<RequestDataType> { get }
-  static var decoder: any Decoder<ResponseDataType> { get }
-}
-
 extension Service {
   public func request<RequestType>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType.DecodableType
   where RequestType: ServiceCall, RequestType.API == Self.API, SessionType.RequestDataType == Self.API.RequestDataType {
       
-    let encoder : any Encoder<API.RequestDataType>
     
-    if #available(macOS 13.0.0, iOS 16.0, *) {
-        if let custom = request as? any CustomServiceEncoding<API.RequestDataType> {
-          encoder = custom.encoder
-        } else {
-          encoder = API.encoder
-        }
-      } else {
-        encoder = API.encoder
-      }
     let response = try await session.data(
       request: request,
       withBaseURL: API.baseURLComponents,
       withHeaders: API.headers,
       authorizationManager: authorizationManager,
-      usingEncoder: encoder
+      usingEncoder: request.resolveEncoder()
     )
 
     guard request.isValidStatusCode(response.statusCode) else {
       throw RequestError.invalidStatusCode(response.statusCode)
     }
 
-      return try API.decoder.decodeContent(
+    return try request.resolveDecoder().decodeContent(
       RequestType.SuccessType.self,
       from: response.data
     )
