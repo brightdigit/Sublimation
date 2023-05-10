@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:brightdigit/PrchVapor.git
 	branch = prch2
-	commit = a5a9eb915b8db65d07f57248ad77477b22afe98b
-	parent = 8ecf83a0a4aef8d7fd3a945c9e696ca5fc9f81a1
+	commit = 72fbe20911c9e61328500cb091dc72db2a66ae2a
+	parent = eee02f979dd8134207832683306f0fdf8bcd874f
 	method = merge
 	cmdver = 0.4.6
