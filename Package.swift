@@ -15,8 +15,8 @@ let package = Package(
     // Dependencies declare other packages that this package depends on.
     // .package(url: /* package url */, from: "1.0.0"),
     .package(url: "https://github.com/vapor/vapor.git", from: "4.66.0"),
-    .package(path: "Packages/Prch"),
-    .package(path: "Packages/PrchVapor")
+    .package(url: "https://github.com/brightdigit/Prch.git", branch: "floxbx"),
+    .package(url: "https://github.com/brightdigit/PrchVapor.git", branch: "prch2")
   ],
   targets: [
     .target(name: "Ngrokit", dependencies: ["Prch"]),
