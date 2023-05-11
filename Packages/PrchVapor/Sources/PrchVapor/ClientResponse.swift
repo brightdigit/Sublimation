@@ -3,12 +3,12 @@ import PrchNIO
 import Vapor
 
 //
-//protocol NIOResponse : SessionResponse {
+// protocol NIOResponse : SessionResponse {
 //  var status: HTTPStatus { get }
 //  var body: ByteBuffer? { get }
-//}
+// }
 //
-//extension NIOResponse {
+// extension NIOResponse {
 //  public var statusCode: Int {
 //    Int(self.statusCode)
 //  }
@@ -18,7 +18,6 @@ import Vapor
 //      Data(buffer: $0)
 //    } ?? .init()
 //  }
-//}
-
+// }
 
 extension ClientResponse: NIOResponse {}

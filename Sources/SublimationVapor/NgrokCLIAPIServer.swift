@@ -1,48 +1,41 @@
 import Foundation
 import Ngrokit
 
-//import class Prch.Client
-import PrchVapor
-import Vapor
 import Prch
 import PrchModel
+// import class Prch.Client
+import PrchVapor
+import Vapor
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
-
 enum NgrokDefaults {
-    public static let defaultBaseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
+  public static let defaultBaseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
 }
 
-protocol NgrokServiceProtocol : ServiceProtocol where ServiceAPI == Ngrok.API {
-  
-}
+protocol NgrokServiceProtocol: ServiceProtocol where ServiceAPI == Ngrok.API {}
 
-class NgrokService<SessionType : Prch.Session> : Service, NgrokServiceProtocol where SessionType.ResponseType.DataType == Ngrok.API.ResponseDataType,
-                                                                                           SessionType.RequestDataType == Ngrok.API.RequestDataType {
-
-  
-
+class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol where SessionType.ResponseType.DataType == Ngrok.API.ResponseDataType,
+  SessionType.RequestDataType == Ngrok.API.RequestDataType {
   internal init(session: SessionType) {
     self.session = session
   }
-  
-  
+
   let session: SessionType
-  
-  
+
   var authorizationManager: any SessionAuthenticationManager {
-    return NullAuthorizationManager()
+    NullAuthorizationManager()
   }
-  
+
   typealias API = Ngrok.API
-  
+
   var api: Ngrok.API {
     Ngrok.API.shared
   }
 }
-//class NgrokService<SessionType : Prch.Session> : Service where SessionType.ResponseType.DataType == Data {
+
+// class NgrokService<SessionType : Prch.Session> : Service where SessionType.ResponseType.DataType == Data {
 //  var authorizationManager: any SessionAuthenticationManager {
 //    return self._authorizationManager
 //  }
@@ -80,20 +73,20 @@ class NgrokService<SessionType : Prch.Session> : Service, NgrokServiceProtocol w
 //  var headers: [String : String]
 //
 //
-//}
+// }
 //
-//class Client<SessionType : Prch.Session> : Service {
+// class Client<SessionType : Prch.Session> : Service {
 //  var authorizationManager: any AuthorizationManager
-//  
+//
 //  let coder: any Coder<Data>
-//  
+//
 //  let session: SessionType
-//  
+//
 //  let baseURLComponents: URLComponents
-//  
-//  
+//
+//
 //  let headers: [String : String]
-//  
+//
 //  init(authorizationManager: any SessionAuthenticationManager, coder: any Coder<Data>, session: SessionType, baseURLComponents: URLComponents, headers: [String : String]) {
 //    self.authorizationManager = authorizationManager
 //    self.coder = coder
@@ -102,12 +95,12 @@ class NgrokService<SessionType : Prch.Session> : Service, NgrokServiceProtocol w
 //    self.headers = headers
 //  }
 //
-//}
+// }
 
 class NgrokCLIAPIServer: NgrokServer {
   internal init(cli: Ngrok.CLI, prchClient: (any NgrokServiceProtocol)? = nil, port: Int? = nil, logger: Logger? = nil, ngrokProcess: Process? = nil, clientSearchTimeoutNanoseconds: UInt64 = NSEC_PER_SEC / 5, cliProcessTimeout: DispatchTimeInterval = .seconds(2), delegate: NgrokServerDelegate? = nil) {
     self.cli = cli
-    self._prchClient = prchClient
+    _prchClient = prchClient
     self.port = port
     self.logger = logger
     self.ngrokProcess = ngrokProcess
@@ -143,11 +136,11 @@ class NgrokCLIAPIServer: NgrokServer {
       return
     }
 
-    self.startHttpTunnel(port: port)
+    startHttpTunnel(port: port)
   }
-  
-  var prchClient : any NgrokServiceProtocol {
-    guard let client = _prchClient  else {
+
+  var prchClient: any NgrokServiceProtocol {
+    guard let client = _prchClient else {
       fatalError()
     }
     return client
@@ -155,7 +148,7 @@ class NgrokCLIAPIServer: NgrokServer {
 
   func setupClient(_ client: Vapor.Client) {
     let service = NgrokService(session: SessionClient(client: client))
-    self._prchClient = service
+    _prchClient = service
   }
 
   public enum TunnelError: Error {
@@ -198,12 +191,11 @@ class NgrokCLIAPIServer: NgrokServer {
 
   func startHttp(port: Int) async throws -> NgrokTunnel {
     self.port = port
-    self.logger.debug("Starting Ngrok Tunnel...")
+    logger.debug("Starting Ngrok Tunnel...")
     let tunnels: [NgrokTunnel]
 
-    let result = await waitForTaskCompletion(withTimeoutInNanoseconds: self.clientSearchTimeoutNanoseconds) {
-      
-      //self.prchClient.request(ListTunnelsRequest())
+    let result = await waitForTaskCompletion(withTimeoutInNanoseconds: clientSearchTimeoutNanoseconds) {
+      // self.prchClient.request(ListTunnelsRequest())
       try? await self.prchClient.request(ListTunnelsRequest()).tunnels
     }?.flatMap { $0 }
 
@@ -211,32 +203,32 @@ class NgrokCLIAPIServer: NgrokServer {
       tunnels = firstCallTunnels
     } else {
       do {
-        self.logger.debug("Starting New Ngrok Client")
-        let ngrokProcess = try await cli.http(port: port, timeout: .now() + self.cliProcessTimeout)
-        guard let tunnel = try await self.prchClient.request(ListTunnelsRequest()).tunnels.first else {
+        logger.debug("Starting New Ngrok Client")
+        let ngrokProcess = try await cli.http(port: port, timeout: .now() + cliProcessTimeout)
+        guard let tunnel = try await prchClient.request(ListTunnelsRequest()).tunnels.first else {
           ngrokProcess.terminate()
           throw TunnelError.noTunnelCreated
         }
         self.ngrokProcess = ngrokProcess
-        self.logger.debug("Created Ngrok Process...")
+        logger.debug("Created Ngrok Process...")
         return tunnel
       } catch let Ngrok.CLI.RunError.earlyTermination(_, errorCode) where errorCode == 108 {
-        self.logger.debug("Ngrok Process Already Created.")
+        logger.debug("Ngrok Process Already Created.")
       } catch {
-        self.logger.debug("Error thrown: \(error.localizedDescription)")
+        logger.debug("Error thrown: \(error.localizedDescription)")
         throw error
       }
 
-      self.logger.debug("Listing Tunnels")
+      logger.debug("Listing Tunnels")
       tunnels = try await prchClient.request(ListTunnelsRequest()).tunnels
     }
 
     if let oldTunnel = tunnels.first {
-      self.logger.debug("Deleting Existing Tunnel: \(oldTunnel.public_url) ")
+      logger.debug("Deleting Existing Tunnel: \(oldTunnel.public_url) ")
       try await prchClient.request(StopTunnelRequest(name: oldTunnel.name))
     }
 
-    self.logger.debug("Creating Tunnel...")
+    logger.debug("Creating Tunnel...")
     let tunnel = try await prchClient.request(StartTunnelRequest(body: .init(port: port)))
 
     return tunnel

@@ -3,19 +3,19 @@ import PrchModel
 
 public struct StopTunnelRequest: ServiceCall {
   public typealias SuccessType = Empty
-  
+
   public typealias BodyType = Empty
-  
+
   public typealias ServiceAPI = Ngrok.API
-  
-  public var parameters: [String : String] {
+
+  public var parameters: [String: String] {
     [:]
   }
-  
+
   public static var requiresCredentials: Bool {
-    return false
+    false
   }
-  
+
   public init(name: String) {
     self.name = name
   }

@@ -1,7 +1,7 @@
-//import Foundation
-//import Prch
+// import Foundation
+// import Prch
 //
-//public struct StopTunnelResponse: Response {
+// public struct StopTunnelResponse: Response {
 //  public let response: Prch.ClientResult<Void, FailureType>
 //
 //  public typealias SuccessType = Void
@@ -24,4 +24,4 @@
 //  public var description: String {
 //    response.description
 //  }
-//}
+// }

@@ -2,28 +2,21 @@ import Foundation
 import PrchModel
 
 public struct ListTunnelsRequest: ServiceCall {
-  
   public typealias ServiceAPI = Ngrok.API
-  
-  
-  
-  
-  public let parameters: [String : String] = [:]
-  
-  
-  
+
+  public let parameters: [String: String] = [:]
+
   public static var requiresCredentials: Bool {
-    return true
+    true
   }
-  
-  
+
   public typealias SuccessType = NgrokTunnelResponse
-  
+
   public typealias BodyType = Empty
-  
+
   public init() {}
 
-  //public let method: String = "GET"
+  // public let method: String = "GET"
   public var method: PrchModel.RequestMethod = .GET
 
   public let path = "api/tunnels"
@@ -34,5 +27,5 @@ public struct ListTunnelsRequest: ServiceCall {
 
 //  public let encodeBody: ((Prch.RequestEncoder) throws -> Data)? = nil
 
-  //public let name: String = ""
+  // public let name: String = ""
 }

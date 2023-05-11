@@ -7,32 +7,32 @@ import PrchModel
 #endif
 
 public enum Ngrok {
-  
-  public struct API : PrchModel.API {
+  public struct API: PrchModel.API {
     public let encoder: any PrchModel.Encoder<Data> = JSONEncoder()
-    
+
     public let decoder: any PrchModel.Decoder<Data> = JSONDecoder()
-    
+
     public typealias DataType = Data
-    
+
     public let baseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
-    
-    public let headers: [String : String] = [:]
-    
-    public static let shared : API = .init()
+
+    public let headers: [String: String] = [:]
+
+    public static let shared: API = .init()
   }
+
 //  public struct API {
 //    public init(coder: any Coder<Data> = JSONCoder(encoder: .init(), decoder: .init()), authorizationManager: (any AuthorizationManager)? = nil, baseURLComponents: URLComponents = Self.defaultBaseURLComponents) {
 //      self.coder = coder
 //      self.authorizationManager = authorizationManager ?? NullAuthorizationManager()
 //      self.baseURLComponents = baseURLComponents
 //    }
-//    
-//    
+//
+//
 //    public var coder: any Coder<Data>
-//    
+//
 //    public var authorizationManager: any AuthorizationManager
-//    
+//
 //    public static let defaultBaseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
 //
 //
