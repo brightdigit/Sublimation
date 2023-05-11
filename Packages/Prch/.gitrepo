@@ -5,8 +5,8 @@
 ;
 [subrepo]
 	remote = git@github.com:brightdigit/Prch.git
-	branch = floxbx-clients
-	commit = adedbc682ee11feb42a22b58de511bb26dd29230
-	parent = d352efc72ac36eee31c2e91dc4b47fe157c6f3b8
+	branch = floxbx
+	commit = 2ad4e83b29a3f7d01fd6d53d8bbfbc0c53c892b0
+	parent = 3ab4cf5434c4f78dd336b190551a6dedb6662c53
 	method = merge
 	cmdver = 0.4.6
