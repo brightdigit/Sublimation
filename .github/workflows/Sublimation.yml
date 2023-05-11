@@ -12,11 +12,8 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     strategy:
       matrix:
-        runs-on: [ubuntu-18.04, ubuntu-20.04]
-        swift-version: [5.5.2, 5.6.2, 5.7]
-        include:
-          - runs-on: ubuntu-22.04
-            swift-version: 5.7.1
+        runs-on: [ubuntu-20.04, ubuntu-22.04]
+        swift-version: [5.7.3, 5.8]
     steps:
       - uses: actions/checkout@v3
       - name: Cache swift package modules
@@ -67,25 +64,29 @@ jobs:
       matrix:
         include:
           - runs-on: macos-12
-            xcode: "/Applications/Xcode_13.3.app"
-            iOSVersion: 15.4
-            watchOSVersion: 8.5
-            watchName: "Apple Watch Series 7 - 41mm"
-          - runs-on: macos-12
-            xcode: "/Applications/Xcode_13.4.1.app"
-            iOSVersion: 15.5
-            watchOSVersion: 8.5
-            watchName: "Apple Watch Series 7 - 41mm"
-          - runs-on: macos-12
             xcode: "/Applications/Xcode_14.0.1.app"
             iOSVersion: "16.0"
             watchOSVersion: "9.0"
             watchName: "Apple Watch Series 8 (41mm)"
+            iPhoneName: "iPhone 12"
           - runs-on: macos-12
             xcode: "/Applications/Xcode_14.1.app"
             iOSVersion: "16.1"
             watchOSVersion: "9.1"
             watchName: "Apple Watch Ultra (49mm)"
+            iPhoneName: "iPhone 13"
+          - runs-on: macos-12
+            xcode: "/Applications/Xcode_14.2.app"
+            iOSVersion: "16.2"
+            watchOSVersion: "9.1"
+            watchName: "Apple Watch Ultra (49mm)"
+            iPhoneName: "iPhone 14"
+          - runs-on: macos-13
+            xcode: "/Applications/Xcode_14.3.app"
+            iOSVersion: "16.4"
+            watchOSVersion: "9.4"
+            watchName: "Apple Watch Ultra (49mm)"
+            iPhoneName: "iPhone 14 Pro Max"
     steps:
       - uses: actions/checkout@v3
       - name: Cache swift package modules
