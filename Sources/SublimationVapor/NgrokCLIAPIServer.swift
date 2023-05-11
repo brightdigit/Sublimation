@@ -8,6 +8,7 @@ import PrchVapor
 import Vapor
 #if canImport(FoundationNetworking)
   import FoundationNetworking
+  private let NSEC_PER_SEC: UInt64 = 1_000_000_000
 #endif
 
 enum NgrokDefaults {
