@@ -3,7 +3,7 @@ import Foundation
 public protocol ServiceCall {
   associatedtype SuccessType: ContentDecodable
   associatedtype BodyType: ContentEncodable
-  associatedtype API
+  associatedtype ServiceAPI
   var path: String { get }
   var parameters: [String: String] { get }
   var method: RequestMethod { get }
@@ -23,10 +23,10 @@ extension ServiceCall {
 
 extension ServiceCall {
   public func resolveEncoder<DataType>(
-    with api: API
+    with api: ServiceAPI
   ) -> any Encoder<DataType>
-    where API: BaseAPI, API.RequestDataType == DataType {
-    if #available(macOS 13.0.0, iOS 16.0, *) {
+    where ServiceAPI: API, ServiceAPI.RequestDataType == DataType {
+    if #available(macOS 13.0.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *) {
       if let custom = self as? any CustomServiceEncoding<DataType> {
         return custom.encoder
       } else {
@@ -40,10 +40,10 @@ extension ServiceCall {
 
 extension ServiceCall {
   public func resolveDecoder<DataType>(
-    with api: API
+    with api: ServiceAPI
   ) -> any Decoder<DataType>
-    where API: BaseAPI, API.ResponseDataType == DataType {
-    if #available(macOS 13.0.0, iOS 16.0, *) {
+    where ServiceAPI: API, ServiceAPI.ResponseDataType == DataType {
+    if #available(macOS 13.0.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *) {
       if let custom = self as? any CustomServiceDecoding<DataType> {
         return custom.decoder
       } else {

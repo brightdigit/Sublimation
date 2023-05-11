@@ -6,7 +6,7 @@ public struct StopTunnelRequest: ServiceCall {
   
   public typealias BodyType = Empty
   
-  public typealias API = Ngrok.API
+  public typealias ServiceAPI = Ngrok.API
   
   public var parameters: [String : String] {
     [:]

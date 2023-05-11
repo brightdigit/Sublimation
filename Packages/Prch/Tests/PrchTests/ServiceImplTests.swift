@@ -90,7 +90,7 @@ struct MockBody: ContentEncodable, Codable, Equatable {
   let id: UUID
 }
 
-struct MockAPI: BaseAPI {
+struct MockAPI: API {
   let baseURLComponents: URLComponents
 
   let headers: [String: String]
@@ -105,7 +105,7 @@ struct MockAPI: BaseAPI {
 }
 
 struct MockSessionGenericRequest: ServiceCall, Equatable {
-  typealias API = MockAPI
+  typealias ServiceAPI = MockAPI
 
   internal init(body: MockBody, path: String, parameters: [String: String], method: PrchModel.RequestMethod, headers: [String: String], requiresCredentials _: Bool) {
     self.body = body
@@ -162,7 +162,7 @@ class MockService: Service {
   }
 
   typealias SessionType = MockSession
-  typealias API = MockAPI
+  typealias ServiceAPI = MockAPI
 
   var api: MockAPI
   var session: MockSession

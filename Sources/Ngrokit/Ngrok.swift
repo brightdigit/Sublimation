@@ -8,7 +8,7 @@ import PrchModel
 
 public enum Ngrok {
   
-  public struct API : BaseAPI {
+  public struct API : PrchModel.API {
     public let encoder: any PrchModel.Encoder<Data> = JSONEncoder()
     
     public let decoder: any PrchModel.Decoder<Data> = JSONDecoder()

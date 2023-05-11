@@ -7,7 +7,7 @@ public struct StartTunnelRequest: ServiceCall {
   
   public typealias BodyType = NgrokTunnelRequest
   
-  public typealias API = Ngrok.API
+  public typealias ServiceAPI = Ngrok.API
   
   
   

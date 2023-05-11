@@ -15,7 +15,7 @@ enum NgrokDefaults {
     public static let defaultBaseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
 }
 
-protocol NgrokServiceProtocol : ServiceProtocol where API == Ngrok.API {
+protocol NgrokServiceProtocol : ServiceProtocol where ServiceAPI == Ngrok.API {
   
 }
 

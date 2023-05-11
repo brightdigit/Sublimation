@@ -3,7 +3,7 @@ import PrchModel
 
 public struct ListTunnelsRequest: ServiceCall {
   
-  public typealias API = Ngrok.API
+  public typealias ServiceAPI = Ngrok.API
   
   
   
