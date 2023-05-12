@@ -172,4 +172,4 @@ jobs:
           fail_ci_if_error: true
           flags: watchOS,watchOS${{ matrix.watchOSVersion }}
           verbose: true
-            token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
