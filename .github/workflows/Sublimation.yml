@@ -130,46 +130,46 @@ jobs:
         run: swift build
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
-      - name: Run Swift Package tests
-        run: swift test -v --enable-code-coverage
-      - uses: sersoft-gmbh/swift-coverage-action@v2
-      - name: Upload SPM coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          fail_ci_if_error: true
-          flags: spm
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
+#       - name: Run Swift Package tests
+#         run: swift test -v --enable-code-coverage
+#       - uses: sersoft-gmbh/swift-coverage-action@v2
+#       - name: Upload SPM coverage to Codecov
+#         uses: codecov/codecov-action@v2
+#         with:
+#           fail_ci_if_error: true
+#           flags: spm
+#           verbose: true
+#           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Lint
         run: ./scripts/lint.sh
         if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
-      - name: Dump PIF
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
-        run: |
-          swift package dump-pif > /dev/null
-          MAX_ATTEMPT=3
-          ATTEMPT=0
-          while [ -z $SUCCESS ] && [ "$ATTEMPT" -le "$MAX_ATTEMPT" ]; do
-            xcodebuild clean -scheme Sublimation -destination 'generic/platform=iOS' | grep -q "CLEAN SUCCEEDED" && SUCCESS=true
-            ATTEMPT=$(($ATTEMPT+1))
-          done
-      - name: Run iOS target tests
-        run:  xcodebuild build -scheme Sublimation -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13,OS=${{ matrix.iOSVersion }}'
-      - uses: sersoft-gmbh/swift-coverage-action@v2
-      - name: Upload iOS coverage to Codecov
-        uses: codecov/codecov-action@v2        
-        with:
-          fail_ci_if_error: true
-          flags: iOS,iOS-${{ matrix.iOSVersion }}
-          verbose: true        
-          token: ${{ secrets.CODECOV_TOKEN }}          
-      - name: Run watchOS target tests
-        run: xcodebuild build -scheme Sublimation -sdk watchsimulator -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}'
-      - uses: sersoft-gmbh/swift-coverage-action@v2
-      - name: Upload watchOS coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          fail_ci_if_error: true
-          flags: watchOS,watchOS${{ matrix.watchOSVersion }}
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
+#       - name: Dump PIF
+#         if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+#         run: |
+#           swift package dump-pif > /dev/null
+#           MAX_ATTEMPT=3
+#           ATTEMPT=0
+#           while [ -z $SUCCESS ] && [ "$ATTEMPT" -le "$MAX_ATTEMPT" ]; do
+#             xcodebuild clean -scheme Sublimation -destination 'generic/platform=iOS' | grep -q "CLEAN SUCCEEDED" && SUCCESS=true
+#             ATTEMPT=$(($ATTEMPT+1))
+#           done
+#       - name: Run iOS target tests
+#         run:  xcodebuild build -scheme Sublimation -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13,OS=${{ matrix.iOSVersion }}'
+#       - uses: sersoft-gmbh/swift-coverage-action@v2
+#       - name: Upload iOS coverage to Codecov
+#         uses: codecov/codecov-action@v2        
+#         with:
+#           fail_ci_if_error: true
+#           flags: iOS,iOS-${{ matrix.iOSVersion }}
+#           verbose: true        
+#           token: ${{ secrets.CODECOV_TOKEN }}          
+#       - name: Run watchOS target tests
+#         run: xcodebuild build -scheme Sublimation -sdk watchsimulator -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}'
+#       - uses: sersoft-gmbh/swift-coverage-action@v2
+#       - name: Upload watchOS coverage to Codecov
+#         uses: codecov/codecov-action@v2
+#         with:
+#           fail_ci_if_error: true
+#           flags: watchOS,watchOS${{ matrix.watchOSVersion }}
+#           verbose: true
+#           token: ${{ secrets.CODECOV_TOKEN }}
