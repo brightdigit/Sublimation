@@ -16,7 +16,6 @@ public struct ListTunnelsRequest: ServiceCall {
 
   public init() {}
 
-  // public let method: String = "GET"
   public var method: PrchModel.RequestMethod = .GET
 
   public let path = "api/tunnels"
@@ -24,8 +23,4 @@ public struct ListTunnelsRequest: ServiceCall {
   public let queryParameters = [String: Any]()
 
   public let headers = [String: String]()
-
-//  public let encodeBody: ((Prch.RequestEncoder) throws -> Data)? = nil
-
-  // public let name: String = ""
 }

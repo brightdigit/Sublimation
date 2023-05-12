@@ -26,14 +26,6 @@ public struct StartTunnelRequest: ServiceCall {
     "Content-Type": "application/json"
   ]
 
-//  func bodyEncoder(_ encoder: Prch.RequestEncoder) throws -> Data {
-//    try encoder.encode(body)
-//  }
-//
-//  public var encodeBody: ((Prch.RequestEncoder) throws -> Data)? {
-//    self.bodyEncoder(_:)
-//  }
-
   public let name: String = ""
 
   public let body: NgrokTunnelRequest

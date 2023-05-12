@@ -30,9 +30,5 @@ public struct StopTunnelRequest: ServiceCall {
 
   public let headers = [String: String]()
 
-//  public var encodeBody: ((Prch.RequestEncoder) throws -> Data)? {
-//    nil
-//  }
-
   public let name: String
 }
