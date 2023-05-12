@@ -3,17 +3,19 @@ import PrchModel
 
 public struct StopTunnelRequest: ServiceCall {
   public typealias SuccessType = Empty
-  
+
   public typealias BodyType = Empty
-  
-  public var parameters: [String : String] {
+
+  public typealias ServiceAPI = Ngrok.API
+
+  public var parameters: [String: String] {
     [:]
   }
-  
+
   public static var requiresCredentials: Bool {
-    return false
+    false
   }
-  
+
   public init(name: String) {
     self.name = name
   }
@@ -27,10 +29,6 @@ public struct StopTunnelRequest: ServiceCall {
   public let queryParameters = [String: Any]()
 
   public let headers = [String: String]()
-
-//  public var encodeBody: ((Prch.RequestEncoder) throws -> Data)? {
-//    nil
-//  }
 
   public let name: String
 }

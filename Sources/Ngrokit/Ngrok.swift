@@ -6,40 +6,23 @@ import PrchModel
   import FoundationNetworking
 #endif
 
-public protocol API {
-  var baseURLComponents : URLComponents { get }
-  var headers : [ String : String ] { get }
-  var authorizationManager : any AuthorizationManager { get }
-  var coder : any Coder { get }
-}
-
-
 public enum Ngrok {
-//  public struct API {
-//    public init(coder: any Coder<Data> = JSONCoder(encoder: .init(), decoder: .init()), authorizationManager: (any AuthorizationManager)? = nil, baseURLComponents: URLComponents = Self.defaultBaseURLComponents) {
-//      self.coder = coder
-//      self.authorizationManager = authorizationManager ?? NullAuthorizationManager()
-//      self.baseURLComponents = baseURLComponents
-//    }
-//    
-//    
-//    public var coder: any Coder<Data>
-//    
-//    public var authorizationManager: any AuthorizationManager
-//    
-//    public static let defaultBaseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
-//
-//
-//    public let baseURLComponents: URLComponents
-//
-//    public let headers = [String: String]()
-//
-//    public enum Error: Swift.Error {
-//      case tunnelNotFound
-//    }
-//  }
+  public struct API: PrchModel.API {
+    public let encoder: any PrchModel.Encoder<Data> = JSONEncoder()
+
+    public let decoder: any PrchModel.Decoder<Data> = JSONDecoder()
+
+    public typealias DataType = Data
+
+    public let baseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
+
+    public let headers: [String: String] = [:]
+
+    public static let shared: API = .init()
+  }
 
   public struct CLI {
+    // swiftlint:disable:next force_try
     static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
     public init(executableURL: URL) {
       self.executableURL = executableURL
@@ -80,7 +63,10 @@ public enum Ngrok {
           continuation.resume(with: .failure(error))
           return
         }
-        continuation.resume(with: .failure(RunError.earlyTermination(process.terminationReason, errorCode)))
+        continuation.resume(with:
+          .failure(
+            RunError.earlyTermination(process.terminationReason, errorCode))
+        )
       }
     }
   }
