@@ -21,31 +21,8 @@ public enum Ngrok {
     public static let shared: API = .init()
   }
 
-//  public struct API {
-//    public init(coder: any Coder<Data> = JSONCoder(encoder: .init(), decoder: .init()), authorizationManager: (any AuthorizationManager)? = nil, baseURLComponents: URLComponents = Self.defaultBaseURLComponents) {
-//      self.coder = coder
-//      self.authorizationManager = authorizationManager ?? NullAuthorizationManager()
-//      self.baseURLComponents = baseURLComponents
-//    }
-//
-//
-//    public var coder: any Coder<Data>
-//
-//    public var authorizationManager: any AuthorizationManager
-//
-//    public static let defaultBaseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
-//
-//
-//    public let baseURLComponents: URLComponents
-//
-//    public let headers = [String: String]()
-//
-//    public enum Error: Swift.Error {
-//      case tunnelNotFound
-//    }
-//  }
-
   public struct CLI {
+    // swiftlint:disable:next force_try
     static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
     public init(executableURL: URL) {
       self.executableURL = executableURL
@@ -86,7 +63,10 @@ public enum Ngrok {
           continuation.resume(with: .failure(error))
           return
         }
-        continuation.resume(with: .failure(RunError.earlyTermination(process.terminationReason, errorCode)))
+        continuation.resume(with:
+          .failure(
+            RunError.earlyTermination(process.terminationReason, errorCode))
+        )
       }
     }
   }

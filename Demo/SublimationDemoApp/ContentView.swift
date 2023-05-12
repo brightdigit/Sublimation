@@ -39,15 +39,22 @@ struct ContentView: View {
     }
   }
 
-  func getBaseURL(fromBucket bucketName: String, withKey key: String) async throws -> URL {
+  func getBaseURL(
+    fromBucket bucketName: String,
+    withKey key: String
+  ) async throws -> URL {
     guard let url = try await KVdb.url(withKey: key, atBucket: bucketName) else {
       throw DemoError.noURLSetAt(bucketName, key)
     }
     return url
   }
 
-  func getServerResponse(from url: URL, using _: URLSession = .shared, encoding: String.Encoding = .utf8) async throws -> String {
-    let (data, urlResponse) = try await URLSession.shared.data(from: url)
+  func getServerResponse(
+    from url: URL,
+    using session: URLSession = .shared,
+    encoding: String.Encoding = .utf8
+  ) async throws -> String {
+    let (data, urlResponse) = try await session.data(from: url)
     guard let httpResponse = urlResponse as? HTTPURLResponse else {
       throw DemoError.invalidResponse(urlResponse)
     }
@@ -71,7 +78,10 @@ struct ContentView: View {
     .taskPolyfill {
       let serverResponse: String
       do {
-        let url = try await self.getBaseURL(fromBucket: Configuration.bucketName, withKey: Configuration.key)
+        let url = try await self.getBaseURL(
+          fromBucket: Configuration.bucketName,
+          withKey: Configuration.key
+        )
         serverResponse = try await self.getServerResponse(from: url)
       } catch {
         serverResponse = error.localizedDescription

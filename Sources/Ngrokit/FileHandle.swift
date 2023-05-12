@@ -10,7 +10,10 @@ extension FileHandle {
       throw Ngrok.CLI.RunError.invalidErrorData(data)
     }
 
-    guard let match = Ngrok.CLI.errorRegex.firstMatch(in: text, range: .init(location: 0, length: text.count)), match.numberOfRanges > 0 else {
+    guard let match = Ngrok.CLI.errorRegex.firstMatch(
+      in: text,
+      range: .init(location: 0, length: text.count)
+    ), match.numberOfRanges > 0 else {
       return nil
     }
 
