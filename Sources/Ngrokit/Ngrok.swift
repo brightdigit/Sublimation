@@ -1,32 +1,28 @@
 import Foundation
 import Prch
+import PrchModel
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
 public enum Ngrok {
-  public struct API: Prch.API {
-    public static let defaultBaseURL = URL(staticString: "http://127.0.0.1:4040")
-    public init(baseURL: URL = Self.defaultBaseURL, encoder: RequestEncoder = JSONEncoder()) {
-      self.baseURL = baseURL
-      self.encoder = encoder
-    }
+  public struct API: PrchModel.API {
+    public let encoder: any PrchModel.Encoder<Data> = JSONEncoder()
 
-    public let baseURL: URL
+    public let decoder: any PrchModel.Decoder<Data> = JSONDecoder()
 
-    public let headers = [String: String]()
+    public typealias DataType = Data
 
-    public let decoder: ResponseDecoder = JSONDecoder()
+    public let baseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
 
-    public var encoder: RequestEncoder = JSONEncoder()
+    public let headers: [String: String] = [:]
 
-    public enum Error: Swift.Error {
-      case tunnelNotFound
-    }
+    public static let shared: API = .init()
   }
 
   public struct CLI {
+    // swiftlint:disable:next force_try
     static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
     public init(executableURL: URL) {
       self.executableURL = executableURL
@@ -67,7 +63,10 @@ public enum Ngrok {
           continuation.resume(with: .failure(error))
           return
         }
-        continuation.resume(with: .failure(RunError.earlyTermination(process.terminationReason, errorCode)))
+        continuation.resume(with:
+          .failure(
+            RunError.earlyTermination(process.terminationReason, errorCode))
+        )
       }
     }
   }

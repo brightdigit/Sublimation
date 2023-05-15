@@ -7,7 +7,9 @@ let yourNgrokPath: String = "/opt/homebrew/bin/ngrok"
 public enum Configuration {
   public static var bucketName: String {
     guard let bucketName = yourBucketName else {
-      preconditionFailure("Please go to \(#filePath) and enter your bucket name from kvdb.io.")
+      preconditionFailure(
+        "Please go to \(#filePath) and enter your bucket name from kvdb.io."
+      )
     }
     return bucketName
   }

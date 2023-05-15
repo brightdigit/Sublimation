@@ -6,16 +6,22 @@ import Vapor
   import FoundationNetworking
 #endif
 
-public class SublimationLifecycleHandler<TunnelRepositoryType: WritableTunnelRepository>: LifecycleHandler, NgrokServerDelegate {
+public class SublimationLifecycleHandler<
+  TunnelRepositoryType: WritableTunnelRepository
+>: LifecycleHandler, NgrokServerDelegate {
   public func server(_: NgrokServer, updatedTunnel tunnel: Ngrokit.NgrokTunnel) {
     Task {
       do {
         try await self.tunnelRepo.saveURL(tunnel.public_url, withKey: self.key)
       } catch {
-        self.logger?.error("Unable to save url to repository: \(error.localizedDescription)")
+        self.logger?.error(
+          "Unable to save url to repository: \(error.localizedDescription)"
+        )
         return
       }
-      self.logger?.notice("Saved url \(tunnel.public_url) to repository with key \(self.key)")
+      self.logger?.notice(
+        "Saved url \(tunnel.public_url) to repository with key \(self.key)"
+      )
     }
   }
 
@@ -23,7 +29,11 @@ public class SublimationLifecycleHandler<TunnelRepositoryType: WritableTunnelRep
 
   public func server(_: NgrokServer, failedWithError _: Error) {}
 
-  public init(server: NgrokServer, repo: TunnelRepositoryType, key: TunnelRepositoryType.Key) {
+  public init(
+    server: NgrokServer,
+    repo: TunnelRepositoryType,
+    key: TunnelRepositoryType.Key
+  ) {
     self.server = server
     tunnelRepo = repo
     self.key = key
@@ -54,6 +64,10 @@ extension SublimationLifecycleHandler {
     bucketName: String,
     key: Key
   ) where TunnelRepositoryType == KVdbTunnelRepository<Key> {
-    self.init(server: NgrokCLIAPIServer(ngrokPath: ngrokPath), repo: .init(bucketName: bucketName), key: key)
+    self.init(
+      server: NgrokCLIAPIServer(ngrokPath: ngrokPath),
+      repo: .init(bucketName: bucketName),
+      key: key
+    )
   }
 }

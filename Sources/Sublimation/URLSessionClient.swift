@@ -40,7 +40,12 @@ extension URLSession {
 
     return try await withCheckedThrowingContinuation { continuation in
       let task = self.dataTask(with: request) { data, response, error in
-        continuation.resume(with: .init(success: data.flatTuple(response), failure: error))
+        continuation.resume(
+          with: .init(
+            success: data.flatTuple(response),
+            failure: error
+          )
+        )
       }
       task.resume()
     }
@@ -62,7 +67,10 @@ public struct URLSessionClient<Key>: KVdbTunnelClient {
   }
 
   let session: URLSession
-  public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
+  public func getValue(
+    ofKey key: Key,
+    fromBucket bucketName: String
+  ) async throws -> URL {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
 
     let data = try await session.dataAsync(from: url).0
@@ -74,7 +82,11 @@ public struct URLSessionClient<Key>: KVdbTunnelClient {
     return url
   }
 
-  public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
+  public func saveValue(
+    _ value: URL,
+    withKey key: Key,
+    inBucket bucketName: String
+  ) async throws {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
     var request = URLRequest(url: url)
     request.httpBody = value.absoluteString.data(using: .utf8)

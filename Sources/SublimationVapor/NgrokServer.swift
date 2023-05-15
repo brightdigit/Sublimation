@@ -8,7 +8,10 @@ public protocol NgrokServer: AnyObject {
 }
 
 extension NgrokServer {
-  func startTunnelFor(application: Application, withDelegate delegate: NgrokServerDelegate) {
+  func startTunnelFor(
+    application: Application,
+    withDelegate delegate: NgrokServerDelegate
+  ) {
     self.delegate = delegate
     setupClient(application.client)
     setupLogger(application.logger)
