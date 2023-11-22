@@ -3,10 +3,6 @@ on:
   push:
     branches-ignore:
       - '*WIP'
-
-env:
-  CODEQL_ENABLE_EXPERIMENTAL_FEATURES_SWIFT: true
-
 jobs:
   build-ubuntu:
     name: Build on Ubuntu
@@ -59,34 +55,24 @@ jobs:
         run: swift build
   build-macos:
     name: Build on macOS
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: macos-13
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     strategy:
       matrix:
-        include:
-#           - runs-on: macos-12
-#             xcode: "/Applications/Xcode_14.0.1.app"
-#             iOSVersion: "16.0"
-#             watchOSVersion: "9.0"
-#             watchName: "Apple Watch Series 8 (41mm)"
-#             iPhoneName: "iPhone 12"
-#           - runs-on: macos-12
-#             xcode: "/Applications/Xcode_14.1.app"
-#             iOSVersion: "16.1"
-#             watchOSVersion: "9.1"
-#             watchName: "Apple Watch Ultra (49mm)"
-#             iPhoneName: "iPhone 13"
-          - runs-on: macos-12
-            xcode: "/Applications/Xcode_14.2.app"
+          - xcode: "/Applications/Xcode_14.2.app"
             iOSVersion: "16.2"
             watchOSVersion: "9.1"
             watchName: "Apple Watch Ultra (49mm)"
             iPhoneName: "iPhone 14"
-          - runs-on: macos-13
-            xcode: "/Applications/Xcode_14.3.app"
+          - xcode: "/Applications/Xcode_14.3.1.app"
             iOSVersion: "16.4"
             watchOSVersion: "9.4"
             watchName: "Apple Watch Ultra (49mm)"
+            iPhoneName: "iPhone 14 Pro Max"
+          - xcode: "/Applications/Xcode_15.0.1.app"
+            iOSVersion: "17.0"
+            watchOSVersion: "10.0"
+            watchName: "Apple Watch Ultra 2 (49mm)"
             iPhoneName: "iPhone 14 Pro Max"
     steps:
       - uses: actions/checkout@v3
@@ -101,7 +87,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-
       - name: Cache mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_15.0.1')
         id: cache-mint
         uses: actions/cache@v3
         env:
@@ -118,58 +104,42 @@ jobs:
       - name: Setup Xcode
         run: sudo xcode-select -s ${{ matrix.xcode }}/Contents/Developer
       - name: Install mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_15.0.1')
         run: |
           brew update
           brew install mint
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: ${{ matrix.language }}
       - name: Build
         run: swift build
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
-#       - name: Run Swift Package tests
-#         run: swift test -v --enable-code-coverage
-#       - uses: sersoft-gmbh/swift-coverage-action@v2
-#       - name: Upload SPM coverage to Codecov
-#         uses: codecov/codecov-action@v2
-#         with:
-#           fail_ci_if_error: true
-#           flags: spm
-#           verbose: true
-#           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Lint
         run: ./scripts/lint.sh
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
-#       - name: Dump PIF
-#         if: startsWith(matrix.xcode,'/Applications/Xcode_14')
-#         run: |
-#           swift package dump-pif > /dev/null
-#           MAX_ATTEMPT=3
-#           ATTEMPT=0
-#           while [ -z $SUCCESS ] && [ "$ATTEMPT" -le "$MAX_ATTEMPT" ]; do
-#             xcodebuild clean -scheme Sublimation -destination 'generic/platform=iOS' | grep -q "CLEAN SUCCEEDED" && SUCCESS=true
-#             ATTEMPT=$(($ATTEMPT+1))
-#           done
-#       - name: Run iOS target tests
-#         run:  xcodebuild build -scheme Sublimation -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13,OS=${{ matrix.iOSVersion }}'
-#       - uses: sersoft-gmbh/swift-coverage-action@v2
-#       - name: Upload iOS coverage to Codecov
-#         uses: codecov/codecov-action@v2        
-#         with:
-#           fail_ci_if_error: true
-#           flags: iOS,iOS-${{ matrix.iOSVersion }}
-#           verbose: true        
-#           token: ${{ secrets.CODECOV_TOKEN }}          
-#       - name: Run watchOS target tests
-#         run: xcodebuild build -scheme Sublimation -sdk watchsimulator -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}'
-#       - uses: sersoft-gmbh/swift-coverage-action@v2
-#       - name: Upload watchOS coverage to Codecov
-#         uses: codecov/codecov-action@v2
-#         with:
-#           fail_ci_if_error: true
-#           flags: watchOS,watchOS${{ matrix.watchOSVersion }}
-#           verbose: true
-#           token: ${{ secrets.CODECOV_TOKEN }}
+        if: startsWith(matrix.xcode,'/Applications/Xcode_15.0.1')
+      # - name: Dump PIF
+      #   if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+      #   run: |
+      #     swift package dump-pif > /dev/null
+      #     MAX_ATTEMPT=3
+      #     ATTEMPT=0
+      #     while [ -z $SUCCESS ] && [ "$ATTEMPT" -le "$MAX_ATTEMPT" ]; do
+      #       xcodebuild clean -scheme Sublimation -destination 'generic/platform=iOS' | grep -q "CLEAN SUCCEEDED" && SUCCESS=true
+      #       ATTEMPT=$(($ATTEMPT+1))
+      #     done
+      - name: Run iOS target tests
+        run:  xcodebuild build -scheme Sublimation -sdk iphonesimulator -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName}},OS=${{ matrix.iOSVersion }}'
+      # - uses: sersoft-gmbh/swift-coverage-action@v2
+      # - name: Upload iOS coverage to Codecov
+      #   uses: codecov/codecov-action@v2        
+      #   with:
+      #     fail_ci_if_error: true
+      #     flags: iOS,iOS-${{ matrix.iOSVersion }}
+      #     verbose: true        
+      #     token: ${{ secrets.CODECOV_TOKEN }}          
+      - name: Run watchOS target tests
+        run: xcodebuild build -scheme Sublimation -sdk watchsimulator -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}'
+      # - uses: sersoft-gmbh/swift-coverage-action@v2
+      # - name: Upload watchOS coverage to Codecov
+      #   uses: codecov/codecov-action@v2
+      #   with:
+      #     fail_ci_if_error: true
+      #     flags: watchOS,watchOS${{ matrix.watchOSVersion }}
+      #     verbose: true
+      #       token: ${{ secrets.CODECOV_TOKEN }}
