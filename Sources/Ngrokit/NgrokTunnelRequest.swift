@@ -1,4 +1,6 @@
-public struct NgrokTunnelRequest: Codable {
+import PrchModel
+
+public struct NgrokTunnelRequest: Codable, Content {
   internal init(addr: String, proto: String, name: String) {
     self.addr = addr
     self.proto = proto
