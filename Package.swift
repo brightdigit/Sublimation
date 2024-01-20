@@ -15,7 +15,10 @@ let package = Package(
     // .package(url: /* package url */, from: "1.0.0"),
     .package(url: "https://github.com/vapor/vapor.git", from: "4.66.0"),
     .package(url: "https://github.com/brightdigit/Prch.git", from: "1.0.0-alpha.1"),
-    .package(url: "https://github.com/brightdigit/PrchVapor.git", from: "1.0.0-alpha.1")
+    .package(url: "https://github.com/brightdigit/PrchVapor.git", from: "1.0.0-alpha.1"),
+    .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.0.0"),
+    .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.0.0"),
+    .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.0.0")
   ],
   targets: [
     .target(name: "Ngrokit", dependencies: ["Prch"]),

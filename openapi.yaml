@@ -1,0 +1,355 @@
+openapi: 3.0.0
+info:
+  title: Ngrok Agent API
+  description: API for controlling the ngrok agent
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:4040/api
+    description: Ngrok Agent API Base URL
+
+paths:
+  /:
+    get:
+      summary: Access the root API resource of a running ngrok agent
+      responses:
+        '200':
+          description: Successful response
+
+  /api/tunnels:
+    get:
+      summary: List Tunnels
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                tunnels:
+                  - name: "command_line"
+                    uri: "/api/tunnels/command_line"
+                    public_url: "https://d95211d2.ngrok.io"
+                    proto: "https"
+                    config:
+                      addr: "localhost:80"
+                      inspect: true
+                    metrics:
+                      conns:
+                        count: 0
+                        gauge: 0
+                        rate1: 0
+                        rate5: 0
+                        rate15: 0
+                        p50: 0
+                        p90: 0
+                        p95: 0
+                        p99: 0
+                      http:
+                        count: 0
+                        rate1: 0
+                        rate5: 0
+                        rate15: 0
+                        p50: 0
+                        p90: 0
+                        p95: 0
+                        p99: 0
+
+    post:
+      summary: Start tunnel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              addr: "22"
+              proto: "tcp"
+              name: "ssh"
+      responses:
+        '201':
+          description: Tunnel started successfully
+          content:
+            application/json:
+              example:
+                name: ""
+                uri: "/api/tunnels/"
+                public_url: "tcp://0.tcp.ngrok.io:53476"
+                proto: "tcp"
+                config:
+                  addr: "localhost:22"
+                  inspect: false
+                metrics:
+                  conns:
+                    count: 0
+                    gauge: 0
+                    rate1: 0
+                    rate5: 0
+                    rate15: 0
+                    p50: 0
+                    p90: 0
+                    p95: 0
+                    p99: 0
+                  http:
+                    count: 0
+                    rate1: 0
+                    rate5: 0
+                    rate15: 0
+                    p50: 0
+                    p90: 0
+                    p95: 0
+                    p99: 0
+
+  /api/tunnels/{name}:
+    get:
+      summary: Tunnel detail
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Name of the tunnel
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                name: "command_line"
+                uri: "/api/tunnels/command_line"
+                public_url: "https://ac294125.ngrok.io"
+                proto: "https"
+                config:
+                  addr: "localhost:80"
+                  inspect: true
+                metrics:
+                  conns:
+                    count: 0
+                    gauge: 0
+                    rate1: 0
+                    rate5: 0
+                    rate15: 0
+                    p50: 0
+                    p90: 0
+                    p95: 0
+                    p99: 0
+                  http:
+                    count: 0
+                    rate1: 0
+                    rate5: 0
+                    rate15: 0
+                    p50: 0
+                    p90: 0
+                    p95: 0
+                    p99: 0
+
+    delete:
+      summary: Stop tunnel
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Name of the tunnel
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Tunnel stopped successfully
+
+  /api/requests/http:
+    get:
+      summary: List Captured Requests
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of requests to return
+          schema:
+            type: integer
+        - name: tunnel_name
+          in: query
+          description: Filter requests only for the given tunnel name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                uri: "/api/requests/http"
+                requests:
+                  - uri: "/api/requests/http/548fb5c700000002"
+                    id: "548fb5c700000002"
+                    tunnel_name: "command_line (http)"
+                    remote_addr: "192.168.100.25"
+                    start: "2014-12-15T20:32:07-08:00"
+                    duration: 3893202
+                    request:
+                      method: "GET"
+                      proto: "HTTP/1.1"
+                      headers:
+                        Accept: ["*/*"]
+                        Accept-Encoding: ["gzip, deflate, sdch"]
+                        Accept-Language: ["en-US,en;q=0.8"]
+                        Connection: ["keep-alive"]
+                        User-Agent: ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36"]
+                        X-Original-Host: ["c159663f.ngrok.io"]
+                      uri: "/favicon.ico"
+                      raw: "<BASE64 ENCODED BYTES>"
+                    response:
+                      status: "502 Bad Gateway"
+                      status_code: 502
+                      proto: "HTTP/1.1"
+                      headers:
+                        Content-Length: ["1716"]
+                      raw: "<BASE64 ENCODED BYTES>"
+
+    post:
+      summary: Replay Captured Request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              id: "548fb5c700000002"
+              tunnel_name: "command_line (http)"
+      responses:
+        '204':
+          description: Request replayed successfully
+
+    delete:
+      summary: Delete Captured Requests
+      responses:
+        '204':
+          description: Captured requests deleted successfully
+
+components:
+  schemas:
+    TunnelMetrics:
+      type: object
+      properties:
+        count:
+          type: integer
+        gauge:
+          type: integer
+        rate1:
+          type: integer
+        rate5:
+          type: integer
+        rate15:
+          type: integer
+        p50:
+          type: integer
+        p90:
+          type: integer
+        p95:
+          type: integer
+        p99:
+          type: integer
+
+    TunnelConfig:
+      type: object
+      properties:
+        addr:
+          type: string
+        inspect:
+          type: boolean
+
+    TunnelDetail:
+      type: object
+      properties:
+        name:
+          type: string
+        uri:
+          type: string
+        public_url:
+          type: string
+        proto:
+          type: string
+        config:
+          $ref: '#/components/schemas/TunnelConfig'
+        metrics:
+          $ref: '#/components/schemas/TunnelMetrics'
+
+    CapturedRequest:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        tunnel_name:
+          type: string
+        remote_addr:
+          type: string
+        start:
+          type: string
+        duration:
+          type: integer
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            proto:
+              type: string
+            headers:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+            uri:
+              type: string
+            raw:
+              type: string
+        response:
+          type: object
+          properties:
+            status:
+              type: string
+            status_code:
+              type: integer
+            proto:
+              type: string
+            headers:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+            raw:
+              type: string
+
+    CapturedRequestsList:
+      type: object
+      properties:
+        uri:
+          type: string
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapturedRequest'
+
+responses:
+  200:
+    description: Successful response
+    content:
+      application/json:
+        example:
+          # Example JSON response goes here
+
+  201:
+    description: Tunnel started successfully
+    content:
+      application/json:
+        example:
+          $ref: '#/components/schemas/TunnelDetail'
+
+  204:
+    description: No content
+
+  502:
+    description: Bad Gateway
+    content:
+      application/json:
+        example:
+          # Example JSON response goes here
