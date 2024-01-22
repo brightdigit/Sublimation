@@ -5,6 +5,7 @@ import PrchModel
   import FoundationNetworking
 #endif
 
+@available(*, deprecated, renamed: "Tunnel")
 public struct NgrokTunnel: Codable, Content {
   public let name: String
   // swiftlint:disable:next identifier_name

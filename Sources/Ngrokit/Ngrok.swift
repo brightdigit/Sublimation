@@ -1,13 +1,106 @@
 import Foundation
 import Prch
 import PrchModel
+import OpenAPIRuntime
+import NgrokOpenAPIClient
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
+public struct Tunnel {
+  internal init(name: String, public_url: URL, config: NgrokTunnelConfiguration) {
+    self.name = name
+    self.public_url = public_url
+    self.config = config
+  }
+  
+  public let name: String
+  // swiftlint:disable:next identifier_name
+  public let public_url: URL
+  public let config: NgrokTunnelConfiguration
+  
+}
+
+enum RuntimeError : Error {
+  case invalidURL(String)
+}
+extension Tunnel {
+  init (response : Components.Schemas.TunnelResponse) throws {
+    guard let public_url = URL(string: response.public_url) else {
+      throw RuntimeError.invalidURL(response.public_url)
+    }
+    guard let addr = URL(string: response.config.addr) else {
+      throw RuntimeError.invalidURL(response.config.addr)
+    }
+    self.init(
+      name: response.name,
+      public_url: public_url,
+      config: .init(
+        addr: addr,
+        inspect: response.config.inspect
+      )
+    )
+  }
+}
+
+public struct TunnelRequest {
+  internal init(addr: String, proto: String, name: String) {
+    self.addr = addr
+    self.proto = proto
+    self.name = name
+  }
+
+  public init(port: Int, proto: String = "http", name: String) {
+    self.init(addr: port.description, proto: proto, name: name)
+  }
+
+  public let addr: String
+  public let proto: String
+  public let name: String
+}
+
+extension Components.Schemas.TunnelRequest {
+  init (request: TunnelRequest) {
+    self.init(addr: request.addr, proto: request.proto, name: request.name)
+  }
+}
+
 public enum Ngrok {
-  public struct API: PrchModel.API {
+  public struct Client : Sendable {
+    static let defaultServerURL = try! Servers.server1()
+    let underlyingClient : NgrokOpenAPIClient.Client
+    
+    public init (serverURL: URL? = nil, transport: ClientTransport) {
+      let underlyingClient = NgrokOpenAPIClient.Client(
+        serverURL: serverURL ?? Self.defaultServerURL,
+        transport: transport
+      )
+      self.init(underlyingClient: underlyingClient)
+    }
+    private init(underlyingClient: NgrokOpenAPIClient.Client) {
+      self.underlyingClient = underlyingClient
+    }
+    
+    public func startTunnel (_ request: TunnelRequest) async throws -> Tunnel {
+      let tunnelRequest : Components.Schemas.TunnelRequest
+      tunnelRequest = .init(request: request)
+      let response = try await self.underlyingClient.startTunnel(.init(body: .json(tunnelRequest))).created.body.json
+      let tunnel : Tunnel = try .init(response: response)
+      return tunnel
+    }
+    
+    public func stopTunnel (withName name: String) async throws {
+      _ = try await self.underlyingClient.stopTunnel(path: .init(name: name)).noContent
+      
+    }
+    
+    public func listTunnels () async throws -> [Tunnel] {
+      return try await self.underlyingClient.listTunnels().ok.body.json.tunnels.map(Tunnel.init(response:))
+    }
+  }
+  @available(*, deprecated)
+  public struct PrchAPI: PrchModel.API {
     public let encoder: any PrchModel.Encoder<Data> = JSONEncoder()
 
     public let decoder: any PrchModel.Decoder<Data> = JSONDecoder()
@@ -18,10 +111,10 @@ public enum Ngrok {
 
     public let headers: [String: String] = [:]
 
-    public static let shared: API = .init()
+    public static let shared: PrchAPI = .init()
   }
 
-  public struct CLI {
+  public struct CLI : Sendable {
     // swiftlint:disable:next force_try
     static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
     public init(executableURL: URL) {

@@ -4,8 +4,8 @@ import Foundation
   import FoundationNetworking
 #endif
 
-public class KVdbTunnelRepository<Key>: WritableTunnelRepository {
-  internal init(client: AnyKVdbTunnelClient<Key>? = nil, bucketName: String) {
+public final class KVdbTunnelRepository<Key>: WritableTunnelRepository {
+  internal init(client: (any KVdbTunnelClient<Key>)? = nil, bucketName: String) {
     self.client = client
     self.bucketName = bucketName
   }
@@ -19,17 +19,17 @@ public class KVdbTunnelRepository<Key>: WritableTunnelRepository {
     client: TunnelClientType,
     bucketName: String
   ) where TunnelClientType.Key == Key {
-    self.client = client.eraseToAnyClient()
+    self.client = client
     self.bucketName = bucketName
   }
 
-  var client: AnyKVdbTunnelClient<Key>?
+  var client: (any KVdbTunnelClient<Key>)?
   let bucketName: String
 
   public func setupClient<TunnelClientType: KVdbTunnelClient>(
     _ client: TunnelClientType
   ) where TunnelClientType.Key == Key {
-    self.client = client.eraseToAnyClient()
+    self.client = client
   }
 
   public func tunnel(forKey key: Key) async throws -> URL? {

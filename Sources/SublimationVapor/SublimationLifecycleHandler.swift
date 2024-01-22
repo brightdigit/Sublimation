@@ -6,10 +6,10 @@ import Vapor
   import FoundationNetworking
 #endif
 
-public class SublimationLifecycleHandler<
+public final class SublimationLifecycleHandler<
   TunnelRepositoryType: WritableTunnelRepository
 >: LifecycleHandler, NgrokServerDelegate {
-  public func server(_: NgrokServer, updatedTunnel tunnel: Ngrokit.NgrokTunnel) {
+  public func server(_: NgrokServer, updatedTunnel tunnel: Tunnel) {
     Task {
       do {
         try await self.tunnelRepo.saveURL(tunnel.public_url, withKey: self.key)
@@ -39,7 +39,7 @@ public class SublimationLifecycleHandler<
     self.key = key
   }
 
-  let server: NgrokServer
+  let server: any NgrokServer
   let tunnelRepo: TunnelRepositoryType
   let key: TunnelRepositoryType.Key
   var logger: Logger?
@@ -51,7 +51,7 @@ public class SublimationLifecycleHandler<
       VaporTunnelClient(
         client: application.client,
         keyType: TunnelRepositoryType.Key.self
-      ).eraseToAnyClient()
+      )
     )
   }
 

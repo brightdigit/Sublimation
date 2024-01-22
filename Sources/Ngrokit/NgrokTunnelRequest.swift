@@ -1,5 +1,6 @@
 import PrchModel
 
+@available(*, deprecated)
 public struct NgrokTunnelRequest: Codable, Content {
   internal init(addr: String, proto: String, name: String) {
     self.addr = addr

@@ -4,7 +4,7 @@ import Foundation
   import FoundationNetworking
 #endif
 
-@available(*, deprecated)
+@available(*, unavailable)
 public struct AnyKVdbTunnelClient<Key>: KVdbTunnelClient {
   private init(
     client: Any,

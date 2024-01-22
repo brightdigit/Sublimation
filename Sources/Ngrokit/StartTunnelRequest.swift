@@ -1,12 +1,13 @@
 import Foundation
 import PrchModel
 
+@available(*, deprecated)
 public struct StartTunnelRequest: ServiceCall {
   public typealias SuccessType = NgrokTunnel
 
   public typealias BodyType = NgrokTunnelRequest
 
-  public typealias ServiceAPI = Ngrok.API
+  public typealias ServiceAPI = Ngrok.PrchAPI
 
   public static var requiresCredentials: Bool {
     false

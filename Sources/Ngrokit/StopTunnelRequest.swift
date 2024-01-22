@@ -1,12 +1,13 @@
 import Foundation
 import PrchModel
 
+@available(*, deprecated)
 public struct StopTunnelRequest: ServiceCall {
   public typealias SuccessType = Empty
 
   public typealias BodyType = Empty
 
-  public typealias ServiceAPI = Ngrok.API
+  public typealias ServiceAPI = Ngrok.PrchAPI
 
   public var parameters: [String: String] {
     [:]

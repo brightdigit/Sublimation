@@ -1,8 +1,9 @@
 import Foundation
 import PrchModel
 
+@available(*, deprecated)
 public struct ListTunnelsRequest: ServiceCall {
-  public typealias ServiceAPI = Ngrok.API
+  public typealias ServiceAPI = Ngrok.PrchAPI
 
   public let parameters: [String: String] = [:]
 
