@@ -9,17 +9,25 @@ import Vapor
 public final class SublimationLifecycleHandler<
   TunnelRepositoryType: WritableTunnelRepository
 >: LifecycleHandler, NgrokServerDelegate {
+  
+  private actor LoggerContainer {
+    var logger: Logger?
+    
+    func setLogger (_ logger : Logger) {
+      self.logger = logger
+    }
+  }
   public func server(_: NgrokServer, updatedTunnel tunnel: Tunnel) {
     Task {
       do {
         try await self.tunnelRepo.saveURL(tunnel.public_url, withKey: self.key)
       } catch {
-        self.logger?.error(
+        await self.getLogger()?.error(
           "Unable to save url to repository: \(error.localizedDescription)"
         )
         return
       }
-      self.logger?.notice(
+      await self.getLogger()?.notice(
         "Saved url \(tunnel.public_url) to repository with key \(self.key)"
       )
     }
@@ -42,17 +50,24 @@ public final class SublimationLifecycleHandler<
   let server: any NgrokServer
   let tunnelRepo: TunnelRepositoryType
   let key: TunnelRepositoryType.Key
-  var logger: Logger?
+  private func getLogger () async -> Logger? {
+    return await self.loggerContainer.logger
+  }
+  private let loggerContainer = LoggerContainer()
 
   public func didBoot(_ application: Application) throws {
-    logger = application.logger
-    server.startTunnelFor(application: application, withDelegate: self)
-    tunnelRepo.setupClient(
-      VaporTunnelClient(
-        client: application.client,
-        keyType: TunnelRepositoryType.Key.self
+    Task {
+      await self.loggerContainer.setLogger(application.logger)
+      await server.startTunnelFor(application: application, withDelegate: self)
+      await     tunnelRepo.setupClient(
+        VaporTunnelClient(
+          client: application.client,
+          keyType: TunnelRepositoryType.Key.self
+        )
       )
-    )
+    }
+    //logger = application.logger
+
   }
 
   public func shutdown(_: Application) {}

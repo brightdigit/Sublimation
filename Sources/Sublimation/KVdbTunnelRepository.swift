@@ -4,7 +4,7 @@ import Foundation
   import FoundationNetworking
 #endif
 
-public final class KVdbTunnelRepository<Key>: WritableTunnelRepository {
+public actor KVdbTunnelRepository<Key>: WritableTunnelRepository {
   internal init(client: (any KVdbTunnelClient<Key>)? = nil, bucketName: String) {
     self.client = client
     self.bucketName = bucketName
@@ -28,7 +28,7 @@ public final class KVdbTunnelRepository<Key>: WritableTunnelRepository {
 
   public func setupClient<TunnelClientType: KVdbTunnelClient>(
     _ client: TunnelClientType
-  ) where TunnelClientType.Key == Key {
+  ) async where TunnelClientType.Key == Key {
     self.client = client
   }
 

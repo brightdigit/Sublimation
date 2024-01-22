@@ -9,6 +9,6 @@ public protocol WritableTunnelRepository: TunnelRepository {
     TunnelClientType: KVdbTunnelClient
   >(
     _ client: TunnelClientType
-  ) where TunnelClientType.Key == Self.Key
+  ) async where TunnelClientType.Key == Self.Key
   func saveURL(_ url: URL, withKey key: Key) async throws
 }

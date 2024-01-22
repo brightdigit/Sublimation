@@ -44,6 +44,20 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
 }
 
 final class NgrokCLIAPIServer: NgrokServer {
+  
+  private actor APIClientContainer {
+    internal init(apiClient: Ngrok.Client? = nil) {
+      self.apiClient = apiClient
+    }
+    
+    func setupClient(_ client: HTTPClient) async {
+      apiClient = .init(
+        transport: AsyncHTTPClientTransport(configuration: .init(client: client))
+      )
+    }
+    
+    var apiClient: Ngrok.Client?
+  }
   internal init(
     cli: Ngrok.CLI,
     apiClient: Ngrok.Client? = nil,
@@ -55,7 +69,7 @@ final class NgrokCLIAPIServer: NgrokServer {
     delegate: NgrokServerDelegate? = nil
   ) {
     self.cli = cli
-    self.apiClient = apiClient
+    self.clientContainer = .init(apiClient: apiClient)
     self.port = port
     self.logger = logger
     self.ngrokProcess = ngrokProcess
@@ -85,7 +99,8 @@ final class NgrokCLIAPIServer: NgrokServer {
   let cli: Ngrok.CLI
   let clientSearchTimeoutNanoseconds: UInt64
   let cliProcessTimeout: DispatchTimeInterval
-  var apiClient: Ngrok.Client?
+  private let clientContainer : APIClientContainer
+  //var apiClient: Ngrok.Client?
   var port: Int?
   var logger: Logger!
   var ngrokProcess: Process? {
@@ -109,15 +124,18 @@ final class NgrokCLIAPIServer: NgrokServer {
   }
 
   var prchClient: Ngrok.Client {
-    guard let client = apiClient else {
-      fatalError()
+    get async {
+      guard let client = await self.clientContainer.apiClient else {
+            fatalError()
+          }
+          return client
     }
-    return client
+
   }
 
-  func setupClient(_ client: HTTPClient) {
-    
-    apiClient = .init(transport: AsyncHTTPClientTransport(configuration: .init(client: client)))
+  func setupClient(_ client: HTTPClient) async {
+    await self.clientContainer.setupClient(client)
+//    apiClient = .init(transport: AsyncHTTPClientTransport(configuration: .init(client: client)))
   }
 
   public enum TunnelError: Error {
