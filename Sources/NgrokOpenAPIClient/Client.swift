@@ -39,15 +39,15 @@ package struct Client: APIProtocol {
     }
     /// Access the root API resource of a running ngrok agent
     ///
-    /// - Remark: HTTP `GET /api/`.
-    /// - Remark: Generated from `#/paths//api//get`.
-    package func get_sol_api_sol_(_ input: Operations.get_sol_api_sol_.Input) async throws -> Operations.get_sol_api_sol_.Output {
+    /// - Remark: HTTP `GET /api`.
+    /// - Remark: Generated from `#/paths//api/get`.
+    package func get_sol_api(_ input: Operations.get_sol_api.Input) async throws -> Operations.get_sol_api.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.get_sol_api_sol_.id,
+            forOperation: Operations.get_sol_api.id,
             serializer: { input in
                 let path = try converter.renderedPath(
-                    template: "/api/",
+                    template: "/api",
                     parameters: []
                 )
                 var request: HTTPTypes.HTTPRequest = .init(

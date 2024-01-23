@@ -8,7 +8,7 @@ public enum KVdb {
   public static let baseString = "https://kvdb.io/"
 
   public static func path<Key>(forKey key: Key, atBucket bucketName: String) -> String {
-    "\(bucketName)/\(key)"
+    "/\(bucketName)/\(key)"
   }
 
   public static func construct<Key, URLType: KVdbURLConstructable>(

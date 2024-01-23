@@ -18,12 +18,14 @@ let package = Package(
     .package(url: "https://github.com/brightdigit/PrchVapor.git", from: "1.0.0-alpha.1"),
     .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.0.0"),
     .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.0.0"),
+    .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.0.0"),
     .package(url: "https://github.com/swift-server/swift-openapi-async-http-client", from: "1.0.0")
   ],
   targets: [
     .target(name: "NgrokOpenAPIClient", dependencies: [.product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")]),
     .target(name: "Ngrokit", dependencies: ["Prch", "NgrokOpenAPIClient",
                                             .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")]),
+    .testTarget(name: "NgrokitTests", dependencies: ["Ngrokit", .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),]),
     .target(name: "Sublimation"),
     .target(name: "SublimationVapor",
             dependencies: [

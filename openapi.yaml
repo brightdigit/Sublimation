@@ -3,10 +3,10 @@ info:
   title: Ngrok Agent API
   version: 1.0.0
 servers:
-  - url: http://127.0.0.1:4040/api
+  - url: http://127.0.0.1:4040
     description: Default Local Server
 paths:
-  /api/:
+  /api:
     get:
       summary: Access the root API resource of a running ngrok agent
       responses:

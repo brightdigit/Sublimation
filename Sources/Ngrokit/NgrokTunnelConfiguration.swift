@@ -5,6 +5,6 @@ import Foundation
 #endif
 
 public struct NgrokTunnelConfiguration: Codable {
-  let addr: URL
-  let inspect: Bool
+  public let addr: URL
+  public let inspect: Bool
 }

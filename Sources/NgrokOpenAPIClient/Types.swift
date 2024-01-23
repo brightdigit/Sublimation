@@ -13,9 +13,9 @@ import struct Foundation.Date
 package protocol APIProtocol: Sendable {
     /// Access the root API resource of a running ngrok agent
     ///
-    /// - Remark: HTTP `GET /api/`.
-    /// - Remark: Generated from `#/paths//api//get`.
-    func get_sol_api_sol_(_ input: Operations.get_sol_api_sol_.Input) async throws -> Operations.get_sol_api_sol_.Output
+    /// - Remark: HTTP `GET /api`.
+    /// - Remark: Generated from `#/paths//api/get`.
+    func get_sol_api(_ input: Operations.get_sol_api.Input) async throws -> Operations.get_sol_api.Output
     /// List Tunnels
     ///
     /// - Remark: HTTP `GET /api/tunnels`.
@@ -42,10 +42,10 @@ package protocol APIProtocol: Sendable {
 extension APIProtocol {
     /// Access the root API resource of a running ngrok agent
     ///
-    /// - Remark: HTTP `GET /api/`.
-    /// - Remark: Generated from `#/paths//api//get`.
-    package func get_sol_api_sol_() async throws -> Operations.get_sol_api_sol_.Output {
-        try await get_sol_api_sol_(Operations.get_sol_api_sol_.Input())
+    /// - Remark: HTTP `GET /api`.
+    /// - Remark: Generated from `#/paths//api/get`.
+    package func get_sol_api() async throws -> Operations.get_sol_api.Output {
+        try await get_sol_api(Operations.get_sol_api.Input())
     }
     /// List Tunnels
     ///
@@ -94,7 +94,7 @@ package enum Servers {
     /// Default Local Server
     package static func server1() throws -> Foundation.URL {
         try Foundation.URL(
-            validatingOpenAPIServerURL: "http://127.0.0.1:4040/api",
+            validatingOpenAPIServerURL: "http://127.0.0.1:4040",
             variables: []
         )
     }
@@ -380,10 +380,10 @@ package enum Components {
 package enum Operations {
     /// Access the root API resource of a running ngrok agent
     ///
-    /// - Remark: HTTP `GET /api/`.
-    /// - Remark: Generated from `#/paths//api//get`.
-    package enum get_sol_api_sol_ {
-        package static let id: Swift.String = "get/api/"
+    /// - Remark: HTTP `GET /api`.
+    /// - Remark: Generated from `#/paths//api/get`.
+    package enum get_sol_api {
+        package static let id: Swift.String = "get/api"
         package struct Input: Sendable, Hashable {
             /// Creates a new `Input`.
             package init() {}
@@ -395,15 +395,15 @@ package enum Operations {
             }
             /// Successful response
             ///
-            /// - Remark: Generated from `#/paths//api//get/responses/200`.
+            /// - Remark: Generated from `#/paths//api/get/responses/200`.
             ///
             /// HTTP response code: `200 ok`.
-            case ok(Operations.get_sol_api_sol_.Output.Ok)
+            case ok(Operations.get_sol_api.Output.Ok)
             /// The associated value of the enum case if `self` is `.ok`.
             ///
             /// - Throws: An error if `self` is not `.ok`.
             /// - SeeAlso: `.ok`.
-            package var ok: Operations.get_sol_api_sol_.Output.Ok {
+            package var ok: Operations.get_sol_api.Output.Ok {
                 get throws {
                     switch self {
                     case let .ok(response):

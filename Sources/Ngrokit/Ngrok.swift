@@ -114,6 +114,7 @@ public enum Ngrok {
     public static let shared: PrchAPI = .init()
   }
 
+  #if os(macOS)
   public struct CLI : Sendable {
     // swiftlint:disable:next force_try
     static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
@@ -163,4 +164,5 @@ public enum Ngrok {
       }
     }
   }
+  #endif
 }
