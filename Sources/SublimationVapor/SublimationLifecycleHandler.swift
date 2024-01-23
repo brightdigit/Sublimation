@@ -57,7 +57,7 @@ public final class SublimationLifecycleHandler<
 
   public func didBoot(_ application: Application) throws {
     Task {
-      try? await Task.sleep(for: .seconds(5), tolerance: .seconds(3))
+      try! await Task.sleep(for: .seconds(1), tolerance: .seconds(3))
       await self.loggerContainer.setLogger(application.logger)
       await server.startTunnelFor(application: application, withDelegate: self)
       await     tunnelRepo.setupClient(
