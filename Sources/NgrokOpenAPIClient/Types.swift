@@ -94,7 +94,7 @@ package enum Servers {
     /// Default Local Server
     package static func server1() throws -> Foundation.URL {
         try Foundation.URL(
-            validatingOpenAPIServerURL: "http://127.0.0.1:4040",
+            validatingOpenAPIServerURL: "http://127.0.0.1:4040/api",
             variables: []
         )
     }

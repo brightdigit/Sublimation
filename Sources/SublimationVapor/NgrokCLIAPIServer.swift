@@ -43,7 +43,11 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
   }
 }
 
-final class NgrokCLIAPIServer: NgrokServer {
+final actor NgrokCLIAPIServer: NgrokServer {
+  func setDelegate(_ delegate: NgrokServerDelegate) async {
+    self.delegate = delegate
+  }
+  
   
   private actor APIClientContainer {
     internal init(apiClient: Ngrok.Client? = nil) {
@@ -52,7 +56,7 @@ final class NgrokCLIAPIServer: NgrokServer {
     
     func setupClient(_ client: HTTPClient) async {
       apiClient = .init(
-        transport: AsyncHTTPClientTransport(configuration: .init(client: client))
+        transport: AsyncHTTPClientTransport()
       )
     }
     
@@ -105,22 +109,29 @@ final class NgrokCLIAPIServer: NgrokServer {
   var logger: Logger!
   var ngrokProcess: Process? {
     didSet {
-      self.ngrokProcess?.terminationHandler = self.ngrokProcessTerminated
+      Task {
+        if let ngrokProcess = self.ngrokProcess {
+          ngrokProcess.terminationHandler = self.ngrokProcessTerminated(_:)
+        }
+      }
     }
   }
 
   weak var delegate: NgrokServerDelegate?
 
-  func setupLogger(_ logger: Logger) {
+  func setupLogger(_ logger: Logger) async {
     self.logger = logger
   }
 
+  
   func ngrokProcessTerminated(_: Process) {
     guard let port = self.port else {
       return
     }
 
-    startHttpTunnel(port: port)
+    Task {
+      await startHttpTunnel(port: port)
+    }
   }
 
   var prchClient: Ngrok.Client {
@@ -142,7 +153,7 @@ final class NgrokCLIAPIServer: NgrokServer {
     case noTunnelCreated
   }
 
-  func startHttpTunnel(port: Int) {
+  func startHttpTunnel(port: Int) async {
     Task {
       let tunnel: Tunnel
       do {
@@ -181,10 +192,15 @@ final class NgrokCLIAPIServer: NgrokServer {
     logger.debug("Starting Ngrok Tunnel...")
     let tunnels: [Tunnel]
 
-    let result = await waitForTaskCompletion(
+    let result : [Tunnel]? = await waitForTaskCompletion(
       withTimeoutInNanoseconds: clientSearchTimeoutNanoseconds
     ) {
-      try? await self.prchClient.listTunnels()
+      do {
+        return try await self.prchClient.listTunnels()
+      } catch {
+        self.logger.debug("Error: \(error)")
+        return []
+      }
       //try? await self.prchClient.request(ListTunnelsRequest()).tunnels
     }?.flatMap { $0 }
 

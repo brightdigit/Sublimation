@@ -1,10 +1,10 @@
 import Foundation
 import Vapor
 public protocol NgrokServer: AnyObject, Sendable {
-  func startHttpTunnel(port: Int)
+  func startHttpTunnel(port: Int) async
   func setupClient(_ client: HTTPClient) async
-  func setupLogger(_ logger: Logger)
-  var delegate: NgrokServerDelegate? { get set }
+  func setupLogger(_ logger: Logger) async
+  func setDelegate(_ delegate: NgrokServerDelegate) async
 }
 
 extension NgrokServer {
@@ -12,11 +12,11 @@ extension NgrokServer {
     application: Application,
     withDelegate delegate: NgrokServerDelegate
   ) async {
-    self.delegate = delegate
+    await self.setDelegate(delegate)
     
     await setupClient(application.http.client.shared)
-    setupLogger(application.logger)
+    await setupLogger(application.logger)
     let port = application.http.server.shared.configuration.port
-    startHttpTunnel(port: port)
+    await startHttpTunnel(port: port)
   }
 }
