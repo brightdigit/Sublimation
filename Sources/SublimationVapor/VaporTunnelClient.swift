@@ -44,7 +44,6 @@ public struct VaporTunnelClient<Key>: KVdbTunnelClient {
     inBucket bucketName: String
   ) async throws {
     let uri = KVdb.construct(URI.self, forKey: key, atBucket: bucketName)
-    dump(uri)
     let response = try await client.post(uri, beforeSend: { request in
       request.body = .init(string: value.absoluteString)
     }).get()
