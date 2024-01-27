@@ -19,15 +19,14 @@ import PrchModel
 #endif
 
 public struct Tunnel {
-  internal init(name: String, public_url: URL, config: NgrokTunnelConfiguration) {
+  internal init(name: String, publicURL: URL, config: NgrokTunnelConfiguration) {
     self.name = name
-    self.public_url = public_url
+    self.publicURL = publicURL
     self.config = config
   }
 
   public let name: String
-  // swiftlint:disable:next identifier_name
-  public let public_url: URL
+  public let publicURL: URL
   public let config: NgrokTunnelConfiguration
 }
 
@@ -39,7 +38,7 @@ public enum RuntimeError: Error {
 
 extension Tunnel {
   init(response: Components.Schemas.TunnelResponse) throws {
-    guard let public_url = URL(string: response.public_url) else {
+    guard let publicURL = URL(string: response.public_url) else {
       throw RuntimeError.invalidURL(response.public_url)
     }
     guard let addr = URL(string: response.config.addr) else {
@@ -47,7 +46,7 @@ extension Tunnel {
     }
     self.init(
       name: response.name,
-      public_url: public_url,
+      publicURL: publicURL,
       config: .init(
         addr: addr,
         inspect: response.config.inspect
@@ -111,7 +110,10 @@ public enum Ngrok {
     }
 
     public func listTunnels() async throws -> [Tunnel] {
-      try await underlyingClient.listTunnels().ok.body.json.tunnels.map(Tunnel.init(response:))
+      try await underlyingClient
+        .listTunnels()
+        .ok.body.json.tunnels
+        .map(Tunnel.init(response:))
     }
   }
 

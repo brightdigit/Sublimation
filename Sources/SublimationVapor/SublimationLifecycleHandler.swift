@@ -20,7 +20,7 @@ public final class SublimationLifecycleHandler<
   public func server(_: NgrokServer, updatedTunnel tunnel: Tunnel) {
     Task {
       do {
-        try await self.tunnelRepo.saveURL(tunnel.public_url, withKey: self.key)
+        try await self.tunnelRepo.saveURL(tunnel.publicURL, withKey: self.key)
       } catch {
         await self.getLogger()?.error(
           "Unable to save url to repository: \(error.localizedDescription)"
@@ -28,7 +28,7 @@ public final class SublimationLifecycleHandler<
         return
       }
       await self.getLogger()?.notice(
-        "Saved url \(tunnel.public_url) to repository with key \(self.key)"
+        "Saved url \(tunnel.publicURL) to repository with key \(self.key)"
       )
     }
   }
@@ -58,7 +58,14 @@ public final class SublimationLifecycleHandler<
 
   public func didBoot(_ application: Application) throws {
     Task {
-      try! await Task.sleep(for: .seconds(1), tolerance: .seconds(3))
+      do {
+        try await Task.sleep(for: .seconds(1), tolerance: .seconds(3))
+      } catch {
+        application.logger.log(
+          level: .error,
+          "Could not sleep \(error.localizedDescription)"
+        )
+      }
       await self.loggerContainer.setLogger(application.logger)
       await server.startTunnelFor(application: application, withDelegate: self)
       await tunnelRepo.setupClient(

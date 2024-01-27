@@ -142,7 +142,6 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
 
     func setupClient(_ client: HTTPClient) async {
       await self.clientContainer.setupClient(client)
-//    apiClient = .init(transport: AsyncHTTPClientTransport(configuration: .init(client: client)))
     }
 
     public enum TunnelError: Error {
@@ -229,13 +228,17 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
       }
 
       if let oldTunnel = tunnels.first {
-        logger.debug("Deleting Existing Tunnel: \(oldTunnel.public_url) ")
+        logger.debug("Deleting Existing Tunnel: \(oldTunnel.publicURL) ")
         try await prchClient.stopTunnel(withName: oldTunnel.name)
       }
 
       logger.debug("Creating Tunnel...")
-      let tunnel = try await prchClient.startTunnel(.init(port: port, name: "vapor-development"))
-      // .request(StartTunnelRequest(body: .init(port: port)))
+      let tunnel = try await prchClient.startTunnel(
+        .init(
+          port: port,
+          name: "vapor-development"
+        )
+      )
 
       return tunnel
     }
