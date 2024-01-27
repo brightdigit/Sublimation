@@ -1,11 +1,21 @@
 import Foundation
+import NgrokOpenAPIClient
+import OpenAPIRuntime
 import Prch
 import PrchModel
-import OpenAPIRuntime
-import NgrokOpenAPIClient
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
+#endif
+
+#if os(macOS)
+  public typealias TerminationReason = Process.TerminationReason
+#else
+  public enum TerminationReason: Int {
+    case exit = 1
+
+    case uncaughtSignal = 2
+  }
 #endif
 
 public struct Tunnel {
@@ -14,19 +24,21 @@ public struct Tunnel {
     self.public_url = public_url
     self.config = config
   }
-  
+
   public let name: String
   // swiftlint:disable:next identifier_name
   public let public_url: URL
   public let config: NgrokTunnelConfiguration
-  
 }
 
-enum RuntimeError : Error {
+public enum RuntimeError: Error {
   case invalidURL(String)
+  case earlyTermination(TerminationReason, Int?)
+  case invalidErrorData(Data)
 }
+
 extension Tunnel {
-  init (response : Components.Schemas.TunnelResponse) throws {
+  init(response: Components.Schemas.TunnelResponse) throws {
     guard let public_url = URL(string: response.public_url) else {
       throw RuntimeError.invalidURL(response.public_url)
     }
@@ -61,44 +73,48 @@ public struct TunnelRequest {
 }
 
 extension Components.Schemas.TunnelRequest {
-  init (request: TunnelRequest) {
+  init(request: TunnelRequest) {
     self.init(addr: request.addr, proto: request.proto, name: request.name)
   }
 }
 
 public enum Ngrok {
-  public struct Client : Sendable {
+  // swiftlint:disable:next force_try
+  static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
+
+  public struct Client: Sendable {
     static let defaultServerURL = try! Servers.server1()
-    let underlyingClient : NgrokOpenAPIClient.Client
-    
-    public init (serverURL: URL? = nil, transport: ClientTransport) {
+    let underlyingClient: NgrokOpenAPIClient.Client
+
+    public init(serverURL: URL? = nil, transport: ClientTransport) {
       let underlyingClient = NgrokOpenAPIClient.Client(
         serverURL: serverURL ?? Self.defaultServerURL,
         transport: transport
       )
       self.init(underlyingClient: underlyingClient)
     }
+
     private init(underlyingClient: NgrokOpenAPIClient.Client) {
       self.underlyingClient = underlyingClient
     }
-    
-    public func startTunnel (_ request: TunnelRequest) async throws -> Tunnel {
-      let tunnelRequest : Components.Schemas.TunnelRequest
+
+    public func startTunnel(_ request: TunnelRequest) async throws -> Tunnel {
+      let tunnelRequest: Components.Schemas.TunnelRequest
       tunnelRequest = .init(request: request)
-      let response = try await self.underlyingClient.startTunnel(.init(body: .json(tunnelRequest))).created.body.json
-      let tunnel : Tunnel = try .init(response: response)
+      let response = try await underlyingClient.startTunnel(.init(body: .json(tunnelRequest))).created.body.json
+      let tunnel: Tunnel = try .init(response: response)
       return tunnel
     }
-    
-    public func stopTunnel (withName name: String) async throws {
-      _ = try await self.underlyingClient.stopTunnel(path: .init(name: name)).noContent
-      
+
+    public func stopTunnel(withName name: String) async throws {
+      _ = try await underlyingClient.stopTunnel(path: .init(name: name)).noContent
     }
-    
-    public func listTunnels () async throws -> [Tunnel] {
-      return try await self.underlyingClient.listTunnels().ok.body.json.tunnels.map(Tunnel.init(response:))
+
+    public func listTunnels() async throws -> [Tunnel] {
+      try await underlyingClient.listTunnels().ok.body.json.tunnels.map(Tunnel.init(response:))
     }
   }
+
   @available(*, deprecated)
   public struct PrchAPI: PrchModel.API {
     public let encoder: any PrchModel.Encoder<Data> = JSONEncoder()
@@ -115,54 +131,47 @@ public enum Ngrok {
   }
 
   #if os(macOS)
-  public struct CLI : Sendable {
-    // swiftlint:disable:next force_try
-    static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
-    public init(executableURL: URL) {
-      self.executableURL = executableURL
-    }
-
-    let executableURL: URL
-
-    public enum RunError: Error {
-      case earlyTermination(Process.TerminationReason, Int?)
-      case invalidErrorData(Data)
-    }
-
-    private func processTerminated(_: Process) {}
-
-    public func http(port: Int, timeout: DispatchTime) async throws -> Process {
-      let process = Process()
-      let pipe = Pipe()
-      let semaphore = DispatchSemaphore(value: 0)
-      process.executableURL = executableURL
-      process.arguments = ["http", port.description]
-      process.standardError = pipe
-      process.terminationHandler = { _ in
-        semaphore.signal()
+    public struct CLI: Sendable {
+      public init(executableURL: URL) {
+        self.executableURL = executableURL
       }
-      try process.run()
-      return try await withCheckedThrowingContinuation { continuation in
-        let semaphoreResult = semaphore.wait(timeout: timeout)
-        guard semaphoreResult == .success else {
-          process.terminationHandler = nil
-          continuation.resume(returning: process)
-          return
-        }
-        let errorCode: Int?
 
-        do {
-          errorCode = try pipe.fileHandleForReading.parseNgrokErrorCode()
-        } catch {
-          continuation.resume(with: .failure(error))
-          return
+      let executableURL: URL
+
+      private func processTerminated(_: Process) {}
+
+      public func http(port: Int, timeout: DispatchTime) async throws -> Process {
+        let process = Process()
+        let pipe = Pipe()
+        let semaphore = DispatchSemaphore(value: 0)
+        process.executableURL = executableURL
+        process.arguments = ["http", port.description]
+        process.standardError = pipe
+        process.terminationHandler = { _ in
+          semaphore.signal()
         }
-        continuation.resume(with:
-          .failure(
-            RunError.earlyTermination(process.terminationReason, errorCode))
-        )
+        try process.run()
+        return try await withCheckedThrowingContinuation { continuation in
+          let semaphoreResult = semaphore.wait(timeout: timeout)
+          guard semaphoreResult == .success else {
+            process.terminationHandler = nil
+            continuation.resume(returning: process)
+            return
+          }
+          let errorCode: Int?
+
+          do {
+            errorCode = try pipe.fileHandleForReading.parseNgrokErrorCode()
+          } catch {
+            continuation.resume(with: .failure(error))
+            return
+          }
+          continuation.resume(with:
+            .failure(
+              RuntimeError.earlyTermination(process.terminationReason, errorCode))
+          )
+        }
       }
     }
-  }
   #endif
 }

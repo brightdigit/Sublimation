@@ -25,7 +25,7 @@ let package = Package(
     .target(name: "NgrokOpenAPIClient", dependencies: [.product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")]),
     .target(name: "Ngrokit", dependencies: ["Prch", "NgrokOpenAPIClient",
                                             .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")]),
-    .testTarget(name: "NgrokitTests", dependencies: ["Ngrokit", .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),]),
+    .testTarget(name: "NgrokitTests", dependencies: ["Ngrokit", .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession")]),
     .target(name: "Sublimation"),
     .target(name: "SublimationVapor",
             dependencies: [

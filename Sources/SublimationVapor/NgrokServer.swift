@@ -12,8 +12,8 @@ extension NgrokServer {
     application: Application,
     withDelegate delegate: NgrokServerDelegate
   ) async {
-    await self.setDelegate(delegate)
-    
+    await setDelegate(delegate)
+
     await setupClient(application.http.client.shared)
     await setupLogger(application.logger)
     let port = application.http.server.shared.configuration.port

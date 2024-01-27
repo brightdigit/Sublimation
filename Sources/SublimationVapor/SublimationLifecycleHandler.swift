@@ -9,14 +9,14 @@ import Vapor
 public final class SublimationLifecycleHandler<
   TunnelRepositoryType: WritableTunnelRepository
 >: LifecycleHandler, NgrokServerDelegate {
-  
   private actor LoggerContainer {
     var logger: Logger?
-    
-    func setLogger (_ logger : Logger) {
+
+    func setLogger(_ logger: Logger) {
       self.logger = logger
     }
   }
+
   public func server(_: NgrokServer, updatedTunnel tunnel: Tunnel) {
     Task {
       do {
@@ -50,9 +50,10 @@ public final class SublimationLifecycleHandler<
   let server: any NgrokServer
   let tunnelRepo: TunnelRepositoryType
   let key: TunnelRepositoryType.Key
-  private func getLogger () async -> Logger? {
-    return await self.loggerContainer.logger
+  private func getLogger() async -> Logger? {
+    await loggerContainer.logger
   }
+
   private let loggerContainer = LoggerContainer()
 
   public func didBoot(_ application: Application) throws {
@@ -60,30 +61,31 @@ public final class SublimationLifecycleHandler<
       try! await Task.sleep(for: .seconds(1), tolerance: .seconds(3))
       await self.loggerContainer.setLogger(application.logger)
       await server.startTunnelFor(application: application, withDelegate: self)
-      await     tunnelRepo.setupClient(
+      await tunnelRepo.setupClient(
         VaporTunnelClient(
           client: application.client,
           keyType: TunnelRepositoryType.Key.self
         )
       )
     }
-    //logger = application.logger
-
+    // logger = application.logger
   }
 
   public func shutdown(_: Application) {}
 }
 
-extension SublimationLifecycleHandler {
-  public convenience init<Key>(
-    ngrokPath: String,
-    bucketName: String,
-    key: Key
-  ) where TunnelRepositoryType == KVdbTunnelRepository<Key> {
-    self.init(
-      server: NgrokCLIAPIServer(ngrokPath: ngrokPath),
-      repo: .init(bucketName: bucketName),
-      key: key
-    )
+#if os(macOS)
+  extension SublimationLifecycleHandler {
+    public convenience init<Key>(
+      ngrokPath: String,
+      bucketName: String,
+      key: Key
+    ) where TunnelRepositoryType == KVdbTunnelRepository<Key> {
+      self.init(
+        server: NgrokCLIAPIServer(ngrokPath: ngrokPath),
+        repo: .init(bucketName: bucketName),
+        key: key
+      )
+    }
   }
-}
+#endif
