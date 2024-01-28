@@ -5,11 +5,13 @@ import Prch
 import PrchModel
 
 import OpenAPIAsyncHTTPClient
+
 // import class Prch.Client
 import PrchVapor
 import Vapor
 #if canImport(FoundationNetworking)
   import FoundationNetworking
+
   // swiftlint:disable:next identifier_name
   private let NSEC_PER_SEC: UInt64 = 1_000_000_000
 #endif
@@ -26,7 +28,7 @@ protocol NgrokServiceProtocol: ServiceProtocol where ServiceAPI == Ngrok.PrchAPI
 class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
   where SessionType.ResponseType.DataType == Ngrok.PrchAPI.ResponseDataType,
   SessionType.RequestDataType == Ngrok.PrchAPI.RequestDataType {
-  internal init(session: SessionType) {
+  init(session: SessionType) {
     self.session = session
   }
 
@@ -50,7 +52,7 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
     }
 
     private actor APIClientContainer {
-      internal init(apiClient: Ngrok.Client? = nil) {
+      init(apiClient: Ngrok.Client? = nil) {
         self.apiClient = apiClient
       }
 
@@ -62,7 +64,8 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
 
       var apiClient: Ngrok.Client?
     }
-    internal init(
+
+    init(
       cli: Ngrok.CLI,
       apiClient: Ngrok.Client? = nil,
       port: Int? = nil,
@@ -73,7 +76,7 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
       delegate: NgrokServerDelegate? = nil
     ) {
       self.cli = cli
-      self.clientContainer = .init(apiClient: apiClient)
+      clientContainer = .init(apiClient: apiClient)
       self.port = port
       self.logger = logger
       self.ngrokProcess = ngrokProcess
@@ -124,7 +127,7 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
     }
 
     func ngrokProcessTerminated(_: Process) {
-      guard let port = self.port else {
+      guard let port else {
         return
       }
 
@@ -134,14 +137,14 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
     }
 
     var prchClient: Ngrok.Client {
-      guard let client = await self.clientContainer.apiClient else {
+      guard let client = await clientContainer.apiClient else {
         fatalError()
       }
       return client
     }
 
     func setupClient(_ client: HTTPClient) async {
-      await self.clientContainer.setupClient(client)
+      await clientContainer.setupClient(client)
     }
 
     public enum TunnelError: Error {

@@ -19,7 +19,7 @@ import PrchModel
 #endif
 
 public struct Tunnel {
-  internal init(name: String, publicURL: URL, config: NgrokTunnelConfiguration) {
+  init(name: String, publicURL: URL, config: NgrokTunnelConfiguration) {
     self.name = name
     self.publicURL = publicURL
     self.config = config
@@ -56,7 +56,7 @@ extension Tunnel {
 }
 
 public struct TunnelRequest {
-  internal init(addr: String, proto: String, name: String) {
+  init(addr: String, proto: String, name: String) {
     self.addr = addr
     self.proto = proto
     self.name = name

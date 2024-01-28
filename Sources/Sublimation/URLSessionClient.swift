@@ -6,9 +6,9 @@ import Foundation
 
 extension Result {
   init(success: Success?, failure: Failure?) where Failure == Error {
-    if let failure = failure {
+    if let failure {
       self = .failure(failure)
-    } else if let success = success {
+    } else if let success {
       self = .success(success)
     } else {
       self = .failure(EmptyError())

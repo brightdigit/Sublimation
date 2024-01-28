@@ -7,18 +7,18 @@ import Foundation
 public enum KVdb {
   public static let baseString = "https://kvdb.io/"
 
-  public static func path<Key>(forKey key: Key, atBucket bucketName: String) -> String {
+  public static func path(forKey key: some Any, atBucket bucketName: String) -> String {
     "/\(bucketName)/\(key)"
   }
 
-  public static func construct<Key, URLType: KVdbURLConstructable>(
+  public static func construct<URLType: KVdbURLConstructable>(
     _: URLType.Type,
-    forKey key: Key,
+    forKey key: some Any,
     atBucket bucketName: String
   ) -> URLType {
     URLType(
-      kvDBBase: Self.baseString,
-      keyBucketPath: Self.path(forKey: key, atBucket: bucketName)
+      kvDBBase: baseString,
+      keyBucketPath: path(forKey: key, atBucket: bucketName)
     )
   }
 

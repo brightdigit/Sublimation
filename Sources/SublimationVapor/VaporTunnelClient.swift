@@ -7,7 +7,7 @@ import Vapor
 #endif
 
 public struct VaporTunnelClient<Key>: KVdbTunnelClient {
-  internal init(client: Vapor.Client, keyType _: Key.Type) {
+  init(client: Vapor.Client, keyType _: Key.Type) {
     self.client = client
   }
 
@@ -32,7 +32,7 @@ public struct VaporTunnelClient<Key>: KVdbTunnelClient {
         }.get()
     }
 
-    guard let url = url else {
+    guard let url else {
       throw NgrokServerError.invalidURL
     }
     return url
