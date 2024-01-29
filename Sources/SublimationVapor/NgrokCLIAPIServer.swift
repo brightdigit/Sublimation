@@ -137,10 +137,12 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
     }
 
     var prchClient: Ngrok.Client {
-      guard let client = await clientContainer.apiClient else {
-        fatalError()
+      get async {
+        guard let client = await clientContainer.apiClient else {
+          fatalError()
+        }
+        return client
       }
-      return client
     }
 
     func setupClient(_ client: HTTPClient) async {
@@ -185,6 +187,7 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
       }
     }
 
+    // swiftlint:disable:next function_body_length
     func startHttp(port: Int) async throws -> Tunnel {
       self.port = port
       logger.debug("Starting Ngrok Tunnel...")
@@ -199,7 +202,6 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
           self.logger.debug("Error: \(error)")
           return []
         }
-        // try? await self.prchClient.request(ListTunnelsRequest()).tunnels
       }?.flatMap { $0 }
 
       if let firstCallTunnels = result {
@@ -218,7 +220,7 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
           self.ngrokProcess = ngrokProcess
           logger.debug("Created Ngrok Process...")
           return tunnel
-        } catch let Ngrok.CLI.RunError.earlyTermination(_, errorCode)
+        } catch let RuntimeError.earlyTermination(_, errorCode)
           where errorCode == 108 {
           logger.debug("Ngrok Process Already Created.")
         } catch {

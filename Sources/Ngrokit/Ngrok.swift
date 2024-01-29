@@ -82,6 +82,7 @@ public enum Ngrok {
   static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
 
   public struct Client: Sendable {
+    // swiftlint:disable:next force_try
     static let defaultServerURL = try! Servers.server1()
     let underlyingClient: NgrokOpenAPIClient.Client
 
@@ -100,7 +101,11 @@ public enum Ngrok {
     public func startTunnel(_ request: TunnelRequest) async throws -> Tunnel {
       let tunnelRequest: Components.Schemas.TunnelRequest
       tunnelRequest = .init(request: request)
-      let response = try await underlyingClient.startTunnel(.init(body: .json(tunnelRequest))).created.body.json
+      let response = try await underlyingClient.startTunnel(
+        .init(
+          body: .json(tunnelRequest)
+        )
+      ).created.body.json
       let tunnel: Tunnel = try .init(response: response)
       return tunnel
     }
