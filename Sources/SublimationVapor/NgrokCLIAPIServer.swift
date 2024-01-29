@@ -1,6 +1,6 @@
 import Foundation
 import Ngrokit
-
+import OpenAPIRuntime
 import OpenAPIAsyncHTTPClient
 
 // import class Prch.Client
@@ -186,9 +186,26 @@ enum NgrokDefaults {
             port: port,
             timeout: .now() + cliProcessTimeout
           )
-          guard let tunnel = try await prchClient.listTunnels().first else {
+          let maximumTime: TimeInterval = 30.0
+          let startTime = Date()
+          var foundTunnelResult: Result<Tunnel?, any Error>?
+          var lastError: (any Error)?
+          while foundTunnelResult == nil, -startTime.timeIntervalSinceNow < maximumTime {
+            let tunnel: Tunnel?
+            do {
+              tunnel = try await prchClient.listTunnels().first
+            } catch let error as ClientError{
+              print(error)
+              lastError = error
+              continue
+            }
+            if let tunnel {
+              foundTunnelResult = .success(tunnel)
+            }
+          }
+          guard let tunnel = try foundTunnelResult?.get() else {
             ngrokProcess.terminate()
-            throw TunnelError.noTunnelCreated
+            throw lastError ?? TunnelError.noTunnelCreated
           }
           self.ngrokProcess = ngrokProcess
           logger.debug("Created Ngrok Process...")
