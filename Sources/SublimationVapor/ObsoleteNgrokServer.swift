@@ -1,14 +1,14 @@
 import Foundation
 import Vapor
 
-public protocol NgrokServer: AnyObject, Sendable {
+public protocol ObsoleteNgrokServer: AnyObject, Sendable, NgrokServer {
   func startHttpTunnel(port: Int) async
   func setupClient(_ client: HTTPClient) async
   func setupLogger(_ logger: Logger) async
   func setDelegate(_ delegate: any NgrokServerDelegate) async
 }
 
-extension NgrokServer {
+extension ObsoleteNgrokServer {
   func startTunnelFor(
     application: Application,
     withDelegate delegate: any NgrokServerDelegate

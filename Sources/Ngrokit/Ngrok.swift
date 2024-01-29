@@ -7,6 +7,4 @@ import OpenAPIRuntime
 #endif
 
 public enum Ngrok {
-  // swiftlint:disable:next force_try
-  static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
 }

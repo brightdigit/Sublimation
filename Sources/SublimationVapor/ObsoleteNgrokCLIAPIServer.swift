@@ -17,8 +17,15 @@ enum NgrokDefaults {
     URLComponents(string: "http://127.0.0.1:4040")!
 }
 
+
+
 #if os(macOS)
-  final actor NgrokCLIAPIServer: NgrokServer {
+
+final actor ObsoleteNgrokCLIAPIServer: ObsoleteNgrokServer {
+  nonisolated func start() {
+    
+  }
+  
     func setDelegate(_ delegate: any NgrokServerDelegate) async {
       self.delegate = delegate
     }
