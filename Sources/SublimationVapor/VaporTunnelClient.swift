@@ -7,11 +7,11 @@ import Vapor
 #endif
 
 public struct VaporTunnelClient<Key>: KVdbTunnelClient {
-  init(client: Vapor.Client, keyType _: Key.Type) {
+  init(client: any Vapor.Client, keyType _: Key.Type) {
     self.client = client
   }
 
-  let client: Vapor.Client
+  let client: any Vapor.Client
 
   public func getValue(
     ofKey key: Key,
@@ -48,10 +48,10 @@ public struct VaporTunnelClient<Key>: KVdbTunnelClient {
       request.body = .init(string: value.absoluteString)
     }).get()
 
-    if response.statusCode / 100 == 2 {
+    if response.status.code / 100 == 2 {
       return
     }
 
-    throw NgrokServerError.cantSaveTunnel(response.statusCode, response.data)
+    throw NgrokServerError.cantSaveTunnel(response)
   }
 }

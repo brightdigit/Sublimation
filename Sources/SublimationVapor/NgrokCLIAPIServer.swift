@@ -1,13 +1,9 @@
 import Foundation
 import Ngrokit
 
-import Prch
-import PrchModel
-
 import OpenAPIAsyncHTTPClient
 
 // import class Prch.Client
-import PrchVapor
 import Vapor
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -21,33 +17,9 @@ enum NgrokDefaults {
     URLComponents(string: "http://127.0.0.1:4040")!
 }
 
-@available(*, deprecated)
-protocol NgrokServiceProtocol: ServiceProtocol where ServiceAPI == Ngrok.PrchAPI {}
-
-@available(*, deprecated)
-class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
-  where SessionType.ResponseType.DataType == Ngrok.PrchAPI.ResponseDataType,
-  SessionType.RequestDataType == Ngrok.PrchAPI.RequestDataType {
-  init(session: SessionType) {
-    self.session = session
-  }
-
-  let session: SessionType
-
-  var authorizationManager: any SessionAuthenticationManager {
-    NullAuthorizationManager()
-  }
-
-  typealias API = Ngrok.PrchAPI
-
-  var api: Ngrok.PrchAPI {
-    Ngrok.PrchAPI.shared
-  }
-}
-
 #if os(macOS)
   final actor NgrokCLIAPIServer: NgrokServer {
-    func setDelegate(_ delegate: NgrokServerDelegate) async {
+    func setDelegate(_ delegate: any NgrokServerDelegate) async {
       self.delegate = delegate
     }
 
@@ -73,7 +45,7 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
       ngrokProcess: Process? = nil,
       clientSearchTimeoutNanoseconds: UInt64 = NSEC_PER_SEC / 5,
       cliProcessTimeout: DispatchTimeInterval = .seconds(2),
-      delegate: NgrokServerDelegate? = nil
+      delegate: (any NgrokServerDelegate)? = nil
     ) {
       self.cli = cli
       clientContainer = .init(apiClient: apiClient)
@@ -85,13 +57,13 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
       self.delegate = delegate
     }
 
-    public convenience init(
+    public init(
       ngrokPath: String,
       apiClient: Ngrok.Client? = nil,
       port: Int? = nil,
       logger: Logger? = nil,
       ngrokProcess: Process? = nil,
-      delegate: NgrokServerDelegate? = nil
+      delegate: (any NgrokServerDelegate)? = nil
     ) {
       self.init(
         cli: .init(executableURL: .init(fileURLWithPath: ngrokPath)),
@@ -120,7 +92,7 @@ class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
       }
     }
 
-    weak var delegate: NgrokServerDelegate?
+    weak var delegate: (any NgrokServerDelegate)?
 
     func setupLogger(_ logger: Logger) async {
       self.logger = logger

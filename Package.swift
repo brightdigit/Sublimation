@@ -2,9 +2,26 @@
 // swiftlint:disable explicit_acl explicit_top_level_acl
 import PackageDescription
 
+let swiftSettings: [SwiftSetting] = [
+  .enableUpcomingFeature("BareSlashRegexLiterals"),
+  .enableUpcomingFeature("ConciseMagicFile"),
+  .enableUpcomingFeature("ExistentialAny"),
+  .enableUpcomingFeature("ForwardTrailingClosures"),
+  .enableUpcomingFeature("ImplicitOpenExistentials"),
+  .enableUpcomingFeature("StrictConcurrency"),
+  .unsafeFlags(["-warn-concurrency", "-enable-actor-data-race-checks"])
+]
+
 let package = Package(
   name: "Sublimation",
-  platforms: [.macOS(.v14), .iOS(.v17), .watchOS(.v10)],
+  platforms: [
+    .macOS(.v14),
+    .iOS(.v17),
+    .watchOS(.v10),
+    .tvOS(.v17),
+    .visionOS(.v1),
+    .macCatalyst(.v17)
+  ],
   products: [
     .library(name: "Sublimation", targets: ["Sublimation"]),
     .library(name: "SublimationVapor", targets: ["SublimationVapor"]),
@@ -14,14 +31,6 @@ let package = Package(
     .package(
       url: "https://github.com/vapor/vapor.git",
       from: "4.66.0"
-    ),
-    .package(
-      url: "https://github.com/brightdigit/Prch.git",
-      from: "1.0.0-alpha.1"
-    ),
-    .package(
-      url: "https://github.com/brightdigit/PrchVapor.git",
-      from: "1.0.0-alpha.1"
     ),
     .package(
       url: "https://github.com/apple/swift-openapi-generator",
@@ -50,18 +59,21 @@ let package = Package(
     .target(
       name: "Ngrokit",
       dependencies: [
-        "Prch", "NgrokOpenAPIClient",
+        "NgrokOpenAPIClient",
         .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")
-      ]
+      ],
+      swiftSettings: swiftSettings
     ),
     .testTarget(
       name: "NgrokitTests",
       dependencies: [
         "Ngrokit",
         .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession")
-      ]
+      ],
+      swiftSettings: swiftSettings
     ),
-    .target(name: "Sublimation"),
+    .target(name: "Sublimation",
+            swiftSettings: swiftSettings),
     .target(
       name: "SublimationVapor",
       dependencies: [
@@ -69,9 +81,14 @@ let package = Package(
           name: "OpenAPIAsyncHTTPClient",
           package: "swift-openapi-async-http-client"
         ),
-        "Ngrokit", "PrchVapor", "Sublimation",
-        .product(name: "Vapor", package: "vapor")
-      ]
+        "Ngrokit",
+        "Sublimation",
+        .product(
+          name: "Vapor",
+          package: "vapor"
+        )
+      ],
+      swiftSettings: swiftSettings
     )
   ]
 )

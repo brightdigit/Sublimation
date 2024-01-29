@@ -5,7 +5,7 @@ import Foundation
 #endif
 
 extension Result {
-  init(success: Success?, failure: Failure?) where Failure == Error {
+  init(success: Success?, failure: Failure?) where Failure == any Error {
     if let failure {
       self = .failure(failure)
     } else if let success {

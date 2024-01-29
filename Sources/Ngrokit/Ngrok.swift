@@ -1,8 +1,6 @@
 import Foundation
 import NgrokOpenAPIClient
 import OpenAPIRuntime
-import Prch
-import PrchModel
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -86,7 +84,7 @@ public enum Ngrok {
     static let defaultServerURL = try! Servers.server1()
     let underlyingClient: NgrokOpenAPIClient.Client
 
-    public init(serverURL: URL? = nil, transport: ClientTransport) {
+    public init(serverURL: URL? = nil, transport: any ClientTransport) {
       let underlyingClient = NgrokOpenAPIClient.Client(
         serverURL: serverURL ?? Self.defaultServerURL,
         transport: transport
@@ -120,21 +118,6 @@ public enum Ngrok {
         .ok.body.json.tunnels
         .map(Tunnel.init(response:))
     }
-  }
-
-  @available(*, deprecated)
-  public struct PrchAPI: PrchModel.API {
-    public let encoder: any PrchModel.Encoder<Data> = JSONEncoder()
-
-    public let decoder: any PrchModel.Decoder<Data> = JSONDecoder()
-
-    public typealias DataType = Data
-
-    public let baseURLComponents = URLComponents(string: "http://127.0.0.1:4040")!
-
-    public let headers: [String: String] = [:]
-
-    public static let shared: PrchAPI = .init()
   }
 
   #if os(macOS)

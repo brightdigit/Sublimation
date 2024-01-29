@@ -5,13 +5,13 @@ public protocol NgrokServer: AnyObject, Sendable {
   func startHttpTunnel(port: Int) async
   func setupClient(_ client: HTTPClient) async
   func setupLogger(_ logger: Logger) async
-  func setDelegate(_ delegate: NgrokServerDelegate) async
+  func setDelegate(_ delegate: any NgrokServerDelegate) async
 }
 
 extension NgrokServer {
   func startTunnelFor(
     application: Application,
-    withDelegate delegate: NgrokServerDelegate
+    withDelegate delegate: any NgrokServerDelegate
   ) async {
     await setDelegate(delegate)
 

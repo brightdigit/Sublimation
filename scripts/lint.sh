@@ -25,10 +25,10 @@ if [ "$LINT_MODE" == "NONE" ]; then
 	exit
 elif [ "$LINT_MODE" == "STRICT" ]; then
 	SWIFTFORMAT_OPTIONS=""
-	STRINGSLINT_OPTIONS="--config .strict.stringslint.yml"
+	SWIFTLINT_OPTIONS="--strict"
 else 
 	SWIFTFORMAT_OPTIONS=""
-	STRINGSLINT_OPTIONS="--config .stringslint.yml"
+	SWIFTLINT_OPTIONS=""
 fi
 
 pushd $PACKAGE_DIR

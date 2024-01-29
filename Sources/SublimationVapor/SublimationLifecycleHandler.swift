@@ -17,7 +17,7 @@ public final class SublimationLifecycleHandler<
     }
   }
 
-  public func server(_: NgrokServer, updatedTunnel tunnel: Tunnel) {
+  public func server(_: any NgrokServer, updatedTunnel tunnel: Tunnel) {
     Task {
       do {
         try await self.tunnelRepo.saveURL(tunnel.publicURL, withKey: self.key)
@@ -33,12 +33,12 @@ public final class SublimationLifecycleHandler<
     }
   }
 
-  public func server(_: NgrokServer, errorDidOccur _: Error) {}
+  public func server(_: any NgrokServer, errorDidOccur _: any Error) {}
 
-  public func server(_: NgrokServer, failedWithError _: Error) {}
+  public func server(_: any NgrokServer, failedWithError _: any Error) {}
 
   public init(
-    server: NgrokServer,
+    server: any NgrokServer,
     repo: TunnelRepositoryType,
     key: TunnelRepositoryType.Key
   ) {
