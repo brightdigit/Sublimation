@@ -44,7 +44,7 @@ enum NgrokDefaults {
       logger: Logger? = nil,
       ngrokProcess: Process? = nil,
       clientSearchTimeoutNanoseconds: UInt64 = NSEC_PER_SEC / 5,
-      cliProcessTimeout: DispatchTimeInterval = .seconds(2),
+      cliProcessTimeout: DispatchTimeInterval = .seconds(5),
       delegate: (any NgrokServerDelegate)? = nil
     ) {
       self.cli = cli
@@ -77,16 +77,18 @@ enum NgrokDefaults {
 
     let cli: Ngrok.CLI
     let clientSearchTimeoutNanoseconds: UInt64
+    @available(*, deprecated, message: "Use listTunnels timeout")
     let cliProcessTimeout: DispatchTimeInterval
     private let clientContainer: APIClientContainer
-    // var apiClient: Ngrok.Client?
     var port: Int?
     var logger: Logger!
     var ngrokProcess: Process? {
       didSet {
-        Task {
-          if let ngrokProcess = self.ngrokProcess {
-            ngrokProcess.terminationHandler = self.ngrokProcessTerminated(_:)
+        if let ngrokProcess {
+          ngrokProcess.terminationHandler = { process in
+            Task {
+              await self.ngrokProcessTerminated(process)
+            }
           }
         }
       }
@@ -138,9 +140,9 @@ enum NgrokDefaults {
       }
     }
 
-    public func waitForTaskCompletion<R>(
+    public func waitForTaskCompletion<R: Sendable>(
       withTimeoutInNanoseconds timeout: UInt64,
-      _ task: @escaping () async -> R
+      _ task: @escaping @Sendable () async -> R
     ) async -> R? {
       await withTaskGroup(of: R?.self) { group in
         await withUnsafeContinuation { continuation in
@@ -159,7 +161,6 @@ enum NgrokDefaults {
       }
     }
 
-    // swiftlint:disable:next function_body_length
     func startHttp(port: Int) async throws -> Tunnel {
       self.port = port
       logger.debug("Starting Ngrok Tunnel...")
@@ -171,10 +172,10 @@ enum NgrokDefaults {
         do {
           return try await self.prchClient.listTunnels()
         } catch {
-          self.logger.debug("Error: \(error)")
+          await self.logger.debug("Error: \(error)")
           return []
         }
-      }?.flatMap { $0 }
+      }?.compactMap { $0 }
 
       if let firstCallTunnels = result {
         tunnels = firstCallTunnels

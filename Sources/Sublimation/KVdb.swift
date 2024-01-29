@@ -22,7 +22,7 @@ public enum KVdb {
     )
   }
 
-  public static func url<Key>(
+  public static func url<Key: Sendable>(
     withKey key: Key,
     atBucket bucketName: String,
     using session: URLSession = .ephemeral()

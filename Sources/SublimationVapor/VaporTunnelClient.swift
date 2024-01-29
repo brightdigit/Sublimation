@@ -6,7 +6,7 @@ import Vapor
   import FoundationNetworking
 #endif
 
-public struct VaporTunnelClient<Key>: KVdbTunnelClient {
+public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
   init(client: any Vapor.Client, keyType _: Key.Type) {
     self.client = client
   }

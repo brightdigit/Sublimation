@@ -4,7 +4,7 @@ import Foundation
   import FoundationNetworking
 #endif
 
-public struct NgrokTunnelConfiguration: Codable {
+public struct NgrokTunnelConfiguration: Sendable {
   public let addr: URL
   public let inspect: Bool
 }

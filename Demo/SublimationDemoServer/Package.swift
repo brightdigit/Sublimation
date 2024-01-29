@@ -1,10 +1,10 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 5.9
 
 import PackageDescription
 
 let package = Package(
   name: "SublimationDemoServer",
-  platforms: [.macOS(.v12), .iOS(.v14), .watchOS(.v7)],
+  platforms: [.macOS(.v14), .iOS(.v17), .watchOS(.v10)],
   products: [
     .executable(
       name: "SublimationDemoServer",

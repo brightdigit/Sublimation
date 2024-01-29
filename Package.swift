@@ -30,7 +30,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/vapor/vapor.git",
-      from: "4.66.0"
+      from: "4.92.0"
     ),
     .package(
       url: "https://github.com/apple/swift-openapi-generator",
@@ -72,8 +72,10 @@ let package = Package(
       ],
       swiftSettings: swiftSettings
     ),
-    .target(name: "Sublimation",
-            swiftSettings: swiftSettings),
+    .target(
+      name: "Sublimation",
+      swiftSettings: swiftSettings
+    ),
     .target(
       name: "SublimationVapor",
       dependencies: [

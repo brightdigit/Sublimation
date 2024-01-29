@@ -61,7 +61,7 @@ extension URLSession {
   }
 }
 
-public struct URLSessionClient<Key>: KVdbTunnelClient {
+public struct URLSessionClient<Key: Sendable>: KVdbTunnelClient {
   public init(session: URLSession = .ephemeral()) {
     self.session = session
   }
