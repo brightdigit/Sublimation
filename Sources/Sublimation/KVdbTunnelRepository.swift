@@ -5,7 +5,7 @@ import Foundation
 #endif
 
 public actor KVdbTunnelRepository<Key>: WritableTunnelRepository {
-  internal init(client: (any KVdbTunnelClient<Key>)? = nil, bucketName: String) {
+  init(client: (any KVdbTunnelClient<Key>)? = nil, bucketName: String) {
     self.client = client
     self.bucketName = bucketName
   }
@@ -33,14 +33,14 @@ public actor KVdbTunnelRepository<Key>: WritableTunnelRepository {
   }
 
   public func tunnel(forKey key: Key) async throws -> URL? {
-    guard let client = self.client else {
+    guard let client else {
       preconditionFailure()
     }
     return try await client.getValue(ofKey: key, fromBucket: bucketName)
   }
 
   public func saveURL(_ url: URL, withKey key: Key) async throws {
-    guard let client = self.client else {
+    guard let client else {
       preconditionFailure()
     }
     try await client.saveValue(url, withKey: key, inBucket: bucketName)

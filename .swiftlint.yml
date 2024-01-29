@@ -121,5 +121,6 @@ excluded:
   - .swiftpm
   - Demo/SublimationDemoServer/.build
   - Demo/SublimationDemoServer/.swiftpm
+  - Sources/NgrokOpenAPIClient
 indentation_width:
   indentation_width: 2

@@ -19,15 +19,14 @@ import PrchModel
 #endif
 
 public struct Tunnel {
-  internal init(name: String, public_url: URL, config: NgrokTunnelConfiguration) {
+  init(name: String, publicURL: URL, config: NgrokTunnelConfiguration) {
     self.name = name
-    self.public_url = public_url
+    self.publicURL = publicURL
     self.config = config
   }
 
   public let name: String
-  // swiftlint:disable:next identifier_name
-  public let public_url: URL
+  public let publicURL: URL
   public let config: NgrokTunnelConfiguration
 }
 
@@ -39,7 +38,7 @@ public enum RuntimeError: Error {
 
 extension Tunnel {
   init(response: Components.Schemas.TunnelResponse) throws {
-    guard let public_url = URL(string: response.public_url) else {
+    guard let publicURL = URL(string: response.public_url) else {
       throw RuntimeError.invalidURL(response.public_url)
     }
     guard let addr = URL(string: response.config.addr) else {
@@ -47,7 +46,7 @@ extension Tunnel {
     }
     self.init(
       name: response.name,
-      public_url: public_url,
+      publicURL: publicURL,
       config: .init(
         addr: addr,
         inspect: response.config.inspect
@@ -57,7 +56,7 @@ extension Tunnel {
 }
 
 public struct TunnelRequest {
-  internal init(addr: String, proto: String, name: String) {
+  init(addr: String, proto: String, name: String) {
     self.addr = addr
     self.proto = proto
     self.name = name
@@ -83,6 +82,7 @@ public enum Ngrok {
   static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
 
   public struct Client: Sendable {
+    // swiftlint:disable:next force_try
     static let defaultServerURL = try! Servers.server1()
     let underlyingClient: NgrokOpenAPIClient.Client
 
@@ -101,7 +101,11 @@ public enum Ngrok {
     public func startTunnel(_ request: TunnelRequest) async throws -> Tunnel {
       let tunnelRequest: Components.Schemas.TunnelRequest
       tunnelRequest = .init(request: request)
-      let response = try await underlyingClient.startTunnel(.init(body: .json(tunnelRequest))).created.body.json
+      let response = try await underlyingClient.startTunnel(
+        .init(
+          body: .json(tunnelRequest)
+        )
+      ).created.body.json
       let tunnel: Tunnel = try .init(response: response)
       return tunnel
     }
@@ -111,7 +115,10 @@ public enum Ngrok {
     }
 
     public func listTunnels() async throws -> [Tunnel] {
-      try await underlyingClient.listTunnels().ok.body.json.tunnels.map(Tunnel.init(response:))
+      try await underlyingClient
+        .listTunnels()
+        .ok.body.json.tunnels
+        .map(Tunnel.init(response:))
     }
   }
 

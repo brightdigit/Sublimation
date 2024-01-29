@@ -1,4 +1,5 @@
 import Foundation
+
 public enum NgrokServerError: Error {
   case clientNotSetup
   case noTunnelFound
