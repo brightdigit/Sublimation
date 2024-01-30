@@ -2,7 +2,7 @@
 //  NgrokCLIAPIServer.swift
 //  Sublimation
 //
-//  Created by NgrokCLIAPIServer.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -33,6 +33,11 @@ import Ngrokit
 import OpenAPIRuntime
 
 public struct NgrokCLIAPIServer: NgrokServer, Sendable {
+  private enum TunnelAttemptResult {
+    case network(NetworkResult<Tunnel?>)
+    case error(ClientError)
+  }
+
   private struct TunnelResult {
     let isOld: Bool
     let tunnel: Tunnel
@@ -65,6 +70,51 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     delegate.server(self, errorDidOccur: error)
   }
 
+  private func attemptTunnel() async -> TunnelAttemptResult {
+    let networkResult = await NetworkResult {
+      try await client.listTunnels().first
+    }
+    // attempts += 1
+    switch networkResult {
+    case let .connectionRefused(error):
+      return .error(error)
+
+    default:
+
+      return .network(networkResult)
+    }
+  }
+
+  // swiftlint:disable:next function_body_length
+  private func searchForCreatedTunnel(
+    within timeout: TimeInterval
+  ) async throws -> Tunnel? {
+    let start = Date()
+    var networkResult: NetworkResult<Tunnel?>?
+    var lastError: ClientError?
+    var attempts = 0
+    while networkResult == nil, (-start.timeIntervalSinceNow) < timeout {
+      logger.debug("Attempt #\(attempts + 1)")
+      try await Task.sleep(for: .seconds(5), tolerance: .seconds(5))
+      let result = await attemptTunnel()
+      attempts += 1
+      switch result {
+      case let .network(newNetworkResult):
+        networkResult = newNetworkResult
+
+      case let .error(error):
+        lastError = error
+      }
+    }
+
+    if let lastError, networkResult == nil {
+      logger.error("Timeout Occured After \(-start.timeIntervalSinceNow) seconds.")
+      throw lastError
+    }
+
+    return try networkResult?.get()?.flatMap { $0 }
+  }
+
   private func searchForExistingTunnel(
     within timeout: TimeInterval
   ) async throws -> TunnelResult? {
@@ -76,9 +126,10 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
 
     switch result {
     case .connectionRefused:
-      logger.debug("Ngrok not started. Running Process.")
+      logger.notice(
+        "Ngrok not running. Waiting for Process and New Tunnel... (about 30 secs)"
+      )
       try await process.run(onError: cliError(_:))
-      try await Task.sleep(for: .seconds(1), tolerance: .seconds(1))
 
     case let .success(tunnel):
       logger.debug("Process Already Running.")
@@ -88,44 +139,16 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
       throw error
     }
 
-    let start = Date()
-    var networkResult: NetworkResult<Tunnel?>?
-    var lastError: ClientError?
-    var attempts = 0
-    while networkResult == nil, (-start.timeIntervalSinceNow) < timeout {
-      logger.debug("Attempt #\(attempts + 1)")
-      networkResult = await NetworkResult {
-        try await client.listTunnels().first
-      }
-      attempts += 1
-      switch networkResult {
-      case let .connectionRefused(error):
-        lastError = error
-        networkResult = nil
-
-      default:
-        continue
-      }
+    return try await searchForCreatedTunnel(within: timeout).map {
+      .init(isOld: false, tunnel: $0)
     }
-
-    if let lastError, networkResult == nil {
-      logger.debug("Timeout Occured After \(-start.timeIntervalSinceNow) seconds.")
-      throw lastError
-    }
-
-    let tunnel = try networkResult?.get()?.flatMap { $0 }
-
-    logger.debug("Result at \(-start.timeIntervalSinceNow) seconds.")
-
-    return tunnel.map { .init(isOld: false, tunnel: $0) }
   }
 
   private func newTunnel() async throws -> Tunnel {
-    if let tunnel = try await searchForExistingTunnel(within: 30.0) {
+    if let tunnel = try await searchForExistingTunnel(within: 60.0) {
       if tunnel.isOld {
-        logger.debug("Existing Tunnel Found. \(tunnel.tunnel.publicURL)")
         try await client.stopTunnel(withName: tunnel.tunnel.name)
-        logger.debug("Tunnel Stopped.")
+        logger.info("Existing Tunnel Stopped. \(tunnel.tunnel.publicURL)")
       } else {
         return tunnel.tunnel
       }
@@ -140,6 +163,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
   }
 
   public func run() async {
+    let start = Date()
     let newTunnel: Tunnel
     do {
       newTunnel = try await self.newTunnel()
@@ -147,7 +171,8 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
       delegate.server(self, errorDidOccur: error)
       return
     }
-    logger.debug("New Tunnel Created. \(newTunnel.publicURL)")
+    let seconds = Int(-start.timeIntervalSinceNow)
+    logger.notice("New Tunnel Created in \(seconds) secs: \(newTunnel.publicURL)")
 
     delegate.server(self, updatedTunnel: newTunnel)
   }

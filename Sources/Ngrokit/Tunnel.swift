@@ -2,7 +2,7 @@
 //  Tunnel.swift
 //  Sublimation
 //
-//  Created by Tunnel.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -34,10 +34,15 @@ public struct Tunnel: Sendable {
   public let name: String
   public let publicURL: URL
   public let config: NgrokTunnelConfiguration
+  public init(name: String, publicURL: URL, config: NgrokTunnelConfiguration) {
+    self.name = name
+    self.publicURL = publicURL
+    self.config = config
+  }
 }
 
 extension Tunnel {
-  private init(response: Components.Schemas.TunnelResponse) throws {
+  internal init(response: Components.Schemas.TunnelResponse) throws {
     guard let publicURL = URL(string: response.public_url) else {
       throw RuntimeError.invalidURL(response.public_url)
     }

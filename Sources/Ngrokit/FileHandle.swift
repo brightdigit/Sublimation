@@ -2,7 +2,7 @@
 //  FileHandle.swift
 //  Sublimation
 //
-//  Created by FileHandle.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -33,9 +33,9 @@ extension FileHandle {
   // swiftlint:disable:next force_try
   private static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
 
-  internal func parseNgrokErrorCode() throws -> Int? {
+  internal func parseNgrokErrorCode() throws -> Int {
     guard let data = try readToEnd() else {
-      return nil
+      throw RuntimeError.unknownError
     }
 
     guard let text = String(data: data, encoding: .utf8) else {
@@ -46,12 +46,15 @@ extension FileHandle {
       in: text,
       range: .init(location: 0, length: text.count)
     ), match.numberOfRanges > 0 else {
-      return nil
+      throw RuntimeError.unknownEarlyTermination(text)
     }
 
     guard let range = Range(match.range(at: 1), in: text) else {
-      return nil
+      throw RuntimeError.unknownEarlyTermination(text)
     }
-    return Int(text[range])
+    guard let code = Int(text[range]) else {
+      throw RuntimeError.unknownEarlyTermination(text)
+    }
+    return code
   }
 }

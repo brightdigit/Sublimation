@@ -2,7 +2,7 @@
 //  NetworkResult.swift
 //  Sublimation
 //
-//  Created by NetworkResult.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -44,17 +44,23 @@ extension NetworkResult {
       return
     }
 
-    guard let posixError = error.underlyingError as? HTTPClient.NWPOSIXError else {
-      self = .failure(error)
+    if let posixError = error.underlyingError as? HTTPClient.NWPOSIXError {
+      guard posixError.errorCode == .ECONNREFUSED else {
+        self = .failure(error)
+        return
+      }
+      self = .connectionRefused(error)
+      return
+    } else if let clientError = error.underlyingError as? HTTPClientError {
+      guard clientError == .connectTimeout else {
+        self = .failure(error)
+        return
+      }
+      self = .connectionRefused(error)
       return
     }
 
-    guard posixError.errorCode == .ECONNREFUSED else {
-      self = .failure(error)
-      return
-    }
-
-    self = .connectionRefused(error)
+    self = .failure(error)
   }
 
   internal init(_ closure: @escaping () async throws -> T) async {

@@ -1,8 +1,8 @@
 //
-//  Ngrok.CLI.swift
+//  URLSession.swift
 //  Sublimation
 //
-//  Created by Ngrok.CLI.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -28,23 +28,42 @@
 //
 
 import Foundation
-import NgrokOpenAPIClient
-import OpenAPIRuntime
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
-extension Ngrok {
-  #if os(macOS)
-    public struct CLI: Sendable {
-      public init(executableURL: URL) {
-        self.executableURL = executableURL
+extension URLSession {
+  public static func ephemeral() -> URLSession {
+    URLSession(configuration: .ephemeral)
+  }
+
+  internal func dataAsync(for request: URLRequest) async throws -> (Data, URLResponse) {
+    #if !canImport(FoundationNetworking)
+      if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
+        return try await self.data(for: request)
       }
+    #endif
 
-      public let executableURL: URL
-
-      private func processTerminated(_: Process) {}
+    return try await withCheckedThrowingContinuation { continuation in
+      let task = self.dataTask(with: request) { data, response, error in
+        continuation.resume(
+          with: .init(
+            success: data.flatTuple(response),
+            failure: error
+          )
+        )
+      }
+      task.resume()
     }
-  #endif
+  }
+
+  internal func dataAsync(from url: URL) async throws -> (Data, URLResponse) {
+    #if !canImport(FoundationNetworking)
+      if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
+        return try await data(for: .init(url: url))
+      }
+    #endif
+    return try await dataAsync(for: .init(url: url))
+  }
 }

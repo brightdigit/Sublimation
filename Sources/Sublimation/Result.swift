@@ -1,5 +1,5 @@
 //
-//  NgrokServerFactory.swift
+//  Result.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,11 +27,15 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public protocol NgrokServerFactory: Sendable {
-  associatedtype Configuration: NgrokServerConfiguration
-
-  func server(
-    from configuration: Configuration,
-    handler: any NgrokServerDelegate
-  ) -> Configuration.Server
+extension Result {
+  internal struct EmptyError: Error {}
+  internal init(success: Success?, failure: Failure?) where Failure == any Error {
+    if let failure {
+      self = .failure(failure)
+    } else if let success {
+      self = .success(success)
+    } else {
+      self = .failure(EmptyError())
+    }
+  }
 }

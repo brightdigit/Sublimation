@@ -2,7 +2,7 @@
 //  TerminationReason.swift
 //  Sublimation
 //
-//  Created by TerminationReason.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -29,6 +29,7 @@
 
 import Foundation
 
+// swiftlint:disable file_types_order
 #if os(macOS)
   public typealias TerminationReason = Process.TerminationReason
 #else
@@ -38,3 +39,4 @@ import Foundation
     case uncaughtSignal = 2
   }
 #endif
+// swiftlint:enable file_types_order

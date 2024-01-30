@@ -2,7 +2,7 @@
 //  NgrokProcess.swift
 //  Sublimation
 //
-//  Created by NgrokProcess.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -30,7 +30,7 @@
 import Foundation
 
 public actor NgrokProcess {
-  private var terminationHandler: ((any Error) -> Void)?
+  private var terminationHandler: (@Sendable (any Error) -> Void)?
   private let process: Process
   private let pipe: Pipe
 
@@ -45,8 +45,9 @@ public actor NgrokProcess {
   }
 
   private init(
-    terminationHandler: (@Sendable (any Error) -> Void)? = nil,
-    process: Process, pipe: Pipe? = nil
+    process: Process,
+    pipe: Pipe? = nil,
+    terminationHandler: (@Sendable (any Error) -> Void)? = nil
   ) {
     self.terminationHandler = terminationHandler
     self.process = process
@@ -59,7 +60,22 @@ public actor NgrokProcess {
     }
   }
 
-  public func run(onError: @Sendable @escaping (any Error) -> Void) throws {
+  @Sendable private nonisolated func terminationHandler(forProcess process: Process) {
+    Task {
+      let error: RuntimeError
+      let errorCode: Int
+      do {
+        errorCode = try self.pipe.fileHandleForReading.parseNgrokErrorCode()
+        error = .earlyTermination(process.terminationReason, errorCode)
+      } catch let runtimeError as RuntimeError {
+        error = runtimeError
+      }
+      await self.terminationHandler?(error)
+    }
+  }
+
+  public func run(onError: @Sendable @escaping (any Error) -> Void) async throws {
+    process.terminationHandler = terminationHandler(forProcess:)
     terminationHandler = onError
     try process.run()
   }

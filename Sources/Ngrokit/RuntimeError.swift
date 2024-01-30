@@ -2,7 +2,7 @@
 //  RuntimeError.swift
 //  Sublimation
 //
-//  Created by RuntimeError.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -31,6 +31,8 @@ import Foundation
 
 public enum RuntimeError: Error {
   case invalidURL(String)
-  case earlyTermination(TerminationReason, Int?)
+  case earlyTermination(TerminationReason, Int)
   case invalidErrorData(Data)
+  case unknownEarlyTermination(String)
+  case unknownError
 }

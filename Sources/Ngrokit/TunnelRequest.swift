@@ -2,7 +2,7 @@
 //  TunnelRequest.swift
 //  Sublimation
 //
-//  Created by TunnelRequest.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -46,7 +46,7 @@ public struct TunnelRequest: Sendable {
 }
 
 extension Components.Schemas.TunnelRequest {
-  private init(request: TunnelRequest) {
+  internal init(request: TunnelRequest) {
     self.init(addr: request.addr, proto: request.proto, name: request.name)
   }
 }

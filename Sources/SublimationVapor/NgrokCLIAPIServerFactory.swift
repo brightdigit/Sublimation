@@ -2,7 +2,7 @@
 //  NgrokCLIAPIServerFactory.swift
 //  Sublimation
 //
-//  Created by NgrokCLIAPIServerFactory.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person

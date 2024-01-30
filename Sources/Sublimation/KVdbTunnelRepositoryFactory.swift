@@ -2,7 +2,7 @@
 //  KVdbTunnelRepositoryFactory.swift
 //  Sublimation
 //
-//  Created by KVdbTunnelRepositoryFactory.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person

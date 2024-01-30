@@ -2,7 +2,7 @@
 //  URLSessionClient.swift
 //  Sublimation
 //
-//  Created by URLSessionClient.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -32,63 +32,6 @@ import Foundation
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
-
-extension Result {
-  init(success: Success?, failure: Failure?) where Failure == any Error {
-    if let failure {
-      self = .failure(failure)
-    } else if let success {
-      self = .success(success)
-    } else {
-      self = .failure(EmptyError())
-    }
-  }
-
-  struct EmptyError: Error {}
-}
-
-extension Optional {
-  func flatTuple<OtherType>(_ other: OtherType?) -> (Wrapped, OtherType)? {
-    flatMap { wrapped in
-      other.map { (wrapped, $0) }
-    }
-  }
-}
-
-extension URLSession {
-  public static func ephemeral() -> URLSession {
-    URLSession(configuration: .ephemeral)
-  }
-
-  func dataAsync(for request: URLRequest) async throws -> (Data, URLResponse) {
-    #if !canImport(FoundationNetworking)
-      if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
-        return try await self.data(for: request)
-      }
-    #endif
-
-    return try await withCheckedThrowingContinuation { continuation in
-      let task = self.dataTask(with: request) { data, response, error in
-        continuation.resume(
-          with: .init(
-            success: data.flatTuple(response),
-            failure: error
-          )
-        )
-      }
-      task.resume()
-    }
-  }
-
-  func dataAsync(from url: URL) async throws -> (Data, URLResponse) {
-    #if !canImport(FoundationNetworking)
-      if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
-        return try await data(for: .init(url: url))
-      }
-    #endif
-    return try await dataAsync(for: .init(url: url))
-  }
-}
 
 public struct URLSessionClient<Key: Sendable>: KVdbTunnelClient {
   private let session: URLSession

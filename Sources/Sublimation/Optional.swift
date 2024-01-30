@@ -1,5 +1,5 @@
 //
-//  NgrokServerFactory.swift
+//  Optional.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,11 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public protocol NgrokServerFactory: Sendable {
-  associatedtype Configuration: NgrokServerConfiguration
-
-  func server(
-    from configuration: Configuration,
-    handler: any NgrokServerDelegate
-  ) -> Configuration.Server
+extension Optional {
+  internal func flatTuple<OtherType>(_ other: OtherType?) -> (Wrapped, OtherType)? {
+    flatMap { wrapped in
+      other.map { (wrapped, $0) }
+    }
+  }
 }

@@ -2,7 +2,7 @@
 //  Ngrok.swift
 //  Sublimation
 //
-//  Created by Ngrok.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person

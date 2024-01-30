@@ -2,7 +2,7 @@
 //  VaporTunnelClient.swift
 //  Sublimation
 //
-//  Created by VaporTunnelClient.swift
+//  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -48,19 +48,10 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
   ) async throws -> URL {
     let uri = KVdb.construct(URI.self, forKey: key, atBucket: bucketName)
     let url: URL?
-    if #available(macOS 12, *) {
-      url = try await client.get(uri)
-        .body
-        .map(String.init(buffer:))
-        .flatMap(URL.init(string:))
-    } else {
-      url = try await client
-        .get(uri)
-        .map {
-          $0.body.map(String.init(buffer:)).flatMap(URL.init(string:))
-        }
-        .get()
-    }
+    url = try await client.get(uri)
+      .body
+      .map(String.init(buffer:))
+      .flatMap(URL.init(string:))
 
     guard let url else {
       throw NgrokServerError.invalidURL

@@ -1,5 +1,5 @@
 //
-//  NgrokServerFactory.swift
+//  CLI.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,11 +27,24 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public protocol NgrokServerFactory: Sendable {
-  associatedtype Configuration: NgrokServerConfiguration
+import Foundation
+import NgrokOpenAPIClient
+import OpenAPIRuntime
 
-  func server(
-    from configuration: Configuration,
-    handler: any NgrokServerDelegate
-  ) -> Configuration.Server
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
+extension Ngrok {
+  #if os(macOS)
+    public struct CLI: Sendable {
+      public init(executableURL: URL) {
+        self.executableURL = executableURL
+      }
+
+      public let executableURL: URL
+
+      private func processTerminated(_: Process) {}
+    }
+  #endif
 }
