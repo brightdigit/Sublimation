@@ -2,12 +2,6 @@ import Foundation
 import NgrokOpenAPIClient
 
 public struct Tunnel: Sendable {
-  init(name: String, publicURL: URL, config: NgrokTunnelConfiguration) {
-    self.name = name
-    self.publicURL = publicURL
-    self.config = config
-  }
-
   public let name: String
   public let publicURL: URL
   public let config: NgrokTunnelConfiguration

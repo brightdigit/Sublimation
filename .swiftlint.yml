@@ -117,8 +117,7 @@ excluded:
   - DerivedData
   - .build
   - .swiftpm
-  - Demo/SublimationDemoServer/.build
-  - Demo/SublimationDemoServer/.swiftpm
+  - Demo
   - Sources/NgrokOpenAPIClient
 indentation_width:
   indentation_width: 2

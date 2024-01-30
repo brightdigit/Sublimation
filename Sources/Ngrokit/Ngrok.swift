@@ -6,5 +6,4 @@ import OpenAPIRuntime
   import FoundationNetworking
 #endif
 
-public enum Ngrok {
-}
+public enum Ngrok {}

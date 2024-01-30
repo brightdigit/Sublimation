@@ -4,8 +4,8 @@ settings:
 packages:
   Prch:
     path: .
-rojectReferences:
-    YamsProject:
+projectReferences:
+    Demo:
       path: ./Demo/SublimationDemoApp.xcodeproj
 aggregateTargets:
   Lint:

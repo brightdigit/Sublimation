@@ -6,10 +6,7 @@ import OpenAPIRuntime
   import FoundationNetworking
 #endif
 
-
-
 extension FileHandle {
-  
   // swiftlint:disable:next force_try
   static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
   func parseNgrokErrorCode() throws -> Int? {
@@ -46,29 +43,7 @@ extension Ngrok {
 
       private func processTerminated(_: Process) {}
 
-//      static func process() -> Process {
-//        let process = Process()
-//        //let pipe = Pipe()
-//        process.executableURL = executableURL
-//        //process.standardError = pipe
-////        process.arguments = ["http", port.description]
-////        process.terminationHandler = { _ in
-////          let errorCode: Int?
-////          
-////          do {
-////            errorCode = try pipe.fileHandleForReading.parseNgrokErrorCode()
-////          } catch {
-////            
-////            terminationHandler(error)
-////            return
-////          }
-////          terminationHandler(RuntimeError.earlyTermination(process.terminationReason, errorCode))
-////        }
-//        //try process.run()
-//        return process
-//      }
-      
-      public func http(port: Int, terminationHandler: @Sendable @escaping (any Error) -> Void)  throws -> Process {
+      public func http(port: Int, terminationHandler: @Sendable @escaping (any Error) -> Void) throws -> Process {
         let process = Process()
         let pipe = Pipe()
         process.executableURL = executableURL
@@ -76,11 +51,10 @@ extension Ngrok {
         process.arguments = ["http", port.description]
         process.terminationHandler = { _ in
           let errorCode: Int?
-          
+
           do {
             errorCode = try pipe.fileHandleForReading.parseNgrokErrorCode()
           } catch {
-            
             terminationHandler(error)
             return
           }
@@ -96,7 +70,7 @@ extension Ngrok {
 //            return
 //          }
 //          let errorCode: Int?
-//          
+//
 //          do {
 //            errorCode = try pipe.fileHandleForReading.parseNgrokErrorCode()
 //          } catch {
@@ -109,6 +83,7 @@ extension Ngrok {
 //          )
 //        }
       }
+
       public func http(port: Int, timeout: DispatchTime) async throws -> Process {
         let process = Process()
         let pipe = Pipe()
