@@ -19,7 +19,7 @@ public struct KVdbTunnelRepositoryFactory<Key : Sendable> : WritableTunnelReposi
  
   
 }
-public protocol TunnelRepositoryFactory {
+public protocol TunnelRepositoryFactory : Sendable {
   associatedtype TunnelRepositoryType : TunnelRepository
   func setupClient<
     TunnelClientType: KVdbTunnelClient

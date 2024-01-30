@@ -4,7 +4,7 @@ import Foundation
   import FoundationNetworking
 #endif
 
-public class KVdbTunnelRepository<Key: Sendable>: WritableTunnelRepository {
+public final class KVdbTunnelRepository<Key: Sendable>: WritableTunnelRepository {
   init(client: any KVdbTunnelClient<Key>, bucketName: String) {
     self.client = client
     self.bucketName = bucketName

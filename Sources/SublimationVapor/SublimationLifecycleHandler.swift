@@ -46,22 +46,12 @@ public final class SublimationLifecycleHandler<
 
   public func server(_: any NgrokServer, failedWithError _: any Error) {}
 
-//  public init(
-//    factory: NgrokServerFactoryType,
-//    repo: WritableTunnelRepositoryFactoryType.TunnelRepositoryConfigurationType.TunnelRepositoryType,
-//    key: WritableTunnelRepositoryFactoryType.TunnelRepositoryConfigurationType.TunnelRepositoryType.Key
-//  ) {
-//    self.factory = factory
-//    tunnelRepo = repo
-//    self.key = key
-//  }
 
   let factory: NgrokServerFactoryType
   let repoFactory : WritableTunnelRepositoryFactoryType
   let key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
-  
+
   var tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?
-  
   var logger: Logger?
   var server: (any NgrokServer)?
 
@@ -73,37 +63,12 @@ public final class SublimationLifecycleHandler<
                         keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self
                        )
     )
-//           tunnelRepo.setupClient(
-//            VaporTunnelClient(
-//              client: application.client,
-//              keyType: TunnelRepositoryType.Key.self
-//            )
-//          )
     let server = factory.server(
       from: NgrokServerFactoryType.Configuration.init(application: application),
       handler: self
     )
     self.server = server
     server.start()
-//    Task {
-//      do {
-//        try await Task.sleep(for: .seconds(1), tolerance: .seconds(3))
-//      } catch {
-//        application.logger.log(
-//          level: .error,
-//          "Could not sleep \(error.localizedDescription)"
-//        )
-//      }
-//      await self.loggerContainer.setLogger(application.logger)
-//      await server.startTunnelFor(application: application, withDelegate: self)
-//      await tunnelRepo.setupClient(
-//        VaporTunnelClient(
-//          client: application.client,
-//          keyType: TunnelRepositoryType.Key.self
-//        )
-//      )
-//    }
-    // logger = application.logger
   }
 
   public func shutdown(_: Application) {}
@@ -375,7 +340,7 @@ public struct NgrokCLIAPIServerFactory : NgrokServerFactory {
   }
 }
 
-public protocol NgrokServerFactory {
+public protocol NgrokServerFactory : Sendable {
   associatedtype Configuration : NgrokServerConfiguration
   
   func server(from configuration: Configuration,  handler: any NgrokServerDelegate) -> Configuration.Server
