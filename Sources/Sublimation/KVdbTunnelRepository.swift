@@ -4,45 +4,30 @@ import Foundation
   import FoundationNetworking
 #endif
 
-public actor KVdbTunnelRepository<Key: Sendable>: WritableTunnelRepository {
-  init(client: (any KVdbTunnelClient<Key>)? = nil, bucketName: String) {
+public class KVdbTunnelRepository<Key: Sendable>: WritableTunnelRepository {
+  init(client: any KVdbTunnelClient<Key>, bucketName: String) {
     self.client = client
     self.bucketName = bucketName
   }
 
-  public init(bucketName: String) {
-    client = nil
-    self.bucketName = bucketName
-  }
+  
 
-  public init<TunnelClientType: KVdbTunnelClient>(
-    client: TunnelClientType,
-    bucketName: String
-  ) where TunnelClientType.Key == Key {
-    self.client = client
-    self.bucketName = bucketName
-  }
-
-  var client: (any KVdbTunnelClient<Key>)?
+  let client: (any KVdbTunnelClient<Key>)
   let bucketName: String
 
-  public func setupClient<TunnelClientType: KVdbTunnelClient>(
+  public static func setupClient<TunnelClientType: KVdbTunnelClient>(
     _ client: TunnelClientType
-  ) async where TunnelClientType.Key == Key {
-    self.client = client
+  ) where TunnelClientType.Key == Key {
+    
   }
 
   public func tunnel(forKey key: Key) async throws -> URL? {
-    guard let client else {
-      preconditionFailure()
-    }
+
     return try await client.getValue(ofKey: key, fromBucket: bucketName)
   }
 
   public func saveURL(_ url: URL, withKey key: Key) async throws {
-    guard let client else {
-      preconditionFailure()
-    }
+
     try await client.saveValue(url, withKey: key, inBucket: bucketName)
   }
 }

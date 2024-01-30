@@ -4,11 +4,33 @@ import Foundation
   import FoundationNetworking
 #endif
 
-public protocol WritableTunnelRepository: TunnelRepository {
+public struct KVdbTunnelRepositoryFactory<Key : Sendable> : WritableTunnelRepositoryFactory {
+  public init(bucketName: String) {
+    self.bucketName = bucketName
+  }
+  
+  public func setupClient<TunnelClientType>(_ client: TunnelClientType) -> KVdbTunnelRepository<Key> where TunnelClientType : KVdbTunnelClient, TunnelClientType.Key == Key {
+    .init(client: client, bucketName: bucketName)
+  }
+  
+  let bucketName : String
+  public typealias TunnelRepositoryType = KVdbTunnelRepository<Key>
+  
+ 
+  
+}
+public protocol TunnelRepositoryFactory {
+  associatedtype TunnelRepositoryType : TunnelRepository
   func setupClient<
     TunnelClientType: KVdbTunnelClient
   >(
     _ client: TunnelClientType
-  ) async where TunnelClientType.Key == Self.Key
+  ) -> TunnelRepositoryType where TunnelClientType.Key == TunnelRepositoryType.Key
+}
+
+public protocol WritableTunnelRepositoryFactory : TunnelRepositoryFactory where TunnelRepositoryType : WritableTunnelRepository {
+  
+}
+public protocol WritableTunnelRepository: TunnelRepository {
   func saveURL(_ url: URL, withKey key: Key) async throws
 }

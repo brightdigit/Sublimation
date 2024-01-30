@@ -11,28 +11,32 @@ import AsyncHTTPClient
 
 
 public final class SublimationLifecycleHandler<
-  TunnelRepositoryType: WritableTunnelRepository,
+  WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   NgrokServerFactoryType : NgrokServerFactory
 >: LifecycleHandler, NgrokServerDelegate where NgrokServerFactoryType.Configuration : NgrokVaporConfiguration {
-  private actor LoggerContainer {
-    var logger: Logger?
-
-    func setLogger(_ logger: Logger) {
-      self.logger = logger
-    }
+  internal init(factory: NgrokServerFactoryType, repoFactory: WritableTunnelRepositoryFactoryType, key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key, tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType? = nil, logger: Logger? = nil, server: (any NgrokServer)? = nil) {
+    self.factory = factory
+    self.repoFactory = repoFactory
+    self.key = key
+    self.tunnelRepo = tunnelRepo
+    self.logger = logger
+    self.server = server
   }
+  
+  
+  
 
   public func server(_: any NgrokServer, updatedTunnel tunnel: Tunnel) {
     Task {
       do {
-        try await self.tunnelRepo.saveURL(tunnel.publicURL, withKey: self.key)
+        try await self.tunnelRepo?.saveURL(tunnel.publicURL, withKey: self.key)
       } catch {
-        await self.getLogger()?.error(
+         self.logger?.error(
           "Unable to save url to repository: \(error.localizedDescription)"
         )
         return
       }
-      await self.getLogger()?.notice(
+       self.logger?.notice(
         "Saved url \(tunnel.publicURL) to repository with key \(self.key)"
       )
     }
@@ -42,28 +46,39 @@ public final class SublimationLifecycleHandler<
 
   public func server(_: any NgrokServer, failedWithError _: any Error) {}
 
-  public init(
-    factory: NgrokServerFactoryType,
-    repo: TunnelRepositoryType,
-    key: TunnelRepositoryType.Key
-  ) {
-    self.factory = factory
-    tunnelRepo = repo
-    self.key = key
-  }
+//  public init(
+//    factory: NgrokServerFactoryType,
+//    repo: WritableTunnelRepositoryFactoryType.TunnelRepositoryConfigurationType.TunnelRepositoryType,
+//    key: WritableTunnelRepositoryFactoryType.TunnelRepositoryConfigurationType.TunnelRepositoryType.Key
+//  ) {
+//    self.factory = factory
+//    tunnelRepo = repo
+//    self.key = key
+//  }
 
-  var server: (any NgrokServer)?
   let factory: NgrokServerFactoryType
-  let tunnelRepo: TunnelRepositoryType
-  let key: TunnelRepositoryType.Key
-  private func getLogger() async -> Logger? {
-    await loggerContainer.logger
-  }
+  let repoFactory : WritableTunnelRepositoryFactoryType
+  let key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
+  
+  var tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?
+  
+  var logger: Logger?
+  var server: (any NgrokServer)?
 
-  private let loggerContainer = LoggerContainer()
 
   public func willBoot(_ application: Application) throws {
-    
+    self.logger = application.logger
+    self.tunnelRepo = self.repoFactory.setupClient(
+      VaporTunnelClient(client: application.client,
+                        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self
+                       )
+    )
+//           tunnelRepo.setupClient(
+//            VaporTunnelClient(
+//              client: application.client,
+//              keyType: TunnelRepositoryType.Key.self
+//            )
+//          )
     let server = factory.server(
       from: NgrokServerFactoryType.Configuration.init(application: application),
       handler: self
@@ -220,7 +235,12 @@ public struct NgrokCLIAPIServer : NgrokServer, Sendable {
     cliError(RuntimeError.earlyTermination(process.terminationReason, errorCode))
   }
   
-  func searchForExistingTunnel (within timeout: TimeInterval) async throws -> Tunnel? {
+  struct TunnelResult {
+    let isOld : Bool
+    let tunnel : Tunnel
+  }
+  
+  func searchForExistingTunnel (within timeout: TimeInterval) async throws -> TunnelResult? {
     logger.debug("Starting Search for Existing Tunnel")
     let result = await NetworkResult {
       try await self.client.listTunnels().first
@@ -233,7 +253,7 @@ public struct NgrokCLIAPIServer : NgrokServer, Sendable {
       try await Task.sleep(for: .seconds(1), tolerance: .seconds(1))
     case .success(let tunnel):
       logger.debug("Process Already Running.")
-      return tunnel
+      return tunnel.map{.init(isOld: true, tunnel: $0)}
     case .failure(let error):
       throw error
     }
@@ -267,28 +287,35 @@ public struct NgrokCLIAPIServer : NgrokServer, Sendable {
       
     }
     
-      return try networkResult?.get()?.flatMap({$0})
+    return try networkResult?.get()?.flatMap({$0}).map{.init(isOld: false, tunnel: $0)}
     
   }
   
+  public func newTunnel () async throws -> Tunnel {
+    if let tunnel = try await self.searchForExistingTunnel(within: 30.0) {
+      if tunnel.isOld {
+        logger.debug("Existing Tunnel Found. \(tunnel.tunnel.publicURL)")
+        try await self.client.stopTunnel(withName: tunnel.tunnel.name)
+        logger.debug("Tunnel Stopped.")
+      } else {
+        return tunnel.tunnel
+      }
+    }
+    
+    return try await self.client.startTunnel(
+      .init(
+        port: port,
+        name: "vapor-development"
+      )
+    )
+  }
   public func run () async {
     
     
     
     let newTunnel : Tunnel
     do {
-      if let oldTunnel = try await self.searchForExistingTunnel(within: 30.0) {
-        logger.debug("Existing Tunnel Found. \(oldTunnel.publicURL)")
-        try await self.client.stopTunnel(withName: oldTunnel.name)
-        logger.debug("Tunnel Stopped.")
-      }
-      
-      newTunnel = try await self.client.startTunnel(
-        .init(
-          port: port,
-          name: "vapor-development"
-        )
-      )
+      newTunnel = try await self.newTunnel()
     } catch {
       self.delegate.server(self, failedWithError: error)
       return
@@ -296,16 +323,6 @@ public struct NgrokCLIAPIServer : NgrokServer, Sendable {
     logger.debug("New Tunnel Created. \(newTunnel.publicURL)")
     
     self.delegate.server(self, updatedTunnel: newTunnel)
-    
-    // periodically check for tunnel
-      // if succeed let vapor know
-      // if fails non-refused let vapor know
-    
-      
-    // if there's a tunnel
-      // delete existing
-    
-    // start new one
     
   }
   public func start() {
@@ -369,12 +386,18 @@ public protocol NgrokServerFactory {
       ngrokPath: String,
       bucketName: String,
       key: Key
-    ) where TunnelRepositoryType == KVdbTunnelRepository<Key>, NgrokServerFactoryType == NgrokCLIAPIServerFactory {
+    ) where WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key>, 
+    NgrokServerFactoryType == NgrokCLIAPIServerFactory,
+    WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key == Key  {
       self.init(
         factory: NgrokCLIAPIServerFactory(ngrokPath: ngrokPath),
-        repo: .init(bucketName: bucketName),
+        repoFactory: KVdbTunnelRepositoryFactory(bucketName: bucketName),
         key: key
       )
+//      self.init(
+//        factory: NgrokCLIAPIServerFactory(ngrokPath: ngrokPath),
+//        repoFactory: KVdbTunnelRepositoryFactory(bucketName: bucketName),
+//        key: key)
     }
   }
 #endif
