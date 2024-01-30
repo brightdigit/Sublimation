@@ -17,9 +17,6 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     self.process = process
     self.port = port
     self.logger = logger
-
-    //self.process.terminationHandler = self.cliError(_:)
-    //self.process.standardError = pipe
   }
 
   let delegate: any NgrokServerDelegate
@@ -34,26 +31,14 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     delegate.server(self, errorDidOccur: error)
   }
 
-//  @Sendable
-//  func terminationHandler(_ error: Error) {
-//    logger.warning("Ngrok Terminated.")
-//    let errorCode: Int?
-//
-//    do {
-//      errorCode = try pipe.fileHandleForReading.parseNgrokErrorCode()
-//    } catch {
-//      cliError(error)
-//      return
-//    }
-//    cliError(RuntimeError.earlyTermination(process.terminationReason, errorCode))
-//  }
-
   struct TunnelResult {
     let isOld: Bool
     let tunnel: Tunnel
   }
 
-  func searchForExistingTunnel(within timeout: TimeInterval) async throws -> TunnelResult? {
+  func searchForExistingTunnel(
+    within timeout: TimeInterval
+  ) async throws -> TunnelResult? {
     logger.debug("Starting Search for Existing Tunnel")
 
     let result = await NetworkResult {
@@ -63,7 +48,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     switch result {
     case .connectionRefused:
       logger.debug("Ngrok not started. Running Process.")
-      try await process.run(onError: self.cliError(_:))
+      try await process.run(onError: cliError(_:))
       try await Task.sleep(for: .seconds(1), tolerance: .seconds(1))
     case let .success(tunnel):
       logger.debug("Process Already Running.")
@@ -72,7 +57,6 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
       throw error
     }
 
-    // start cli command
     let start = Date()
     var networkResult: NetworkResult<Tunnel?>?
     var lastError: ClientError?

@@ -12,8 +12,16 @@ import Vapor
 public actor SublimationLifecycleHandler<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   NgrokServerFactoryType: NgrokServerFactory
->: LifecycleHandler, NgrokServerDelegate where NgrokServerFactoryType.Configuration: NgrokVaporConfiguration {
-  init(factory: NgrokServerFactoryType, repoFactory: WritableTunnelRepositoryFactoryType, key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key, tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType? = nil, logger: Logger? = nil, server: (any NgrokServer)? = nil) {
+>: LifecycleHandler, NgrokServerDelegate
+  where NgrokServerFactoryType.Configuration: NgrokVaporConfiguration {
+  init(
+    factory: NgrokServerFactoryType,
+    repoFactory: WritableTunnelRepositoryFactoryType,
+    key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
+    tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType? = nil,
+    logger: Logger? = nil,
+    server: (any NgrokServer)? = nil
+  ) {
     self.factory = factory
     self.repoFactory = repoFactory
     self.key = key
@@ -65,8 +73,11 @@ public actor SublimationLifecycleHandler<
     )
     logger = application.logger
     tunnelRepo = repoFactory.setupClient(
-      VaporTunnelClient(client: application.client,
-                        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self)
+      VaporTunnelClient(
+        client: application.client,
+
+        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self
+      )
     )
     self.server = server
     server.start()

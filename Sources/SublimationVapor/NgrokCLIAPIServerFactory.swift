@@ -1,23 +1,33 @@
 import Foundation
 import Ngrokit
+import NIOCore
 import OpenAPIAsyncHTTPClient
 
 public struct NgrokCLIAPIServerFactory: NgrokServerFactory {
-  //let ngrokPath: String
-  let cliAPI : NgrokCLIAPI
+  let cliAPI: NgrokCLIAPI
+  let timeout: TimeAmount
 
   public typealias Configuration = NgrokCLIAPIConfiguration
-  
-  init(cliAPI: NgrokCLIAPI) {
+
+  init(
+    cliAPI: NgrokCLIAPI = .init(ngrokPath: "/opt/homebrew/bin/ngrok"),
+    timeout: TimeAmount = .seconds(1)
+  ) {
     self.cliAPI = cliAPI
-  }
-  
-  init(ngrokPath: String) {
-    self.init(cliAPI: .init(ngrokPath: ngrokPath) )
+    self.timeout = timeout
   }
 
-  public func server(from configuration: Configuration, handler: any NgrokServerDelegate) -> NgrokCLIAPIServer {
-    let client = Ngrok.Client(transport: AsyncHTTPClientTransport(configuration: .init(timeout: .seconds(1))))
+  init(ngrokPath: String) {
+    self.init(cliAPI: .init(ngrokPath: ngrokPath))
+  }
+
+  public func server(
+    from configuration: Configuration,
+    handler: any NgrokServerDelegate
+  ) -> NgrokCLIAPIServer {
+    let client = Ngrok.Client(
+      transport: AsyncHTTPClientTransport(configuration: .init(timeout: timeout))
+    )
 
     let process = cliAPI.process(forHTTPPort: configuration.port)
     return .init(

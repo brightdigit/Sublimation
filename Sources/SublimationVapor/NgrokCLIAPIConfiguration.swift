@@ -3,8 +3,8 @@ import Vapor
 
 public struct NgrokCLIAPIConfiguration: NgrokServerConfiguration {
   public typealias Server = NgrokCLIAPIServer
-  let port: Int
-  let logger: Logger
+  public let port: Int
+  public let logger: Logger
 }
 
 extension NgrokCLIAPIConfiguration: NgrokVaporConfiguration {

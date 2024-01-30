@@ -16,7 +16,6 @@ extension Ngrok {
       let executableURL: URL
 
       private func processTerminated(_: Process) {}
-
     }
   #endif
 }
