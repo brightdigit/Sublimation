@@ -7,7 +7,7 @@ public struct NgrokCLIAPIConfiguration: NgrokServerConfiguration {
   let logger: Logger
 }
 
-extension NgrokCLIAPIConfiguration : NgrokVaporConfiguration {
+extension NgrokCLIAPIConfiguration: NgrokVaporConfiguration {
   public init(application: Application) {
     self.init(
       port: application.http.server.configuration.port,

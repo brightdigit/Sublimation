@@ -1,5 +1,5 @@
-import Foundation
 import AsyncHTTPClient
+import Foundation
 import OpenAPIRuntime
 
 enum NetworkResult<T> {

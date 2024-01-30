@@ -1,14 +1,13 @@
+import Foundation
 import Logging
 import Ngrokit
-import Foundation
 import OpenAPIRuntime
-
 
 public struct NgrokCLIAPIServer: NgrokServer, Sendable {
   init(
     delegate: any NgrokServerDelegate,
     client: Ngrok.Client,
-    process: Process,
+    process: NgrokProcess,
     port: Int,
     logger: Logger
   ) {
@@ -19,34 +18,35 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     self.port = port
     self.logger = logger
 
-    self.process.terminationHandler = terminationHandler(_:)
-    self.process.standardError = pipe
+    //self.process.terminationHandler = self.cliError(_:)
+    //self.process.standardError = pipe
   }
 
   let delegate: any NgrokServerDelegate
   let client: Ngrok.Client
-  let process: Process
+  let process: NgrokProcess
   let port: Int
   let pipe: Pipe
   let logger: Logger
 
+  @Sendable
   func cliError(_ error: any Error) {
     delegate.server(self, errorDidOccur: error)
   }
 
-  @Sendable
-  func terminationHandler(_ process: Process) {
-    logger.warning("Ngrok Terminated.")
-    let errorCode: Int?
-
-    do {
-      errorCode = try pipe.fileHandleForReading.parseNgrokErrorCode()
-    } catch {
-      cliError(error)
-      return
-    }
-    cliError(RuntimeError.earlyTermination(process.terminationReason, errorCode))
-  }
+//  @Sendable
+//  func terminationHandler(_ error: Error) {
+//    logger.warning("Ngrok Terminated.")
+//    let errorCode: Int?
+//
+//    do {
+//      errorCode = try pipe.fileHandleForReading.parseNgrokErrorCode()
+//    } catch {
+//      cliError(error)
+//      return
+//    }
+//    cliError(RuntimeError.earlyTermination(process.terminationReason, errorCode))
+//  }
 
   struct TunnelResult {
     let isOld: Bool
@@ -63,7 +63,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     switch result {
     case .connectionRefused:
       logger.debug("Ngrok not started. Running Process.")
-      try process.run()
+      try await process.run(onError: self.cliError(_:))
       try await Task.sleep(for: .seconds(1), tolerance: .seconds(1))
     case let .success(tunnel):
       logger.debug("Process Already Running.")
@@ -128,7 +128,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     do {
       newTunnel = try await self.newTunnel()
     } catch {
-      delegate.server(self, failedWithError: error)
+      delegate.server(self, errorDidOccur: error)
       return
     }
     logger.debug("New Tunnel Created. \(newTunnel.publicURL)")

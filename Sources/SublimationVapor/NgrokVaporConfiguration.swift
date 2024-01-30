@@ -1,5 +1,5 @@
 import Vapor
 
-public protocol NgrokVaporConfiguration : NgrokServerConfiguration {
-  init (application: Application)
+public protocol NgrokVaporConfiguration: NgrokServerConfiguration {
+  init(application: Application)
 }

@@ -9,7 +9,7 @@ import Vapor
   import FoundationNetworking
 #endif
 
-public final class SublimationLifecycleHandler<
+public actor SublimationLifecycleHandler<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   NgrokServerFactoryType: NgrokServerFactory
 >: LifecycleHandler, NgrokServerDelegate where NgrokServerFactoryType.Configuration: NgrokVaporConfiguration {
@@ -22,28 +22,32 @@ public final class SublimationLifecycleHandler<
     self.server = server
   }
 
-  public func server(_: any NgrokServer, updatedTunnel tunnel: Tunnel) {
-    Task {
-      do {
-        try await self.tunnelRepo?.saveURL(tunnel.publicURL, withKey: self.key)
-      } catch {
-        self.logger?.error(
-          "Unable to save url to repository: \(error.localizedDescription)"
-        )
-        return
-      }
-      self.logger?.notice(
-        "Saved url \(tunnel.publicURL) to repository with key \(self.key)"
+  private func saveTunnel(_ tunnel: Tunnel) async {
+    do {
+      try await tunnelRepo?.saveURL(tunnel.publicURL, withKey: key)
+    } catch {
+      logger?.error(
+        "Unable to save url to repository: \(error.localizedDescription)"
       )
+      return
+    }
+    logger?.notice(
+      "Saved url \(tunnel.publicURL) to repository with key \(key)"
+    )
+  }
+
+  private func onError(_: any Error) async {}
+
+  public nonisolated func server(_: any NgrokServer, updatedTunnel tunnel: Tunnel) {
+    Task {
+      await self.saveTunnel(tunnel)
     }
   }
 
-  public func server(_: any NgrokServer, errorDidOccur _: any Error) {
-    #warning("How to handle this")
-  }
-
-  public func server(_: any NgrokServer, failedWithError _: any Error) {
-    #warning("How to handle this")
+  public nonisolated func server(_: any NgrokServer, errorDidOccur error: any Error) {
+    Task {
+      await self.onError(error)
+    }
   }
 
   let factory: NgrokServerFactoryType
@@ -54,26 +58,32 @@ public final class SublimationLifecycleHandler<
   var logger: Logger?
   var server: (any NgrokServer)?
 
-  public func willBoot(_ application: Application) throws {
+  private func beginFromApplication(_ application: Application) async {
+    let server = factory.server(
+      from: NgrokServerFactoryType.Configuration(application: application),
+      handler: self
+    )
     logger = application.logger
     tunnelRepo = repoFactory.setupClient(
       VaporTunnelClient(client: application.client,
                         keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self)
     )
-    let server = factory.server(
-      from: NgrokServerFactoryType.Configuration(application: application),
-      handler: self
-    )
     self.server = server
     server.start()
   }
 
-  public func shutdown(_: Application) {}
+  public nonisolated func willBoot(_ application: Application) throws {
+    Task {
+      await self.beginFromApplication(application)
+    }
+  }
+
+  public nonisolated func shutdown(_: Application) {}
 }
 
 #if os(macOS)
   extension SublimationLifecycleHandler {
-    public convenience init<Key>(
+    public init<Key>(
       ngrokPath: String,
       bucketName: String,
       key: Key
