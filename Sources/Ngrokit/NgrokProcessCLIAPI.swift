@@ -1,5 +1,5 @@
 //
-//  Tunnel.swift
+//  NgrokProcessCLIAPI.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,34 +28,20 @@
 //
 
 import Foundation
-import NgrokOpenAPIClient
 
-public struct Tunnel: Sendable {
-  public let name: String
-  public let publicURL: URL
-  public let config: NgrokTunnelConfiguration
-  public init(name: String, publicURL: URL, config: NgrokTunnelConfiguration) {
-    self.name = name
-    self.publicURL = publicURL
-    self.config = config
+public struct NgrokProcessCLIAPI {
+  public let ngrokPath: String
+
+  public init(ngrokPath: String) {
+    self.ngrokPath = ngrokPath
   }
 }
 
-extension Tunnel {
-  internal init(response: Components.Schemas.TunnelResponse) throws {
-    guard let publicURL = URL(string: response.public_url) else {
-      throw RuntimeError.invalidURL(response.public_url)
+#if os(macOS)
+  extension NgrokProcessCLIAPI: NgrokCLIAPI {
+    public func process(forHTTPPort httpPort: Int) -> any NgrokProcess {
+      NgrokMacProcess(ngrokPath: ngrokPath, httpPort: httpPort)
     }
-    guard let addr = URL(string: response.config.addr) else {
-      throw RuntimeError.invalidURL(response.config.addr)
-    }
-    self.init(
-      name: response.name,
-      publicURL: publicURL,
-      config: .init(
-        addr: addr,
-        inspect: response.config.inspect
-      )
-    )
   }
-}
+
+#endif

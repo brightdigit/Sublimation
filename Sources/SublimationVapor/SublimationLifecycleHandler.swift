@@ -1,4 +1,36 @@
+//
+//  SublimationLifecycleHandler.swift
+//  Sublimation
+//
+//  Created by Leo Dion.
+//  Copyright © 2024 BrightDigit.
+//
+//  Permission is hereby granted, free of charge, to any person
+//  obtaining a copy of this software and associated documentation
+//  files (the “Software”), to deal in the Software without
+//  restriction, including without limitation the rights to use,
+//  copy, modify, merge, publish, distribute, sublicense, and/or
+//  sell copies of the Software, and to permit persons to whom the
+//  Software is furnished to do so, subject to the following
+//  conditions:
+//
+//  The above copyright notice and this permission notice shall be
+//  included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+//  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+//  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+//  OTHER DEALINGS IN THE SOFTWARE.
+//
+
+import AsyncHTTPClient
 import Ngrokit
+import OpenAPIAsyncHTTPClient
+import OpenAPIRuntime
 import Sublimation
 import Vapor
 
@@ -6,91 +38,118 @@ import Vapor
   import FoundationNetworking
 #endif
 
-public final class SublimationLifecycleHandler<
-  TunnelRepositoryType: WritableTunnelRepository
->: LifecycleHandler, NgrokServerDelegate {
-  private actor LoggerContainer {
-    var logger: Logger?
+public actor SublimationLifecycleHandler<
+  WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
+  NgrokServerFactoryType: NgrokServerFactory
+>: LifecycleHandler, NgrokServerDelegate
+  where NgrokServerFactoryType.Configuration: NgrokVaporConfiguration {
+  private let factory: NgrokServerFactoryType
+  private let repoFactory: WritableTunnelRepositoryFactoryType
+  private let key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
 
-    func setLogger(_ logger: Logger) {
-      self.logger = logger
-    }
-  }
-
-  public func server(_: any NgrokServer, updatedTunnel tunnel: Tunnel) {
-    Task {
-      do {
-        try await self.tunnelRepo.saveURL(tunnel.publicURL, withKey: self.key)
-      } catch {
-        await self.getLogger()?.error(
-          "Unable to save url to repository: \(error.localizedDescription)"
-        )
-        return
-      }
-      await self.getLogger()?.notice(
-        "Saved url \(tunnel.publicURL) to repository with key \(self.key)"
-      )
-    }
-  }
-
-  public func server(_: any NgrokServer, errorDidOccur _: any Error) {}
-
-  public func server(_: any NgrokServer, failedWithError _: any Error) {}
+  private var tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?
+  private var logger: Logger?
+  private var server: (any NgrokServer)?
 
   public init(
-    server: any NgrokServer,
-    repo: TunnelRepositoryType,
-    key: TunnelRepositoryType.Key
+    factory: NgrokServerFactoryType,
+    repoFactory: WritableTunnelRepositoryFactoryType,
+    key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
   ) {
-    self.server = server
-    tunnelRepo = repo
+    self.init(
+      factory: factory,
+      repoFactory: repoFactory,
+      key: key,
+      tunnelRepo: nil,
+      logger: nil,
+      server: nil
+    )
+  }
+
+  private init(
+    factory: NgrokServerFactoryType,
+    repoFactory: WritableTunnelRepositoryFactoryType,
+    key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
+    tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?,
+    logger: Logger?,
+    server: (any NgrokServer)?
+  ) {
+    self.factory = factory
+    self.repoFactory = repoFactory
     self.key = key
+    self.tunnelRepo = tunnelRepo
+    self.logger = logger
+    self.server = server
   }
 
-  let server: any NgrokServer
-  let tunnelRepo: TunnelRepositoryType
-  let key: TunnelRepositoryType.Key
-  private func getLogger() async -> Logger? {
-    await loggerContainer.logger
-  }
-
-  private let loggerContainer = LoggerContainer()
-
-  public func didBoot(_ application: Application) throws {
-    Task {
-      do {
-        try await Task.sleep(for: .seconds(1), tolerance: .seconds(3))
-      } catch {
-        application.logger.log(
-          level: .error,
-          "Could not sleep \(error.localizedDescription)"
-        )
-      }
-      await self.loggerContainer.setLogger(application.logger)
-      await server.startTunnelFor(application: application, withDelegate: self)
-      await tunnelRepo.setupClient(
-        VaporTunnelClient(
-          client: application.client,
-          keyType: TunnelRepositoryType.Key.self
-        )
+  private func saveTunnel(_ tunnel: Tunnel) async {
+    do {
+      try await tunnelRepo?.saveURL(tunnel.publicURL, withKey: key)
+    } catch {
+      logger?.error(
+        "Unable to save url to repository: \(error.localizedDescription)"
       )
+      return
     }
-    // logger = application.logger
+    logger?.notice(
+      "Saved url \(tunnel.publicURL) to repository with key \(key)"
+    )
   }
 
-  public func shutdown(_: Application) {}
+  private func onError(_ error: any Error) async {
+    logger?.error("Error running tunnel: \(error.localizedDescription)")
+  }
+
+  public nonisolated func server(_: any NgrokServer, updatedTunnel tunnel: Tunnel) {
+    Task {
+      await self.saveTunnel(tunnel)
+    }
+  }
+
+  public nonisolated func server(_: any NgrokServer, errorDidOccur error: any Error) {
+    Task {
+      await self.onError(error)
+    }
+  }
+
+  private func beginFromApplication(_ application: Application) async {
+    let server = factory.server(
+      from: NgrokServerFactoryType.Configuration(application: application),
+      handler: self
+    )
+    logger = application.logger
+    tunnelRepo = repoFactory.setupClient(
+      VaporTunnelClient(
+        client: application.client,
+
+        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self
+      )
+    )
+    self.server = server
+    server.start()
+  }
+
+  public nonisolated func willBoot(_ application: Application) throws {
+    Task {
+      await self.beginFromApplication(application)
+    }
+  }
+
+  public nonisolated func shutdown(_: Application) {}
 }
 
 #if os(macOS)
   extension SublimationLifecycleHandler {
-    public convenience init<Key>(
+    public init<Key>(
       ngrokPath: String,
       bucketName: String,
       key: Key
-    ) where TunnelRepositoryType == KVdbTunnelRepository<Key> {
+    ) where WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key>,
+      NgrokServerFactoryType == NgrokCLIAPIServerFactory,
+      WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key == Key {
       self.init(
-        server: NgrokCLIAPIServer(ngrokPath: ngrokPath),
-        repo: .init(bucketName: bucketName),
+        factory: NgrokCLIAPIServerFactory(ngrokPath: ngrokPath),
+        repoFactory: KVdbTunnelRepositoryFactory(bucketName: bucketName),
         key: key
       )
     }

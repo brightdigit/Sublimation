@@ -1,5 +1,5 @@
 //
-//  Tunnel.swift
+//  Optional.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,35 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import NgrokOpenAPIClient
-
-public struct Tunnel: Sendable {
-  public let name: String
-  public let publicURL: URL
-  public let config: NgrokTunnelConfiguration
-  public init(name: String, publicURL: URL, config: NgrokTunnelConfiguration) {
-    self.name = name
-    self.publicURL = publicURL
-    self.config = config
-  }
-}
-
-extension Tunnel {
-  internal init(response: Components.Schemas.TunnelResponse) throws {
-    guard let publicURL = URL(string: response.public_url) else {
-      throw RuntimeError.invalidURL(response.public_url)
+extension Optional {
+  internal func flatTuple<OtherType>(_ other: OtherType?) -> (Wrapped, OtherType)? {
+    flatMap { wrapped in
+      other.map { (wrapped, $0) }
     }
-    guard let addr = URL(string: response.config.addr) else {
-      throw RuntimeError.invalidURL(response.config.addr)
-    }
-    self.init(
-      name: response.name,
-      publicURL: publicURL,
-      config: .init(
-        addr: addr,
-        inspect: response.config.inspect
-      )
-    )
   }
 }

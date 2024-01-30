@@ -1,5 +1,5 @@
 //
-//  Tunnel.swift
+//  NgrokCLIAPIServerFactory.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,34 +28,45 @@
 //
 
 import Foundation
-import NgrokOpenAPIClient
+import Ngrokit
+import NIOCore
+import OpenAPIAsyncHTTPClient
 
-public struct Tunnel: Sendable {
-  public let name: String
-  public let publicURL: URL
-  public let config: NgrokTunnelConfiguration
-  public init(name: String, publicURL: URL, config: NgrokTunnelConfiguration) {
-    self.name = name
-    self.publicURL = publicURL
-    self.config = config
+public struct NgrokCLIAPIServerFactory: NgrokServerFactory {
+  public typealias Configuration = NgrokCLIAPIConfiguration
+
+  private let cliAPI: any NgrokCLIAPI
+  private let timeout: TimeAmount
+
+  public init(
+    cliAPI: any NgrokCLIAPI,
+    timeout: TimeAmount = .seconds(1)
+  ) {
+    self.cliAPI = cliAPI
+    self.timeout = timeout
   }
-}
 
-extension Tunnel {
-  internal init(response: Components.Schemas.TunnelResponse) throws {
-    guard let publicURL = URL(string: response.public_url) else {
-      throw RuntimeError.invalidURL(response.public_url)
+  #if os(macOS)
+    public init(ngrokPath: String, timeout: TimeAmount = .seconds(1)) {
+      self.init(cliAPI: NgrokProcessCLIAPI(ngrokPath: ngrokPath), timeout: timeout)
     }
-    guard let addr = URL(string: response.config.addr) else {
-      throw RuntimeError.invalidURL(response.config.addr)
-    }
-    self.init(
-      name: response.name,
-      publicURL: publicURL,
-      config: .init(
-        addr: addr,
-        inspect: response.config.inspect
-      )
+  #endif
+
+  public func server(
+    from configuration: Configuration,
+    handler: any NgrokServerDelegate
+  ) -> NgrokCLIAPIServer {
+    let client = NgrokClient(
+      transport: AsyncHTTPClientTransport(configuration: .init(timeout: timeout))
+    )
+
+    let process = cliAPI.process(forHTTPPort: configuration.port)
+    return .init(
+      delegate: handler,
+      client: client,
+      process: process,
+      port: configuration.port,
+      logger: configuration.logger
     )
   }
 }

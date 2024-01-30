@@ -1,5 +1,5 @@
 //
-//  Tunnel.swift
+//  URLSession.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,34 +28,42 @@
 //
 
 import Foundation
-import NgrokOpenAPIClient
 
-public struct Tunnel: Sendable {
-  public let name: String
-  public let publicURL: URL
-  public let config: NgrokTunnelConfiguration
-  public init(name: String, publicURL: URL, config: NgrokTunnelConfiguration) {
-    self.name = name
-    self.publicURL = publicURL
-    self.config = config
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
+extension URLSession {
+  public static func ephemeral() -> URLSession {
+    URLSession(configuration: .ephemeral)
   }
-}
 
-extension Tunnel {
-  internal init(response: Components.Schemas.TunnelResponse) throws {
-    guard let publicURL = URL(string: response.public_url) else {
-      throw RuntimeError.invalidURL(response.public_url)
+  internal func dataAsync(for request: URLRequest) async throws -> (Data, URLResponse) {
+    #if !canImport(FoundationNetworking)
+      if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
+        return try await self.data(for: request)
+      }
+    #endif
+
+    return try await withCheckedThrowingContinuation { continuation in
+      let task = self.dataTask(with: request) { data, response, error in
+        continuation.resume(
+          with: .init(
+            success: data.flatTuple(response),
+            failure: error
+          )
+        )
+      }
+      task.resume()
     }
-    guard let addr = URL(string: response.config.addr) else {
-      throw RuntimeError.invalidURL(response.config.addr)
-    }
-    self.init(
-      name: response.name,
-      publicURL: publicURL,
-      config: .init(
-        addr: addr,
-        inspect: response.config.inspect
-      )
-    )
+  }
+
+  internal func dataAsync(from url: URL) async throws -> (Data, URLResponse) {
+    #if !canImport(FoundationNetworking)
+      if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
+        return try await data(for: .init(url: url))
+      }
+    #endif
+    return try await dataAsync(for: .init(url: url))
   }
 }
