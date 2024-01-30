@@ -27,56 +27,6 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-
-public actor NgrokProcess {
-  private var terminationHandler: (@Sendable (any Error) -> Void)?
-  private let process: Process
-  private let pipe: Pipe
-
-  public init(
-    ngrokPath: String,
-    httpPort: Int
-  ) {
-    let process = Process()
-    process.executableURL = .init(filePath: ngrokPath)
-    process.arguments = ["http", httpPort.description]
-    self.init(process: process)
-  }
-
-  private init(
-    process: Process,
-    pipe: Pipe? = nil,
-    terminationHandler: (@Sendable (any Error) -> Void)? = nil
-  ) {
-    self.terminationHandler = terminationHandler
-    self.process = process
-    if let pipe {
-      self.pipe = pipe
-    } else {
-      let pipe = Pipe()
-      self.process.standardError = pipe
-      self.pipe = pipe
-    }
-  }
-
-  @Sendable private nonisolated func terminationHandler(forProcess process: Process) {
-    Task {
-      let error: RuntimeError
-      let errorCode: Int
-      do {
-        errorCode = try self.pipe.fileHandleForReading.parseNgrokErrorCode()
-        error = .earlyTermination(process.terminationReason, errorCode)
-      } catch let runtimeError as RuntimeError {
-        error = runtimeError
-      }
-      await self.terminationHandler?(error)
-    }
-  }
-
-  public func run(onError: @Sendable @escaping (any Error) -> Void) async throws {
-    process.terminationHandler = terminationHandler(forProcess:)
-    terminationHandler = onError
-    try process.run()
-  }
+public protocol NgrokProcess: Sendable {
+  func run(onError: @Sendable @escaping (any Error) -> Void) async throws
 }

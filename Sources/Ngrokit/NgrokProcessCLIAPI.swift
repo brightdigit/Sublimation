@@ -1,5 +1,5 @@
 //
-//  NgrokCLIAPIServerFactory.swift
+//  NgrokProcessCLIAPI.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,45 +28,20 @@
 //
 
 import Foundation
-import Ngrokit
-import NIOCore
-import OpenAPIAsyncHTTPClient
 
-public struct NgrokCLIAPIServerFactory: NgrokServerFactory {
-  public typealias Configuration = NgrokCLIAPIConfiguration
+public struct NgrokProcessCLIAPI {
+  public let ngrokPath: String
 
-  private let cliAPI: any NgrokCLIAPI
-  private let timeout: TimeAmount
-
-  public init(
-    cliAPI: any NgrokCLIAPI,
-    timeout: TimeAmount = .seconds(1)
-  ) {
-    self.cliAPI = cliAPI
-    self.timeout = timeout
-  }
-
-  #if os(macOS)
-    public init(ngrokPath: String, timeout: TimeAmount = .seconds(1)) {
-      self.init(cliAPI: NgrokProcessCLIAPI(ngrokPath: ngrokPath), timeout: timeout)
-    }
-  #endif
-
-  public func server(
-    from configuration: Configuration,
-    handler: any NgrokServerDelegate
-  ) -> NgrokCLIAPIServer {
-    let client = NgrokClient(
-      transport: AsyncHTTPClientTransport(configuration: .init(timeout: timeout))
-    )
-
-    let process = cliAPI.process(forHTTPPort: configuration.port)
-    return .init(
-      delegate: handler,
-      client: client,
-      process: process,
-      port: configuration.port,
-      logger: configuration.logger
-    )
+  public init(ngrokPath: String) {
+    self.ngrokPath = ngrokPath
   }
 }
+
+#if os(macOS)
+  extension NgrokProcessCLIAPI: NgrokCLIAPI {
+    public func process(forHTTPPort httpPort: Int) -> any NgrokProcess {
+      NgrokMacProcess(ngrokPath: ngrokPath, httpPort: httpPort)
+    }
+  }
+
+#endif

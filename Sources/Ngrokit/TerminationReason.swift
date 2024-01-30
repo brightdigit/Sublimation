@@ -33,7 +33,7 @@ import Foundation
 #if os(macOS)
   public typealias TerminationReason = Process.TerminationReason
 #else
-  public enum TerminationReason: Int {
+  public enum TerminationReason: Int, Sendable {
     case exit = 1
 
     case uncaughtSignal = 2

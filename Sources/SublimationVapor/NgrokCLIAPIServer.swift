@@ -33,12 +33,11 @@ import Ngrokit
 import OpenAPIRuntime
 
 public struct NgrokCLIAPIServer: NgrokServer, Sendable {
-  
   private enum TunnelAttemptResult {
     case network(NetworkResult<Tunnel?>)
     case error(ClientError)
   }
-  
+
   private struct TunnelResult {
     let isOld: Bool
     let tunnel: Tunnel
@@ -46,7 +45,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
 
   private let delegate: any NgrokServerDelegate
   private let client: NgrokClient
-  private let process: NgrokProcess
+  private let process: any NgrokProcess
   private let port: Int
   private let pipe: Pipe
   private let logger: Logger
@@ -54,7 +53,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
   public init(
     delegate: any NgrokServerDelegate,
     client: NgrokClient,
-    process: NgrokProcess,
+    process: any NgrokProcess,
     port: Int,
     logger: Logger
   ) {
@@ -66,12 +65,9 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     self.logger = logger
   }
 
-  @Sendable
-  private func cliError(_ error: any Error) {
-    delegate.server(self, errorDidOccur: error)
-  }
-
-  private static func attemptTunnel(withClient client: NgrokClient) async -> TunnelAttemptResult {
+  private static func attemptTunnel(
+    withClient client: NgrokClient
+  ) async -> TunnelAttemptResult {
     let networkResult = await NetworkResult {
       try await client.listTunnels().first
     }
@@ -86,7 +82,6 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     }
   }
 
-  // swiftlint:disable:next function_body_length
   private static func searchForCreatedTunnel(
     withClient client: NgrokClient,
     within timeout: TimeInterval,
@@ -116,6 +111,11 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     }
 
     return try networkResult?.get()?.flatMap { $0 }
+  }
+
+  @Sendable
+  private func cliError(_ error: any Error) {
+    delegate.server(self, errorDidOccur: error)
   }
 
   private func searchForExistingTunnel(

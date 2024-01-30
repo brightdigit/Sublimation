@@ -96,7 +96,9 @@ public actor SublimationLifecycleHandler<
     )
   }
 
-  private func onError(_: any Error) async {}
+  private func onError(_ error: any Error) async {
+    logger?.error("Error running tunnel: \(error.localizedDescription)")
+  }
 
   public nonisolated func server(_: any NgrokServer, updatedTunnel tunnel: Tunnel) {
     Task {

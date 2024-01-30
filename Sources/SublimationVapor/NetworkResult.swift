@@ -44,14 +44,18 @@ extension NetworkResult {
       return
     }
 
-    if let posixError = error.underlyingError as? HTTPClient.NWPOSIXError {
-      guard posixError.errorCode == .ECONNREFUSED else {
-        self = .failure(error)
+    #if canImport(Network)
+      if let posixError = error.underlyingError as? HTTPClient.NWPOSIXError {
+        guard posixError.errorCode == .ECONNREFUSED else {
+          self = .failure(error)
+          return
+        }
+        self = .connectionRefused(error)
         return
       }
-      self = .connectionRefused(error)
-      return
-    } else if let clientError = error.underlyingError as? HTTPClientError {
+    #endif
+
+    if let clientError = error.underlyingError as? HTTPClientError {
       guard clientError == .connectTimeout else {
         self = .failure(error)
         return
