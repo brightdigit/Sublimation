@@ -54,7 +54,7 @@ public struct NgrokCLIAPIServerFactory: NgrokServerFactory {
     from configuration: Configuration,
     handler: any NgrokServerDelegate
   ) -> NgrokCLIAPIServer {
-    let client = Ngrok.Client(
+    let client = NgrokClient(
       transport: AsyncHTTPClientTransport(configuration: .init(timeout: timeout))
     )
 

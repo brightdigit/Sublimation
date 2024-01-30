@@ -33,18 +33,19 @@ import Ngrokit
 import OpenAPIRuntime
 
 public struct NgrokCLIAPIServer: NgrokServer, Sendable {
+  
   private enum TunnelAttemptResult {
     case network(NetworkResult<Tunnel?>)
     case error(ClientError)
   }
-
+  
   private struct TunnelResult {
     let isOld: Bool
     let tunnel: Tunnel
   }
 
   private let delegate: any NgrokServerDelegate
-  private let client: Ngrok.Client
+  private let client: NgrokClient
   private let process: NgrokProcess
   private let port: Int
   private let pipe: Pipe
@@ -52,7 +53,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
 
   public init(
     delegate: any NgrokServerDelegate,
-    client: Ngrok.Client,
+    client: NgrokClient,
     process: NgrokProcess,
     port: Int,
     logger: Logger
@@ -70,7 +71,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     delegate.server(self, errorDidOccur: error)
   }
 
-  private func attemptTunnel() async -> TunnelAttemptResult {
+  private static func attemptTunnel(withClient client: NgrokClient) async -> TunnelAttemptResult {
     let networkResult = await NetworkResult {
       try await client.listTunnels().first
     }
@@ -86,8 +87,10 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
   }
 
   // swiftlint:disable:next function_body_length
-  private func searchForCreatedTunnel(
-    within timeout: TimeInterval
+  private static func searchForCreatedTunnel(
+    withClient client: NgrokClient,
+    within timeout: TimeInterval,
+    logger: Logger
   ) async throws -> Tunnel? {
     let start = Date()
     var networkResult: NetworkResult<Tunnel?>?
@@ -96,7 +99,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     while networkResult == nil, (-start.timeIntervalSinceNow) < timeout {
       logger.debug("Attempt #\(attempts + 1)")
       try await Task.sleep(for: .seconds(5), tolerance: .seconds(5))
-      let result = await attemptTunnel()
+      let result = await attemptTunnel(withClient: client)
       attempts += 1
       switch result {
       case let .network(newNetworkResult):
@@ -139,7 +142,12 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
       throw error
     }
 
-    return try await searchForCreatedTunnel(within: timeout).map {
+    return try await Self.searchForCreatedTunnel(
+      withClient: client,
+      within: timeout,
+      logger: logger
+    )
+    .map {
       .init(isOld: false, tunnel: $0)
     }
   }

@@ -35,8 +35,7 @@ import OpenAPIRuntime
   import FoundationNetworking
 #endif
 
-extension Ngrok {
-  public struct Client: Sendable {
+  public struct NgrokClient: Sendable {
     // swiftlint:disable:next force_try
     public static let defaultServerURL = try! Servers.server1()
 
@@ -77,4 +76,4 @@ extension Ngrok {
         .map(Tunnel.init(response:))
     }
   }
-}
+
