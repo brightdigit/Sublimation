@@ -1,3 +1,32 @@
+//
+//  VaporTunnelClient.swift
+//  Sublimation
+//
+//  Created by VaporTunnelClient.swift
+//  Copyright © 2024 BrightDigit.
+//
+//  Permission is hereby granted, free of charge, to any person
+//  obtaining a copy of this software and associated documentation
+//  files (the “Software”), to deal in the Software without
+//  restriction, including without limitation the rights to use,
+//  copy, modify, merge, publish, distribute, sublicense, and/or
+//  sell copies of the Software, and to permit persons to whom the
+//  Software is furnished to do so, subject to the following
+//  conditions:
+//
+//  The above copyright notice and this permission notice shall be
+//  included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+//  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+//  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+//  OTHER DEALINGS IN THE SOFTWARE.
+//
+
 import Foundation
 import Sublimation
 import Vapor
@@ -7,11 +36,11 @@ import Vapor
 #endif
 
 public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
-  init(client: any Vapor.Client, keyType _: Key.Type) {
+  private let client: any Vapor.Client
+
+  public init(client: any Vapor.Client, keyType _: Key.Type) {
     self.client = client
   }
-
-  let client: any Vapor.Client
 
   public func getValue(
     ofKey key: Key,
@@ -29,7 +58,8 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
         .get(uri)
         .map {
           $0.body.map(String.init(buffer:)).flatMap(URL.init(string:))
-        }.get()
+        }
+        .get()
     }
 
     guard let url else {
@@ -44,9 +74,11 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
     inBucket bucketName: String
   ) async throws {
     let uri = KVdb.construct(URI.self, forKey: key, atBucket: bucketName)
-    let response = try await client.post(uri, beforeSend: { request in
+
+    let response = try await client.post(uri) { request in
       request.body = .init(string: value.absoluteString)
-    }).get()
+    }
+    .get()
 
     if response.status.code / 100 == 2 {
       return
