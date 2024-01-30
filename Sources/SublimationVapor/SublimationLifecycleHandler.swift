@@ -14,13 +14,36 @@ public actor SublimationLifecycleHandler<
   NgrokServerFactoryType: NgrokServerFactory
 >: LifecycleHandler, NgrokServerDelegate
   where NgrokServerFactoryType.Configuration: NgrokVaporConfiguration {
-  init(
+  private let factory: NgrokServerFactoryType
+  private let repoFactory: WritableTunnelRepositoryFactoryType
+  private let key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
+
+  private var tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?
+  private var logger: Logger?
+  private var server: (any NgrokServer)?
+
+  public init(
+    factory: NgrokServerFactoryType,
+    repoFactory: WritableTunnelRepositoryFactoryType,
+    key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
+  ) {
+    self.init(
+      factory: factory,
+      repoFactory: repoFactory,
+      key: key,
+      tunnelRepo: nil,
+      logger: nil,
+      server: nil
+    )
+  }
+
+  private init(
     factory: NgrokServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
     key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
-    tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType? = nil,
-    logger: Logger? = nil,
-    server: (any NgrokServer)? = nil
+    tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?,
+    logger: Logger?,
+    server: (any NgrokServer)?
   ) {
     self.factory = factory
     self.repoFactory = repoFactory
@@ -57,14 +80,6 @@ public actor SublimationLifecycleHandler<
       await self.onError(error)
     }
   }
-
-  let factory: NgrokServerFactoryType
-  let repoFactory: WritableTunnelRepositoryFactoryType
-  let key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
-
-  var tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?
-  var logger: Logger?
-  var server: (any NgrokServer)?
 
   private func beginFromApplication(_ application: Application) async {
     let server = factory.server(

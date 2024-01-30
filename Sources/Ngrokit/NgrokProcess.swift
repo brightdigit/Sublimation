@@ -1,7 +1,17 @@
 import Foundation
 
 public actor NgrokProcess {
-  init(
+  public init(
+    ngrokPath: String,
+    httpPort: Int
+  ) {
+    let process = Process()
+    process.executableURL = .init(filePath: ngrokPath)
+    process.arguments = ["http", httpPort.description]
+    self.init(process: process)
+  }
+
+  private init(
     terminationHandler: (@Sendable (any Error) -> Void)? = nil,
     process: Process, pipe: Pipe? = nil
   ) {
@@ -16,27 +26,12 @@ public actor NgrokProcess {
     }
   }
 
-  var terminationHandler: ((any Error) -> Void)?
-  let process: Process
-  let pipe: Pipe
+  private var terminationHandler: ((any Error) -> Void)?
+  private let process: Process
+  private let pipe: Pipe
 
   public func run(onError: @Sendable @escaping (any Error) -> Void) throws {
     terminationHandler = onError
     try process.run()
-  }
-}
-
-public struct NgrokCLIAPI: Sendable {
-  public init(ngrokPath: String) {
-    self.ngrokPath = ngrokPath
-  }
-
-  let ngrokPath: String
-
-  public func process(forHTTPPort port: Int) -> NgrokProcess {
-    let process = Process()
-    process.executableURL = .init(filePath: ngrokPath)
-    process.arguments = ["http", port.description]
-    return .init(process: process)
   }
 }

@@ -1,7 +1,6 @@
 import AsyncHTTPClient
 import Foundation
 import OpenAPIRuntime
-
 enum NetworkResult<T> {
   case success(T)
   case connectionRefused(ClientError)

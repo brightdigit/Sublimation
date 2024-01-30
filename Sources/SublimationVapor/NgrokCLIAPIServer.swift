@@ -4,7 +4,19 @@ import Ngrokit
 import OpenAPIRuntime
 
 public struct NgrokCLIAPIServer: NgrokServer, Sendable {
-  init(
+  private struct TunnelResult {
+    let isOld: Bool
+    let tunnel: Tunnel
+  }
+
+  private let delegate: any NgrokServerDelegate
+  private let client: Ngrok.Client
+  private let process: NgrokProcess
+  private let port: Int
+  private let pipe: Pipe
+  private let logger: Logger
+
+  public init(
     delegate: any NgrokServerDelegate,
     client: Ngrok.Client,
     process: NgrokProcess,
@@ -19,24 +31,12 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     self.logger = logger
   }
 
-  let delegate: any NgrokServerDelegate
-  let client: Ngrok.Client
-  let process: NgrokProcess
-  let port: Int
-  let pipe: Pipe
-  let logger: Logger
-
   @Sendable
-  func cliError(_ error: any Error) {
+  private func cliError(_ error: any Error) {
     delegate.server(self, errorDidOccur: error)
   }
 
-  struct TunnelResult {
-    let isOld: Bool
-    let tunnel: Tunnel
-  }
-
-  func searchForExistingTunnel(
+  private func searchForExistingTunnel(
     within timeout: TimeInterval
   ) async throws -> TunnelResult? {
     logger.debug("Starting Search for Existing Tunnel")
@@ -50,9 +50,11 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
       logger.debug("Ngrok not started. Running Process.")
       try await process.run(onError: cliError(_:))
       try await Task.sleep(for: .seconds(1), tolerance: .seconds(1))
+
     case let .success(tunnel):
       logger.debug("Process Already Running.")
       return tunnel.map { .init(isOld: true, tunnel: $0) }
+
     case let .failure(error):
       throw error
     }
@@ -71,6 +73,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
       case let .connectionRefused(error):
         lastError = error
         networkResult = nil
+
       default:
         continue
       }
@@ -88,7 +91,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     return tunnel.map { .init(isOld: false, tunnel: $0) }
   }
 
-  public func newTunnel() async throws -> Tunnel {
+  private func newTunnel() async throws -> Tunnel {
     if let tunnel = try await searchForExistingTunnel(within: 30.0) {
       if tunnel.isOld {
         logger.debug("Existing Tunnel Found. \(tunnel.tunnel.publicURL)")

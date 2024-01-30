@@ -5,13 +5,12 @@ import Foundation
 #endif
 
 public final class KVdbTunnelRepository<Key: Sendable>: WritableTunnelRepository {
-  init(client: any KVdbTunnelClient<Key>, bucketName: String) {
+  private let client: any KVdbTunnelClient<Key>
+  private let bucketName: String
+  public init(client: any KVdbTunnelClient<Key>, bucketName: String) {
     self.client = client
     self.bucketName = bucketName
   }
-
-  let client: any KVdbTunnelClient<Key>
-  let bucketName: String
 
   public static func setupClient<TunnelClientType: KVdbTunnelClient>(
     _: TunnelClientType

@@ -109,6 +109,8 @@ function_parameter_count: 8
 line_length:
   - 90
   - 90
+generic_type_name:
+  max_length: 40
 identifier_name:
   excluded:
     - id
