@@ -31,14 +31,14 @@ import XCTest
 
 class VaporTunnelClientTests: XCTestCase {
   func testInit() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 
   func testGetValue() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 
   func testSaveValue() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 }

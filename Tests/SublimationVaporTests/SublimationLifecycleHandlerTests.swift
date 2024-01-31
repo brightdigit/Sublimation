@@ -31,14 +31,22 @@ import XCTest
 
 class SublimationLifecycleHandlerTests: XCTestCase {
   func testInit() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 
-  func testServerUpdateTunnel() {}
+  func testServerUpdateTunnel() {
+    XCTFail("not implemented")
+  }
 
-  func testServerErrorDidOccur() {}
+  func testServerErrorDidOccur() {
+    XCTFail("not implemented")
+  }
 
-  func testServerWillBoot() {}
+  func testServerWillBoot() {
+    XCTFail("not implemented")
+  }
 
-  func testInitMacOS() {}
+  func testInitMacOS() {
+    XCTFail("not implemented")
+  }
 }

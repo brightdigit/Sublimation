@@ -31,6 +31,6 @@ import XCTest
 
 class NgrokTunnelConfigurationTests: XCTestCase {
   func testExample() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 }

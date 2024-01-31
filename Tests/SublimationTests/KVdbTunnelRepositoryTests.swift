@@ -31,16 +31,18 @@ import XCTest
 
 class KVdbTunnelRepositoryTests: XCTestCase {
   func testInit() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 
   func testSetupClient() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 
   func testTunnel() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 
-  func testSaveURL() {}
+  func testSaveURL() {
+    XCTFail("not implemented")
+  }
 }

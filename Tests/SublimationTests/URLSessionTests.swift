@@ -30,5 +30,7 @@
 import XCTest
 
 class URLSessionTests: XCTestCase {
-  func testEphemeral() {}
+  func testEphemeral() {
+    XCTFail("not implemented")
+  }
 }

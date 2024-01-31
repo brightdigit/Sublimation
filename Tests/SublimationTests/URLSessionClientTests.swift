@@ -30,9 +30,15 @@
 import XCTest
 
 class URLSessionClientTests: XCTestCase {
-  func testInit() {}
+  func testInit() {
+    XCTFail("not implemented")
+  }
 
-  func testGetValue() {}
+  func testGetValue() {
+    XCTFail("not implemented")
+  }
 
-  func testSaveValue() {}
+  func testSaveValue() {
+    XCTFail("not implemented")
+  }
 }

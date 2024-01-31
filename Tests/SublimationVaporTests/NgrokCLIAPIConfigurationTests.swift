@@ -31,6 +31,6 @@ import XCTest
 
 class NgrokCLIAPIConfigurationTests: XCTestCase {
   func testInit() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 }

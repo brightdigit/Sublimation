@@ -28,9 +28,26 @@
 //
 
 import XCTest
+@testable import Ngrokit
 
 class NgrokProcessCLIAPITests: XCTestCase {
-  func testProcess() {
-    // Add test logic here.
+  func testProcess() async throws {
+    let ngrokPath = UUID().uuidString
+    let httpPort = Int.random(in: 10...10000)
+    let api = NgrokProcessCLIAPI<MockProcess>(ngrokPath: ngrokPath)
+    let process = api.process(forHTTPPort: httpPort)
+    
+    let macProcess = process as? NgrokMacProcess<MockProcess>
+    
+    XCTAssertNotNil(macProcess)
+    
+    let mockProcess = await macProcess?.process
+    
+    XCTAssertNotNil(mockProcess)
+    
+    
+    XCTAssertEqual(mockProcess?.executableFilePath, ngrokPath)
+    XCTAssertEqual(mockProcess?.port, httpPort)
+    XCTAssertEqual(mockProcess?.scheme, "http")
   }
 }

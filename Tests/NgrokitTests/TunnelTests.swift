@@ -31,6 +31,6 @@ import XCTest
 
 class TunnelTests: XCTestCase {
   func testTunnelResponse() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 }

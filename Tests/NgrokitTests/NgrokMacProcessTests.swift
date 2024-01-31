@@ -26,15 +26,98 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
-
+@testable import Ngrokit
 import XCTest
 
+final class MockPipe : Pipable {
+  internal init(fileHandleForReading: MockDataHandle) {
+    self.fileHandleForReading = fileHandleForReading
+  }
+  
+  let fileHandleForReading: MockDataHandle
+  
+  typealias DataHandleType = MockDataHandle
+  
+  
+}
+final class MockProcess: Processable {
+  internal init(executableFilePath: String, scheme: String, port: Int, terminationReason: TerminationReason, standardErrorPipe: MockPipe? = nil, pipeDataResult : Result<Data?, any Error> = .success(nil), runError: (any Error)? = nil) {
+    self.executableFilePath = executableFilePath
+    self.scheme = scheme
+    self.port = port
+    self.standardErrorPipe = standardErrorPipe
+    self.terminationReason = terminationReason
+    self.pipeDataResult = pipeDataResult
+    self.runError = runError
+  }
+  
+  
+  internal convenience init(executableFilePath: String, scheme: String, port: Int) {
+    self.init(executableFilePath: executableFilePath, scheme: scheme, port: port, terminationReason: .exit)
+  }
+  
+  let executableFilePath: String
+  let scheme : String
+  let port: Int
+  let pipeDataResult : Result<Data?, any Error>
+  let runError : (any Error)?
+  var standardErrorPipe: MockPipe?
+  
+  private (set) var isTerminationHandlerSet : Bool = false
+  private (set) var isRunCalled : Bool = false
+  
+  nonisolated func createPipe() -> MockPipe {
+    return .init(fileHandleForReading: .init(self.pipeDataResult))
+  }
+  
+  typealias PipeType = MockPipe
+  
+  let terminationReason: Ngrokit.TerminationReason
+  
+  
+  func setTerminationHandler(_ closure: @escaping @Sendable (MockProcess) -> Void) {
+    self.isTerminationHandlerSet = true
+  }
+  
+  func run() throws {
+    self.isRunCalled = true
+    if let error = runError {
+      throw error
+    }
+  }
+  
+
+  
+  
+}
+
 class NgrokMacProcessTests: XCTestCase {
-  func testInit() {
-    // Add test logic here.
+  func testInit() async {
+    let ngrokPath = UUID().uuidString
+    let httpPort = Int.random(in: 10...10000)
+    let process = NgrokMacProcess(
+      ngrokPath: ngrokPath,
+      httpPort: httpPort,
+      processType: MockProcess.self
+    )
+    let actualProcess = await process.process
+    XCTAssertEqual(actualProcess.executableFilePath, ngrokPath)
+    XCTAssertEqual(actualProcess.port, httpPort)
+    XCTAssertEqual(actualProcess.scheme, "http")
   }
 
-  func testRunOnError() {
-    // Add test logic here.
+  func testRunOnError() async throws {
+    let ngrokPath = UUID().uuidString
+    let httpPort = Int.random(in: 10...10000)
+    let process = NgrokMacProcess(
+      ngrokPath: ngrokPath,
+      httpPort: httpPort,
+      processType: MockProcess.self
+    )
+    try await process.run { _ in }
+    
+    let actualProcess = await process.process
+    XCTAssertTrue(actualProcess.isRunCalled)
+    XCTAssertTrue(actualProcess.isTerminationHandlerSet)
   }
 }

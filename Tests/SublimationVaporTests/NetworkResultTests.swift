@@ -31,12 +31,14 @@ import XCTest
 
 class NetworkResultTests: XCTestCase {
   func testError() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 
   func testClosure() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 
-  func testGet() {}
+  func testGet() {
+    XCTFail("not implemented")
+  }
 }

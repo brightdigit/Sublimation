@@ -28,9 +28,40 @@
 //
 
 import XCTest
+@testable import Ngrokit
+
+extension Data {
+  static let code : Data? = """
+ERROR:  authentication failed: Your account is limited to 1 simultaneous ngrok agent session.
+ERROR:  You can run multiple tunnels on a single agent session using a configuration file.
+ERROR:  To learn more, see https://ngrok.com/docs/secure-tunnels/ngrok-agent/reference/config/
+ERROR:
+ERROR:  Active ngrok agent sessions in region 'us':
+ERROR:    - ts_2bjiyVxWh6dMoaZUfjXNsHWFNta (2607:fb90:8da8:5b15:900b:13fd:c5e7:f9c6)
+ERROR:
+ERROR:  ERR_NGROK_108
+ERROR:
+""".data(using: .utf8)
+}
+
+struct MockDataHandle : DataHandle {
+  internal init(_ actualResult: Result<Data?, any Error>) {
+    self.actualResult = actualResult
+  }
+  
+  let actualResult : Result<Data?, any Error>
+  
+  func readToEnd() throws -> Data? {
+    return try actualResult.get()
+  }
+  
+  
+}
 
 class DataHandleTests: XCTestCase {
-  func testParseNgrokErrorCode() {
-    XCTFail()
+  func testParseNgrokErrorCode() throws {
+    let dataHandle = MockDataHandle(.success(.code))
+    let error = try dataHandle.parseNgrokErrorCode()
+    XCTAssertEqual(error.rawValue, 108)
   }
 }

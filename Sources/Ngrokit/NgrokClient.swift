@@ -39,7 +39,7 @@ public struct NgrokClient: Sendable {
   // swiftlint:disable:next force_try
   public static let defaultServerURL = try! Servers.server1()
 
-  private let underlyingClient: NgrokOpenAPIClient.Client
+  private let underlyingClient: any APIProtocol
 
   public init(transport: any ClientTransport, serverURL: URL? = nil) {
     let underlyingClient = NgrokOpenAPIClient.Client(
@@ -49,7 +49,7 @@ public struct NgrokClient: Sendable {
     self.init(underlyingClient: underlyingClient)
   }
 
-  private init(underlyingClient: NgrokOpenAPIClient.Client) {
+  internal init(underlyingClient: any APIProtocol) {
     self.underlyingClient = underlyingClient
   }
 

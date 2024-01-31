@@ -81,6 +81,11 @@ let package = Package(
       swiftSettings: swiftSettings
     ),
     .testTarget(
+      name: "NgrokitTests",
+      dependencies: ["Ngrokit"],
+      swiftSettings: swiftSettings
+    ),
+    .testTarget(
       name: "SublimationTests",
       dependencies: [],
       swiftSettings: swiftSettings

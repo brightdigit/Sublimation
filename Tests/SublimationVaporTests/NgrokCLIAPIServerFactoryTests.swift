@@ -31,6 +31,6 @@ import XCTest
 
 class NgrokCLIAPIServerFactoryTests: XCTestCase {
   func testServer() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 }

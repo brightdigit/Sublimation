@@ -31,14 +31,14 @@ import XCTest
 
 class KVdbTests: XCTestCase {
   func testPath() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 
   func testConstruct() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 
   func testURL() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 }

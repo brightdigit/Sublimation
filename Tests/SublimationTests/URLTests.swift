@@ -31,6 +31,6 @@ import XCTest
 
 class URLTests: XCTestCase {
   func testKVdbURLConstructable() {
-    // Add test logic here.
+    XCTFail("not implemented")
   }
 }

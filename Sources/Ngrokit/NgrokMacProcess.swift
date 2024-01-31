@@ -31,7 +31,7 @@ import Foundation
 
 public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
   private var terminationHandler: (@Sendable (any Error) -> Void)?
-  private let process: ProcessType
+  internal let process: ProcessType
   private let pipe: ProcessType.PipeType
 
   public init(
