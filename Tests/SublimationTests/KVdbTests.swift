@@ -28,17 +28,37 @@
 //
 
 import XCTest
+import Sublimation
+
+struct MockURL : KVdbURLConstructable {
+  internal init(kvDBBase: String, keyBucketPath: String) {
+    self.kvDBBase = kvDBBase
+    self.keyBucketPath = keyBucketPath
+  }
+  
+  let kvDBBase : String
+  let keyBucketPath: String
+  
+  
+  
+}
 
 class KVdbTests: XCTestCase {
   func testPath() {
-    XCTFail("not implemented")
+    let key = UUID()
+    let bucket = UUID().uuidString
+    let actual = KVdb.path(forKey: key, atBucket: bucket)
+    XCTAssertEqual(actual, "/\(bucket)/\(key)")
   }
 
   func testConstruct() {
-    XCTFail("not implemented")
+    let key = UUID()
+    let bucket = UUID().uuidString
+    let url = KVdb.construct(MockURL.self, forKey: key, atBucket: bucket)
+    let expectedPath = KVdb.path(forKey: key, atBucket: bucket)
+    
+    XCTAssertEqual(url.kvDBBase, KVdb.baseString)
+    XCTAssertEqual(url.keyBucketPath, expectedPath)
   }
 
-  func testURL() {
-    XCTFail("not implemented")
-  }
 }
