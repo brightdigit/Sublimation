@@ -30,7 +30,15 @@
 import XCTest
 
 class VaporTunnelClientTests: XCTestCase {
-  func testExample() {
+  func testInit() {
+    // Add test logic here.
+  }
+
+  func testGetValue() {
+    // Add test logic here.
+  }
+
+  func testSaveValue() {
     // Add test logic here.
   }
 }

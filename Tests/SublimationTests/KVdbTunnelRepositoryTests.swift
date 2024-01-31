@@ -30,7 +30,17 @@
 import XCTest
 
 class KVdbTunnelRepositoryTests: XCTestCase {
-  func testExample() {
+  func testInit() {
     // Add test logic here.
   }
+
+  func testSetupClient() {
+    // Add test logic here.
+  }
+
+  func testTunnel() {
+    // Add test logic here.
+  }
+
+  func testSaveURL() {}
 }

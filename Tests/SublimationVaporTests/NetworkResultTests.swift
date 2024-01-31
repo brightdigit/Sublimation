@@ -30,7 +30,13 @@
 import XCTest
 
 class NetworkResultTests: XCTestCase {
-  func testExample() {
+  func testError() {
     // Add test logic here.
   }
+
+  func testClosure() {
+    // Add test logic here.
+  }
+
+  func testGet() {}
 }

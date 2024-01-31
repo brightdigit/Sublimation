@@ -30,7 +30,15 @@
 import XCTest
 
 class KVdbTests: XCTestCase {
-  func testExample() {
+  func testPath() {
+    // Add test logic here.
+  }
+
+  func testConstruct() {
+    // Add test logic here.
+  }
+
+  func testURL() {
     // Add test logic here.
   }
 }

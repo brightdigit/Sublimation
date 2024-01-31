@@ -30,7 +30,9 @@
 import XCTest
 
 class URLSessionClientTests: XCTestCase {
-  func testExample() {
-    // Add test logic here.
-  }
+  func testInit() {}
+
+  func testGetValue() {}
+
+  func testSaveValue() {}
 }

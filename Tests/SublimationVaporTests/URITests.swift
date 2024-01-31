@@ -30,7 +30,7 @@
 import XCTest
 
 class URITests: XCTestCase {
-  func testExample() {
+  func testKVdbURLConstructable() {
     // Add test logic here.
   }
 }

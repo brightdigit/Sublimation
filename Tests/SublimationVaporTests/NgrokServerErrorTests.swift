@@ -30,7 +30,7 @@
 import XCTest
 
 class NgrokServerErrorTests: XCTestCase {
-  func testExample() {
+  func testCantSaveTunnel() {
     // Add test logic here.
   }
 }

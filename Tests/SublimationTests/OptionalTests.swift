@@ -30,7 +30,7 @@
 import XCTest
 
 class OptionalTests: XCTestCase {
-  func testExample() {
+  func testFlatTuple() {
     // Add test logic here.
   }
 }

@@ -30,7 +30,5 @@
 import XCTest
 
 class URLSessionTests: XCTestCase {
-  func testExample() {
-    // Add test logic here.
-  }
+  func testEphemeral() {}
 }

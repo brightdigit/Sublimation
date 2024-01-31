@@ -30,7 +30,15 @@
 import XCTest
 
 class SublimationLifecycleHandlerTests: XCTestCase {
-  func testExample() {
+  func testInit() {
     // Add test logic here.
   }
+
+  func testServerUpdateTunnel() {}
+
+  func testServerErrorDidOccur() {}
+
+  func testServerWillBoot() {}
+
+  func testInitMacOS() {}
 }

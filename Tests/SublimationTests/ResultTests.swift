@@ -30,7 +30,7 @@
 import XCTest
 
 class ResultTests: XCTestCase {
-  func testExample() {
+  func testInit() {
     // Add test logic here.
   }
 }
