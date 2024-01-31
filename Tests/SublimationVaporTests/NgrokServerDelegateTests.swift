@@ -1,5 +1,5 @@
 //
-//  APITests.swift
+//  NgrokServerDelegateTests.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,9 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import Ngrokit
-import OpenAPIURLSession
 import XCTest
 
-final class APITests: XCTestCase {}
+class NgrokServerDelegateTests: XCTestCase {
+  func testExample() {
+    // Add test logic here.
+  }
+}

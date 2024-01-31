@@ -27,59 +27,59 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if os(macOS)
-  import Foundation
+import Foundation
 
-  public actor NgrokMacProcess: NgrokProcess {
-    private var terminationHandler: (@Sendable (any Error) -> Void)?
-    private let process: Process
-    private let pipe: Pipe
+public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
+  private var terminationHandler: (@Sendable (any Error) -> Void)?
+  private let process: ProcessType
+  private let pipe: ProcessType.PipeType
 
-    public init(
-      ngrokPath: String,
-      httpPort: Int
-    ) {
-      let process = Process()
-      process.executableURL = .init(filePath: ngrokPath)
-      process.arguments = ["http", httpPort.description]
-      self.init(process: process)
-    }
+  public init(
+    ngrokPath: String,
+    httpPort: Int,
+    processType _: ProcessType.Type
+  ) {
+    self.init(
+      process: .init(
+        executableFilePath: ngrokPath,
+        scheme: "http",
+        port: httpPort
+      )
+    )
+  }
 
-    private init(
-      process: Process,
-      pipe: Pipe? = nil,
-      terminationHandler: (@Sendable (any Error) -> Void)? = nil
-    ) {
-      self.terminationHandler = terminationHandler
-      self.process = process
-      if let pipe {
-        self.pipe = pipe
-      } else {
-        let pipe = Pipe()
-        self.process.standardError = pipe
-        self.pipe = pipe
-      }
-    }
-
-    @Sendable
-    private nonisolated func terminationHandler(forProcess process: Process) {
-      Task {
-        let error: RuntimeError
-        let errorCode: Int
-        do {
-          errorCode = try self.pipe.fileHandleForReading.parseNgrokErrorCode()
-          error = .earlyTermination(process.terminationReason, errorCode)
-        } catch let runtimeError as RuntimeError {
-          error = runtimeError
-        }
-        await self.terminationHandler?(error)
-      }
-    }
-
-    public func run(onError: @Sendable @escaping (any Error) -> Void) async throws {
-      process.terminationHandler = terminationHandler(forProcess:)
-      terminationHandler = onError
-      try process.run()
+  private init(
+    process: ProcessType,
+    pipe: ProcessType.PipeType? = nil,
+    terminationHandler: (@Sendable (any Error) -> Void)? = nil
+  ) {
+    self.terminationHandler = terminationHandler
+    self.process = process
+    if let pipe {
+      self.pipe = pipe
+    } else {
+      let newPipe: ProcessType.PipeType = process.createPipe()
+      self.process.standardErrorPipe = newPipe
+      self.pipe = newPipe
     }
   }
-#endif
+
+  @Sendable
+  private nonisolated func terminationHandler(forProcess _: any Processable) {
+    Task {
+      let error: any Error
+      do {
+        error = try self.pipe.fileHandleForReading.parseNgrokErrorCode()
+      } catch let runtimeError as RuntimeError {
+        error = runtimeError
+      }
+      await self.terminationHandler?(error)
+    }
+  }
+
+  public func run(onError: @Sendable @escaping (any Error) -> Void) async throws {
+    process.setTerminationHandler(terminationHandler(forProcess:))
+    terminationHandler = onError
+    try process.run()
+  }
+}

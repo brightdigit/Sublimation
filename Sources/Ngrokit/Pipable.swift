@@ -1,5 +1,5 @@
 //
-//  NgrokProcessCLIAPI.swift
+//  Pipable.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -29,20 +29,7 @@
 
 import Foundation
 
-public struct NgrokProcessCLIAPI<ProcessType: Processable> {
-  public let ngrokPath: String
-
-  public init(ngrokPath: String) {
-    self.ngrokPath = ngrokPath
-  }
-}
-
-extension NgrokProcessCLIAPI: NgrokCLIAPI {
-  public func process(forHTTPPort httpPort: Int) -> any NgrokProcess {
-    NgrokMacProcess(
-      ngrokPath: ngrokPath,
-      httpPort: httpPort,
-      processType: ProcessType.self
-    )
-  }
+public protocol Pipable: Sendable {
+  associatedtype DataHandleType: DataHandle
+  var fileHandleForReading: DataHandleType { get }
 }

@@ -32,7 +32,7 @@ import Ngrokit
 import NIOCore
 import OpenAPIAsyncHTTPClient
 
-public struct NgrokCLIAPIServerFactory: NgrokServerFactory {
+public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: NgrokServerFactory {
   public typealias Configuration = NgrokCLIAPIConfiguration
 
   private let cliAPI: any NgrokCLIAPI
@@ -46,11 +46,12 @@ public struct NgrokCLIAPIServerFactory: NgrokServerFactory {
     self.timeout = timeout
   }
 
-  #if os(macOS)
-    public init(ngrokPath: String, timeout: TimeAmount = .seconds(1)) {
-      self.init(cliAPI: NgrokProcessCLIAPI(ngrokPath: ngrokPath), timeout: timeout)
-    }
-  #endif
+  public init(ngrokPath: String, timeout: TimeAmount = .seconds(1)) {
+    self.init(
+      cliAPI: NgrokProcessCLIAPI<ProcessType>(ngrokPath: ngrokPath),
+      timeout: timeout
+    )
+  }
 
   public func server(
     from configuration: Configuration,

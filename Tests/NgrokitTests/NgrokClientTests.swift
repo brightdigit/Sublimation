@@ -1,5 +1,5 @@
 //
-//  NgrokProcessCLIAPI.swift
+//  NgrokClientTests.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,22 +27,18 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
+import XCTest
 
-public struct NgrokProcessCLIAPI<ProcessType: Processable> {
-  public let ngrokPath: String
-
-  public init(ngrokPath: String) {
-    self.ngrokPath = ngrokPath
+class NgrokClientTests: XCTestCase {
+  func testStartTunnel() {
+    // Add test logic here.
   }
-}
 
-extension NgrokProcessCLIAPI: NgrokCLIAPI {
-  public func process(forHTTPPort httpPort: Int) -> any NgrokProcess {
-    NgrokMacProcess(
-      ngrokPath: ngrokPath,
-      httpPort: httpPort,
-      processType: ProcessType.self
-    )
+  func testStopTunnel() {
+    // Add test logic here.
+  }
+
+  func testListTunnel() {
+    // Add test logic here.
   }
 }

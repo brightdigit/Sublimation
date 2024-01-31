@@ -1,5 +1,5 @@
 //
-//  NgrokProcessCLIAPI.swift
+//  ProcessableProcess.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -29,20 +29,43 @@
 
 import Foundation
 
-public struct NgrokProcessCLIAPI<ProcessType: Processable> {
-  public let ngrokPath: String
+#if os(macOS)
 
-  public init(ngrokPath: String) {
-    self.ngrokPath = ngrokPath
-  }
-}
+  public final class ProcessableProcess: Process, Processable {
+    public typealias PipeType = Pipe
 
-extension NgrokProcessCLIAPI: NgrokCLIAPI {
-  public func process(forHTTPPort httpPort: Int) -> any NgrokProcess {
-    NgrokMacProcess(
-      ngrokPath: ngrokPath,
-      httpPort: httpPort,
-      processType: ProcessType.self
-    )
+    public var standardErrorPipe: Pipe? {
+      get {
+        standardError as? Pipe
+      }
+      set {
+        standardError = newValue
+      }
+    }
+
+    public init(executableFilePath: String, scheme: String, port: Int) {
+      super.init()
+      super.executableURL = .init(filePath: executableFilePath)
+      super.arguments = [scheme, port.description]
+    }
+
+    public func setTerminationHandler(
+      _ closure: @escaping @Sendable (ProcessableProcess) -> Void
+    ) {
+      super.terminationHandler = { process in
+        guard let pprocess = process as? ProcessableProcess else {
+          assertionFailure()
+          closure(self)
+          return
+        }
+        closure(pprocess)
+      }
+    }
+
+    public func createPipe() -> Pipe {
+      Pipe()
+    }
   }
-}
+
+  extension Pipe: Pipable {}
+#endif

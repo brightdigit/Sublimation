@@ -145,7 +145,7 @@ public actor SublimationLifecycleHandler<
       bucketName: String,
       key: Key
     ) where WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key>,
-      NgrokServerFactoryType == NgrokCLIAPIServerFactory,
+      NgrokServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
       WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key == Key {
       self.init(
         factory: NgrokCLIAPIServerFactory(ngrokPath: ngrokPath),

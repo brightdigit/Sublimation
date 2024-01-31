@@ -1,5 +1,5 @@
 //
-//  NgrokProcessCLIAPI.swift
+//  WritableTunnelRepositoryTests.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,22 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
+import XCTest
 
-public struct NgrokProcessCLIAPI<ProcessType: Processable> {
-  public let ngrokPath: String
-
-  public init(ngrokPath: String) {
-    self.ngrokPath = ngrokPath
-  }
-}
-
-extension NgrokProcessCLIAPI: NgrokCLIAPI {
-  public func process(forHTTPPort httpPort: Int) -> any NgrokProcess {
-    NgrokMacProcess(
-      ngrokPath: ngrokPath,
-      httpPort: httpPort,
-      processType: ProcessType.self
-    )
+class WritableTunnelRepositoryTests: XCTestCase {
+  func testExample() {
+    // Add test logic here.
   }
 }
