@@ -28,17 +28,137 @@
 //
 
 import XCTest
+import OpenAPIRuntime
+import AsyncHTTPClient
+@testable import SublimationVapor
+
+public func XCTAsyncAssert(_ expression: @autoclosure () async throws -> Bool, _ message: @autoclosure () -> String = "", file: StaticString = #filePath, line: UInt = #line) async rethrows {
+  let expressionResult = try await expression()
+   XCTAssert(expressionResult, message(), file: file, line: line)
+}
+extension NetworkResult {
+  var isSuccess : Bool {
+    guard case .success = self else {
+      return false
+    }
+    return true
+    
+  }
+  
+  var isFailure : Bool {
+    guard case .failure = self else {
+      return false
+    }
+    return true
+  }
+  
+  
+  func underlyingClientError<Failure : Error> () -> Failure? {
+    guard case .connectionRefused(let clientError)  = self else {
+      return nil
+    }
+    return clientError.underlyingError as? Failure
+  }
+}
 
 class NetworkResultTests: XCTestCase {
   func testError() {
-    XCTFail("not implemented")
+    let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
+    let timeoutError = HTTPClientError.connectTimeout
+    
+    let clientPosixError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: posixError)
+    let clientTimeoutError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: timeoutError)
+    let clientOtherError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: NSError())
+    
+    let actualPosixError : HTTPClient.NWPOSIXError? = NetworkResult<Void>(error: clientPosixError).underlyingClientError()
+    XCTAssertEqual(
+      actualPosixError?.errorCode,
+      posixError.errorCode
+    )
+    
+    let actualTimeoutError : HTTPClientError? = NetworkResult<Void>(error: clientTimeoutError).underlyingClientError()
+    XCTAssertEqual(
+      actualTimeoutError,
+      timeoutError
+    )
+    
+    XCTAssert(NetworkResult<Void>(error: clientOtherError).isFailure)
+    XCTAssert(NetworkResult<Void>(error: posixError).isFailure)
+    XCTAssert(NetworkResult<Void>(error: timeoutError).isFailure)
   }
 
-  func testClosure() {
-    XCTFail("not implemented")
+  func testClosure() async {
+    let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
+    let timeoutError = HTTPClientError.connectTimeout
+    
+    let clientPosixError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: posixError)
+    let clientTimeoutError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: timeoutError)
+    let clientOtherError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: NSError())
+    
+    let actualPosixError : HTTPClient.NWPOSIXError? = await NetworkResult<Void>{throw clientPosixError}.underlyingClientError()
+    XCTAssertEqual(
+      actualPosixError?.errorCode,
+      posixError.errorCode
+    )
+    
+    let actualTimeoutError : HTTPClientError? = await NetworkResult<Void>{throw  clientTimeoutError}.underlyingClientError()
+    XCTAssertEqual(
+      actualTimeoutError,
+      timeoutError
+    )
+    
+    
+    
+    
+    await XCTAsyncAssert(await NetworkResult<Void>{ throw clientOtherError}.isFailure)
+    await XCTAsyncAssert(await NetworkResult<Void>{ throw posixError}.isFailure)
+    await XCTAsyncAssert(await NetworkResult<Void>{ throw timeoutError}.isFailure)
+    await XCTAsyncAssert(await NetworkResult<Void>{ throw timeoutError}.isFailure)
+    
+    
+    await XCTAsyncAssert(await NetworkResult{}.isSuccess)
+    
   }
 
-  func testGet() {
-    XCTFail("not implemented")
+  func testGet() async {
+    let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
+    let timeoutError = HTTPClientError.connectTimeout
+    
+    let clientPosixError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: posixError)
+    let clientTimeoutError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: timeoutError)
+    let clientOtherError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: URLError(.unknown))
+    
+    do {
+      let value = try await NetworkResult<Void>{throw clientPosixError}.get()
+      XCTAssertNil(value)
+    } catch {
+      XCTAssertNil(error)
+    }
+    
+    
+    do {
+      let value = try await NetworkResult<Void>{throw clientTimeoutError}.get()
+      XCTAssertNil(value)
+    } catch {
+      XCTAssertNil(error)
+    }
+    
+    
+    var error:(any Error)?
+    do {
+      let value = try await NetworkResult<Void>{throw clientOtherError}.get()
+      error = nil
+    } catch let caughtError {
+      error = caughtError
+    }
+    XCTAssertNotNil(error)
+    
+    
+    do {
+      let value = try await NetworkResult{}.get()
+      XCTAssertNotNil(value)
+    } catch {
+      XCTAssertNil(error)
+    }
   }
 }
