@@ -28,9 +28,20 @@
 //
 
 import XCTest
+@testable import Sublimation
 
 class OptionalTests: XCTestCase {
   func testFlatTuple() {
-    XCTFail("not implemented")
+    let nilValue : Int? = nil
+    let notNilValue : Int? = 12
+    let expectedNotNil = (12,12)
+    
+    XCTAssertNil( nilValue.flatTuple(notNilValue))
+    XCTAssertNil( nilValue.flatTuple(nilValue))
+    XCTAssertNil( notNilValue.flatTuple(nilValue))
+    
+    let actualNotNil = notNilValue.flatTuple(notNilValue)
+    XCTAssertEqual(actualNotNil?.0 , expectedNotNil.0)
+    XCTAssertEqual(actualNotNil?.1 , expectedNotNil.1)
   }
 }

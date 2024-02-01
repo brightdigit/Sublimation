@@ -29,7 +29,7 @@
 
 import Foundation
 
-public protocol TunnelRepository: Sendable {
+public protocol TunnelRepository<Key>: Sendable {
   associatedtype Key: Sendable
   func tunnel(forKey key: Key) async throws -> URL?
 }

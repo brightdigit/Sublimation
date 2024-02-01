@@ -41,10 +41,6 @@ public final class KVdbTunnelRepository<Key: Sendable>: WritableTunnelRepository
     self.bucketName = bucketName
   }
 
-  public static func setupClient<TunnelClientType: KVdbTunnelClient>(
-    _: TunnelClientType
-  ) where TunnelClientType.Key == Key {}
-
   public func tunnel(forKey key: Key) async throws -> URL? {
     try await client.getValue(ofKey: key, fromBucket: bucketName)
   }

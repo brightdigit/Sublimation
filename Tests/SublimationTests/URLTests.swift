@@ -31,6 +31,9 @@ import XCTest
 
 class URLTests: XCTestCase {
   func testKVdbURLConstructable() {
-    XCTFail("not implemented")
+    let base = "http://www.apple.com"
+    let keyBucketPath = UUID().uuidString
+    let url = URL(kvDBBase: base, keyBucketPath: keyBucketPath)
+    XCTAssertEqual(url.absoluteString, "\(base)/\(keyBucketPath)")
   }
 }

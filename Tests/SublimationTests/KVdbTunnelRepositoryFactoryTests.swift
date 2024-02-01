@@ -27,14 +27,85 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import Sublimation
 import XCTest
 
-class KVdbTunnelRepositoryFactoryTests: XCTestCase {
-  func testInit() {
-    XCTFail("not implemented")
+actor MockTunnelClient<Key : Sendable> : KVdbTunnelClient {
+  internal init(
+    getValueResult: Result<URL, any Error>? = nil, saveValueError: (any Error)? = nil
+  ) {
+    self.getValueResult = getValueResult
+    self.saveValueError = saveValueError
   }
+  
+  struct GetParameters {
+    let key : Key
+    let bucketName : String
+  }
+  
+  struct SaveParameters {
+    let value : URL
+    let key : Key
+    let bucketName : String
+  }
+  
+  let getValueResult : Result<URL, any Error>?
+  let saveValueError : (any Error)?
+  
+  var getValuesPassed = [GetParameters]()
+  var saveValuesPassed = [SaveParameters]()
+  
+  func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
+    getValuesPassed.append(.init(key: key, bucketName: bucketName))
+    return try self.getValueResult!.get()
+  }
+  
+  func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
+    saveValuesPassed.append(.init(value: value, key: key, bucketName: bucketName))
+    if let saveValueError {
+      throw saveValueError
+    }
+  }
+  
+  
+  
+  
+}
+extension URL {
+  static func random () -> URL {
+    URL(filePath: NSTemporaryDirectory())
+  }
+}
+class KVdbTunnelRepositoryFactoryTests: XCTestCase {
 
-  func testSetupClient() {
-    XCTFail("not implemented")
+  func testSetupClient() async throws {
+    let getURLExpected : URL = .random()
+    let client = MockTunnelClient<UUID>(
+      getValueResult: .success(getURLExpected),
+      saveValueError: nil
+    )
+    let saveKey = UUID()
+    let saveURL : URL = .random()
+    
+    let getKey  = UUID()
+    
+    let bucketName = UUID().uuidString
+    let factory = KVdbTunnelRepositoryFactory<UUID>(bucketName: bucketName)
+    
+    let repository = factory.setupClient(client)
+    
+    try await repository.saveURL(saveURL, withKey: saveKey)
+    let getURLActual = try await repository.tunnel(forKey: getKey)
+    
+    let savedValue = await client.saveValuesPassed.last
+    XCTAssertEqual(saveKey, savedValue?.key)
+    XCTAssertEqual(saveURL, savedValue?.value)
+    XCTAssertEqual(bucketName, savedValue?.bucketName)
+    
+    let getValue = await client.getValuesPassed.last
+    XCTAssertEqual(getKey, getValue?.key)
+    XCTAssertEqual(bucketName, getValue?.bucketName)
+    
+    XCTAssertEqual(getURLActual, getURLExpected)
   }
 }

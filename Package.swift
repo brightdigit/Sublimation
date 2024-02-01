@@ -87,7 +87,7 @@ let package = Package(
     ),
     .testTarget(
       name: "SublimationTests",
-      dependencies: [],
+      dependencies: ["Sublimation"],
       swiftSettings: swiftSettings
     ),
     .testTarget(

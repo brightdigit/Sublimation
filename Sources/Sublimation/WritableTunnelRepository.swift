@@ -33,6 +33,6 @@ import Foundation
   import FoundationNetworking
 #endif
 
-public protocol WritableTunnelRepository: TunnelRepository {
+public protocol WritableTunnelRepository<Key>: TunnelRepository {
   func saveURL(_ url: URL, withKey key: Key) async throws
 }
