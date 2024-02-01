@@ -63,18 +63,20 @@ extension NetworkResult {
 
 class NetworkResultTests: XCTestCase {
   func testError() {
+#if canImport(Network)
     let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
-    let timeoutError = HTTPClientError.connectTimeout
-    
     let clientPosixError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: posixError)
-    let clientTimeoutError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: timeoutError)
-    let clientOtherError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: NSError())
-    
     let actualPosixError : HTTPClient.NWPOSIXError? = NetworkResult<Void>(error: clientPosixError).underlyingClientError()
     XCTAssertEqual(
       actualPosixError?.errorCode,
       posixError.errorCode
     )
+    #endif
+    let timeoutError = HTTPClientError.connectTimeout
+    
+    let clientTimeoutError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: timeoutError)
+    
+    
     
     let actualTimeoutError : HTTPClientError? = NetworkResult<Void>(error: clientTimeoutError).underlyingClientError()
     XCTAssertEqual(
@@ -82,24 +84,28 @@ class NetworkResultTests: XCTestCase {
       timeoutError
     )
     
-    XCTAssert(NetworkResult<Void>(error: clientOtherError).isFailure)
+  #if canImport(Network)
     XCTAssert(NetworkResult<Void>(error: posixError).isFailure)
+    #endif
     XCTAssert(NetworkResult<Void>(error: timeoutError).isFailure)
   }
 
   func testClosure() async {
+#if canImport(Network)
     let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
+    let clientPosixError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: posixError)
+    #endif
     let timeoutError = HTTPClientError.connectTimeout
     
-    let clientPosixError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: posixError)
     let clientTimeoutError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: timeoutError)
-    let clientOtherError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: NSError())
     
+  #if canImport(Network)
     let actualPosixError : HTTPClient.NWPOSIXError? = await NetworkResult<Void>{throw clientPosixError}.underlyingClientError()
     XCTAssertEqual(
       actualPosixError?.errorCode,
       posixError.errorCode
     )
+#endif
     
     let actualTimeoutError : HTTPClientError? = await NetworkResult<Void>{throw  clientTimeoutError}.underlyingClientError()
     XCTAssertEqual(
@@ -109,9 +115,10 @@ class NetworkResultTests: XCTestCase {
     
     
     
+  #if canImport(Network)
     
-    await XCTAsyncAssert(await NetworkResult<Void>{ throw clientOtherError}.isFailure)
     await XCTAsyncAssert(await NetworkResult<Void>{ throw posixError}.isFailure)
+    #endif
     await XCTAsyncAssert(await NetworkResult<Void>{ throw timeoutError}.isFailure)
     await XCTAsyncAssert(await NetworkResult<Void>{ throw timeoutError}.isFailure)
     
@@ -121,19 +128,29 @@ class NetworkResultTests: XCTestCase {
   }
 
   func testGet() async {
+    
+#if canImport(Network)
     let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
+    #endif
     let timeoutError = HTTPClientError.connectTimeout
     
+    
+    
+  #if canImport(Network)
     let clientPosixError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: posixError)
+    #endif
     let clientTimeoutError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: timeoutError)
     let clientOtherError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: URLError(.unknown))
     
+    
+  #if canImport(Network)
     do {
       let value = try await NetworkResult<Void>{throw clientPosixError}.get()
       XCTAssertNil(value)
     } catch {
       XCTAssertNil(error)
     }
+    #endif
     
     
     do {

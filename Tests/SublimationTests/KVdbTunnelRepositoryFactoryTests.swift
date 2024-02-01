@@ -30,6 +30,11 @@
 import Sublimation
 import XCTest
 
+
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 actor MockTunnelClient<Key : Sendable> : KVdbTunnelClient {
   internal init(
     getValueResult: Result<URL, any Error>? = nil, saveValueError: (any Error)? = nil
@@ -73,7 +78,7 @@ actor MockTunnelClient<Key : Sendable> : KVdbTunnelClient {
 }
 extension URL {
   static func random () -> URL {
-    URL(filePath: NSTemporaryDirectory())
+    URL(fileURLWithPath: NSTemporaryDirectory())
   }
 }
 class KVdbTunnelRepositoryFactoryTests: XCTestCase {

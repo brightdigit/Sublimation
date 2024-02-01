@@ -31,6 +31,16 @@ import NgrokOpenAPIClient
 @testable import Ngrokit
 import XCTest
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
+
+extension URL {
+  static func temporaryDirectory () -> URL {
+    URL(fileURLWithPath: NSTemporaryDirectory())
+  }
+}
 final actor MockAPI : APIProtocol {
   internal init(
     actualStopTunnelResult: Result<Operations.stopTunnel.Output, any Error>? = nil,
@@ -88,7 +98,7 @@ class NgrokClientTests: XCTestCase {
   }
   
   func testStartTunnel() async throws {
-    let public_url = URL(fileURLWithPath: NSTemporaryDirectory())
+    let public_url = URL.temporaryDirectory()
     let expectedInput = TunnelRequest(port: .random(in: 10...100), name: UUID().uuidString, proto: UUID().uuidString)
     let expectedOutput : Components.Schemas.TunnelResponse = .init(name: UUID().uuidString, public_url: public_url.absoluteString, config: .init(addr: UUID().uuidString, inspect: .random()))
     let request = Operations.startTunnel.Output.created(.init(body: .json(expectedOutput)))
@@ -129,9 +139,9 @@ class NgrokClientTests: XCTestCase {
 
   func testListTunnel() async throws {
     let expectedTunnels : [Components.Schemas.TunnelResponse] = [
-      .init(name: UUID().uuidString, public_url: URL(filePath: NSTemporaryDirectory()).absoluteString, config: .init(addr: UUID().uuidString, inspect: .random())),
-      .init(name: UUID().uuidString, public_url: URL(filePath: NSTemporaryDirectory()).absoluteString, config: .init(addr: UUID().uuidString, inspect: .random())),
-      .init(name: UUID().uuidString, public_url: URL(filePath: NSTemporaryDirectory()).absoluteString, config: .init(addr: UUID().uuidString, inspect: .random()))
+      .init(name: UUID().uuidString, public_url: URL.temporaryDirectory().absoluteString, config: .init(addr: UUID().uuidString, inspect: .random())),
+      .init(name: UUID().uuidString, public_url: URL.temporaryDirectory().absoluteString, config: .init(addr: UUID().uuidString, inspect: .random())),
+      .init(name: UUID().uuidString, public_url: URL.temporaryDirectory().absoluteString, config: .init(addr: UUID().uuidString, inspect: .random()))
     ]
     let api = MockAPI(actualListTunnelResult: .success(.ok(.init(body: .json(.init(tunnels: expectedTunnels))))))
     let client = NgrokClient(underlyingClient: api)
