@@ -54,13 +54,17 @@ jobs:
       - name: Test
         run: swift test
       - uses: sersoft-gmbh/swift-coverage-action@v4
-      - name: Upload iOS coverage to Codecov
+        id: coverage-files
+        with:
+          fail-on-empty-output: true
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4       
         with:
           fail_ci_if_error: true
-          flags: iOS,iOS-${{ matrix.iOSVersion }}
+          flags: swift-${{ matrix.swift-version }},ubuntu-${{ matrix.RELEASE_DOT }}
           verbose: true        
-          token: ${{ secrets.CODECOV_TOKEN }}          
+          token: ${{ secrets.CODECOV_TOKEN }}  
+          files: ${{ join(fromJSON(steps.coverage-files.outputs.files), ',') }}        
   build-macos:
     name: Build on macOS
     runs-on: ${{ matrix.os }}
@@ -123,6 +127,9 @@ jobs:
       - name: Build
         run: swift test
       - uses: sersoft-gmbh/swift-coverage-action@v4
+        id: coverage-files
+        with:
+          fail-on-empty-output: true
       - name: Upload SPM coverage to Codecov
         uses: codecov/codecov-action@v4       
         with:
@@ -130,6 +137,7 @@ jobs:
           flags: SPM
           verbose: true        
           token: ${{ secrets.CODECOV_TOKEN }}  
+          files: ${{ join(fromJSON(steps.coverage-files.outputs.files), ',') }}     
       - name: Lint
         run: ./scripts/lint.sh
         if: startsWith(matrix.xcode,'/Applications/Xcode_15.2')
