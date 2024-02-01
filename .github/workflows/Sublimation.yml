@@ -52,7 +52,7 @@ jobs:
       - name: Add Path
         run: echo "$GITHUB_WORKSPACE/swift-${SWIFT_VER}-RELEASE-ubuntu${RELEASE_DOT}/usr/bin" >> $GITHUB_PATH
       - name: Test
-        run: swift test
+        run: swift test --enable-code-coverage 
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files
         with:
@@ -124,8 +124,8 @@ jobs:
         run: |
           brew update
           brew install mint
-      - name: Build
-        run: swift test
+      - name: Test
+        run: swift test --enable-code-coverage 
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files
         with:
