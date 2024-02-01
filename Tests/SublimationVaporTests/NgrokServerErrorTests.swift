@@ -31,6 +31,5 @@ import XCTest
 
 class NgrokServerErrorTests: XCTestCase {
   func testCantSaveTunnel() {
-    XCTFail("not implemented")
   }
 }

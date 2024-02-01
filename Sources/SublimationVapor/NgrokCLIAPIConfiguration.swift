@@ -30,6 +30,19 @@
 import Logging
 import Vapor
 
+internal protocol ServerApplication {
+  var httpServerConfigurationPort : Int { get }
+  var logger : Logger { get }
+}
+
+extension Vapor.Application : ServerApplication {
+  var httpServerConfigurationPort: Int {
+    http.server.configuration.port
+  }
+  
+  
+}
+
 public struct NgrokCLIAPIConfiguration: NgrokServerConfiguration {
   public typealias Server = NgrokCLIAPIServer
   public let port: Int
@@ -37,10 +50,15 @@ public struct NgrokCLIAPIConfiguration: NgrokServerConfiguration {
 }
 
 extension NgrokCLIAPIConfiguration: NgrokVaporConfiguration {
-  public init(application: Application) {
+  internal init(serverApplication: any ServerApplication) {
     self.init(
-      port: application.http.server.configuration.port,
-      logger: application.logger
+      port: serverApplication.httpServerConfigurationPort,
+      logger: serverApplication.logger
     )
+    
+  }
+  
+  public init(application: Vapor.Application) {
+    self.init(serverApplication: application)
   }
 }

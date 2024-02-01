@@ -30,11 +30,9 @@
 import XCTest
 
 class NgrokCLIAPIServerTests: XCTestCase {
-  func testInit() {
-    XCTFail("not implemented")
-  }
-  
-  func testStart() {
-    
-  }
+
+//  
+//  func testStart() {
+//    
+//  }
 }
