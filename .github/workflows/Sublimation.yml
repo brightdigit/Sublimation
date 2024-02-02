@@ -164,7 +164,7 @@ jobs:
           verbose: true        
           token: ${{ secrets.CODECOV_TOKEN }}          
       - name: Run watchOS target tests
-        run: xcodebuild build test -scheme Sublimation-Package -sdk watchsimulator -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}'
+        run: xcodebuild build test -scheme Sublimation-Package -sdk watchsimulator -destination 'platform=watchOS Simulator, name=${{ matrix.watchName }}, OS=${{ matrix.watchOSVersion }}'
       - uses: sersoft-gmbh/swift-coverage-action@v4
       - name: Upload watchOS coverage to Codecov
         uses: codecov/codecov-action@v4
