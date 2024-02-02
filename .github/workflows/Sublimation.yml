@@ -128,18 +128,18 @@ jobs:
         run: swift build
       - name: Run Swift Package tests
         run: swift test -v --enable-code-coverage
-      - uses: sersoft-gmbh/swift-coverage-action@v4
-        id: coverage-files
-        with:
-          fail-on-empty-output: true
-      - name: Upload SPM coverage to Codecov
-        uses: codecov/codecov-action@v4       
-        with:
-          fail_ci_if_error: true
-          flags: SPM
-          verbose: true        
-          token: ${{ secrets.CODECOV_TOKEN }}  
-          files: ${{ join(fromJSON(steps.coverage-files.outputs.files), ',') }}     
+      # - uses: sersoft-gmbh/swift-coverage-action@v4
+      #   id: coverage-files
+      #   with:
+      #     fail-on-empty-output: true
+      # - name: Upload SPM coverage to Codecov
+      #   uses: codecov/codecov-action@v4       
+      #   with:
+      #     fail_ci_if_error: true
+      #     flags: SPM
+      #     verbose: true        
+      #     token: ${{ secrets.CODECOV_TOKEN }}  
+      #     files: ${{ join(fromJSON(steps.coverage-files.outputs.files), ',') }}     
       - name: Lint
         run: ./scripts/lint.sh
         if: startsWith(matrix.xcode,'/Applications/Xcode_15.2')
