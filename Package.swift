@@ -81,7 +81,8 @@ let package = Package(
       swiftSettings: swiftSettings
     ),
     .target(
-      name: "NgrokitMocks"
+      name: "NgrokitMocks",
+      dependencies: ["Ngrokit"]
     ),
     .testTarget(
       name: "NgrokitTests",

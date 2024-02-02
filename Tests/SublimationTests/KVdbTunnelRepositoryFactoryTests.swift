@@ -38,7 +38,7 @@ import XCTest
 
 class KVdbTunnelRepositoryFactoryTests: XCTestCase {
   func testSetupClient() async throws {
-    let getURLExpected: URL = .temporaryDirectory
+    let getURLExpected: URL = .random()
     let client = MockTunnelClient<UUID>(
       getValueResult: .success(getURLExpected),
       saveValueError: nil
