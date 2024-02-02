@@ -154,7 +154,7 @@ jobs:
       #       ATTEMPT=$(($ATTEMPT+1))
       #     done
       - name: Run iOS target tests
-        run:  xcodebuild build test -scheme Sublimation -sdk iphonesimulator -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName}},OS=${{ matrix.iOSVersion }}'
+        run:  xcodebuild build test -scheme Sublimation-Package -sdk iphonesimulator -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName}},OS=${{ matrix.iOSVersion }}'
       - uses: sersoft-gmbh/swift-coverage-action@v4
       - name: Upload iOS coverage to Codecov
         uses: codecov/codecov-action@v4       
@@ -164,7 +164,7 @@ jobs:
           verbose: true        
           token: ${{ secrets.CODECOV_TOKEN }}          
       - name: Run watchOS target tests
-        run: xcodebuild build test -scheme Sublimation -sdk watchsimulator -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}'
+        run: xcodebuild build test -scheme Sublimation-Package -sdk watchsimulator -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}'
       - uses: sersoft-gmbh/swift-coverage-action@v4
       - name: Upload watchOS coverage to Codecov
         uses: codecov/codecov-action@v4
