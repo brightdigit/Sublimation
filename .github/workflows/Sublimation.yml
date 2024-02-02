@@ -125,7 +125,7 @@ jobs:
           brew update
           brew install mint
       - name: Build
-        run: swift build --build-tests
+        run: swift build
       - name: Run Swift Package tests
         run: swift test -v --enable-code-coverage
       - uses: sersoft-gmbh/swift-coverage-action@v4
