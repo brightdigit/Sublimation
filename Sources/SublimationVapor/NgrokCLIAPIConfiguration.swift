@@ -31,16 +31,14 @@ import Logging
 import Vapor
 
 internal protocol ServerApplication {
-  var httpServerConfigurationPort : Int { get }
-  var logger : Logger { get }
+  var httpServerConfigurationPort: Int { get }
+  var logger: Logger { get }
 }
 
-extension Vapor.Application : ServerApplication {
+extension Vapor.Application: ServerApplication {
   var httpServerConfigurationPort: Int {
     http.server.configuration.port
   }
-  
-  
 }
 
 public struct NgrokCLIAPIConfiguration: NgrokServerConfiguration {
@@ -55,9 +53,8 @@ extension NgrokCLIAPIConfiguration: NgrokVaporConfiguration {
       port: serverApplication.httpServerConfigurationPort,
       logger: serverApplication.logger
     )
-    
   }
-  
+
   public init(application: Vapor.Application) {
     self.init(serverApplication: application)
   }

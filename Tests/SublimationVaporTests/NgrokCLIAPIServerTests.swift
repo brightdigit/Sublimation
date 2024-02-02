@@ -30,9 +30,8 @@
 import XCTest
 
 class NgrokCLIAPIServerTests: XCTestCase {
-
-//  
+//
 //  func testStart() {
-//    
+//
 //  }
 }

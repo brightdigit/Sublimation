@@ -27,21 +27,19 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import XCTest
 import Sublimation
+import SublimationMocks
+import XCTest
 
-struct MockURL : KVdbURLConstructable {
-  internal init(kvDBBase: String, keyBucketPath: String) {
-    self.kvDBBase = kvDBBase
-    self.keyBucketPath = keyBucketPath
-  }
-  
-  let kvDBBase : String
-  let keyBucketPath: String
-  
-  
-  
-}
+//struct MockURL: KVdbURLConstructable {
+//  internal init(kvDBBase: String, keyBucketPath: String) {
+//    self.kvDBBase = kvDBBase
+//    self.keyBucketPath = keyBucketPath
+//  }
+//
+//  let kvDBBase: String
+//  let keyBucketPath: String
+//}
 
 class KVdbTests: XCTestCase {
   func testPath() {
@@ -56,9 +54,8 @@ class KVdbTests: XCTestCase {
     let bucket = UUID().uuidString
     let url = KVdb.construct(MockURL.self, forKey: key, atBucket: bucket)
     let expectedPath = KVdb.path(forKey: key, atBucket: bucket)
-    
+
     XCTAssertEqual(url.kvDBBase, KVdb.baseString)
     XCTAssertEqual(url.keyBucketPath, expectedPath)
   }
-
 }

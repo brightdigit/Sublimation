@@ -1,5 +1,5 @@
 //
-//  OptionalTests.swift
+//  KVdbTests.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,21 +27,18 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-@testable import Sublimation
-import XCTest
+import Sublimation
 
-class OptionalTests: XCTestCase {
-  func testFlatTuple() {
-    let nilValue: Int? = nil
-    let notNilValue: Int? = 12
-    let expectedNotNil = (12, 12)
 
-    XCTAssertNil(nilValue.flatTuple(notNilValue))
-    XCTAssertNil(nilValue.flatTuple(nilValue))
-    XCTAssertNil(notNilValue.flatTuple(nilValue))
-
-    let actualNotNil = notNilValue.flatTuple(notNilValue)
-    XCTAssertEqual(actualNotNil?.0, expectedNotNil.0)
-    XCTAssertEqual(actualNotNil?.1, expectedNotNil.1)
+package struct MockURL : KVdbURLConstructable {
+  package  init(kvDBBase: String, keyBucketPath: String) {
+    self.kvDBBase = kvDBBase
+    self.keyBucketPath = keyBucketPath
   }
+  
+  package let kvDBBase : String
+  package let keyBucketPath: String
+  
+  
+  
 }

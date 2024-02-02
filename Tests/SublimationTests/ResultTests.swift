@@ -27,44 +27,41 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import XCTest
 @testable import Sublimation
+import SublimationMocks
+import XCTest
+//
+//extension Result {
+//  func mockErrorValue<T: Equatable & Sendable>() -> T? {
+//    guard let mockError = error as? MockError<T> else {
+//      return nil
+//    }
+//
+//    switch mockError {
+//    case let .value(value):
+//      return value
+//    }
+//  }
+//
+//  var error: (any Error)? {
+//    guard case let .failure(failure) = self else {
+//      return nil
+//    }
+//    return failure
+//  }
+//}
 
-enum MockError<T : Equatable & Sendable>: Error {
-  case value(T)
-}
-
-extension Result {
-  func mockErrorValue<T : Equatable & Sendable> () -> T? {
-    guard let mockError = self.error as? MockError<T> else {
-      return nil
-    }
-    
-    switch mockError {
-    case .value(let value):
-      return value
-    }
-  }
-  var error : (any Error)? {
-    get {
-      guard case .failure(let failure) = self else {
-        return nil
-      }
-      return failure
-    }
-  }
-}
 class ResultTests: XCTestCase {
   typealias MockResult = Result<UUID, any Error>
   func testInit() {
     let successValue = UUID()
     let errorValue = UUID()
-    
+
     let successResult = MockResult(success: successValue, failure: nil)
     let failedResult = MockResult(success: UUID(), failure: MockError.value(errorValue))
     let emptyResult = MockResult(success: nil, failure: nil)
-    
-    let actualErrorValue : UUID? = failedResult.mockErrorValue()
+
+    let actualErrorValue: UUID? = failedResult.mockErrorValue()
     try XCTAssertEqual(successResult.get(), successValue)
     XCTAssertEqual(actualErrorValue, errorValue)
     XCTAssert(emptyResult.error is Result<UUID, any Error>.EmptyError)

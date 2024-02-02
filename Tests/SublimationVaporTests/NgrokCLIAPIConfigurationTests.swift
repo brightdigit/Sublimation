@@ -27,24 +27,24 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import Logging
 @testable import SublimationVapor
 import XCTest
-import Logging
 
-struct MockServerApplication : ServerApplication {
- let httpServerConfigurationPort: Int
- let logger: Logger
+struct MockServerApplication: ServerApplication {
+  let httpServerConfigurationPort: Int
+  let logger: Logger
 }
 
 class NgrokCLIAPIConfigurationTests: XCTestCase {
   func testInit() {
     let loggerLabel = UUID().uuidString
     let application = MockServerApplication(
-      httpServerConfigurationPort: .random(in: 10...10000),
+      httpServerConfigurationPort: .random(in: 10 ... 10_000),
       logger: .init(label: loggerLabel)
     )
     let configuration = NgrokCLIAPIConfiguration(serverApplication: application)
-    XCTAssertEqual(    configuration.logger.label, loggerLabel)
+    XCTAssertEqual(configuration.logger.label, loggerLabel)
     XCTAssertEqual(configuration.port, application.httpServerConfigurationPort)
   }
 }

@@ -1,5 +1,5 @@
 //
-//  OptionalTests.swift
+//  ResultTests.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,21 +27,46 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-@testable import Sublimation
+import Ngrokit
 import XCTest
 
-class OptionalTests: XCTestCase {
-  func testFlatTuple() {
-    let nilValue: Int? = nil
-    let notNilValue: Int? = 12
-    let expectedNotNil = (12, 12)
+enum MockError<T: Equatable & Sendable>: Error {
+  case value(T)
+}
 
-    XCTAssertNil(nilValue.flatTuple(notNilValue))
-    XCTAssertNil(nilValue.flatTuple(nilValue))
-    XCTAssertNil(notNilValue.flatTuple(nilValue))
+extension Result {
+  func mockErrorValue<T: Equatable & Sendable>() -> T? {
+    guard let mockError = error as? MockError<T> else {
+      return nil
+    }
 
-    let actualNotNil = notNilValue.flatTuple(notNilValue)
-    XCTAssertEqual(actualNotNil?.0, expectedNotNil.0)
-    XCTAssertEqual(actualNotNil?.1, expectedNotNil.1)
+    switch mockError {
+    case let .value(value):
+      return value
+    }
+  }
+
+  var error: (any Error)? {
+    guard case let .failure(failure) = self else {
+      return nil
+    }
+    return failure
   }
 }
+//
+//class ResultTests: XCTestCase {
+//  typealias MockResult = Result<UUID, any Error>
+//  func testInit() {
+//    let successValue = UUID()
+//    let errorValue = UUID()
+//
+//    let successResult = MockResult(success: successValue, failure: nil)
+//    let failedResult = MockResult(success: UUID(), failure: MockError.value(errorValue))
+//    let emptyResult = MockResult(success: nil, failure: nil)
+//
+//    let actualErrorValue: UUID? = failedResult.mockErrorValue()
+//    try XCTAssertEqual(successResult.get(), successValue)
+//    XCTAssertEqual(actualErrorValue, errorValue)
+//    XCTAssert(emptyResult.error is Result<UUID, any Error>.EmptyError)
+//  }
+//}

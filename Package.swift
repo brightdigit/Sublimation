@@ -80,19 +80,26 @@ let package = Package(
       ],
       swiftSettings: swiftSettings
     ),
+    .target(
+      name: "NgrokitMocks"
+    ),
     .testTarget(
       name: "NgrokitTests",
-      dependencies: ["Ngrokit"],
+      dependencies: ["Ngrokit", "NgrokitMocks"],
       swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "SublimationMocks"
     ),
     .testTarget(
       name: "SublimationTests",
-      dependencies: ["Sublimation"],
+      dependencies: ["Sublimation", "SublimationMocks"],
       swiftSettings: swiftSettings
     ),
     .testTarget(
       name: "SublimationVaporTests",
-      dependencies: ["SublimationVapor"],
+      dependencies: ["SublimationVapor"
+                     , "NgrokitMocks"],
       swiftSettings: swiftSettings
     )
   ]

@@ -47,7 +47,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
   private let client: NgrokClient
   internal let process: any NgrokProcess
   internal let port: Int
-  //internal let pipe: Pipe
+  // internal let pipe: Pipe
   internal let logger: Logger
 
   public init(
@@ -59,7 +59,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
   ) {
     self.delegate = delegate
     self.client = client
-    //pipe = Pipe()
+    // pipe = Pipe()
     self.process = process
     self.port = port
     self.logger = logger
