@@ -90,7 +90,8 @@ let package = Package(
       swiftSettings: swiftSettings
     ),
     .target(
-      name: "SublimationMocks"
+      name: "SublimationMocks",
+      dependencies: ["Sublimation"]
     ),
     .testTarget(
       name: "SublimationTests",
