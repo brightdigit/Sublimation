@@ -82,7 +82,7 @@ jobs:
             os: macos-13
             iOSVersion: "17.2"
             watchOSVersion: "10.2"
-            watchName: "Apple Watch Ultra 9 (45mm)"
+            watchName: "Apple Watch Series 9 (45mm)"
             iPhoneName: "iPhone 15 Pro"
           - xcode: "/Applications/Xcode_15.2.app"
             os: macos-14
