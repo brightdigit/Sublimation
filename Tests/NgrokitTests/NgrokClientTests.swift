@@ -36,19 +36,33 @@ import XCTest
   import FoundationNetworking
 #endif
 
-class NgrokClientTests: XCTestCase {
-  fileprivate func assertTunnelEqual(_ actualOutput: Tunnel, _ expectedOutput: Components.Schemas.TunnelResponse) {
+internal class NgrokClientTests: XCTestCase {
+  private func assertTunnelEqual(
+    _ actualOutput: Tunnel,
+    _ expectedOutput: Components.Schemas.TunnelResponse
+  ) {
     XCTAssertEqual(actualOutput.publicURL.absoluteString, expectedOutput.public_url)
     XCTAssertEqual(actualOutput.name, expectedOutput.name)
     XCTAssertEqual(actualOutput.config.addr.absoluteString, expectedOutput.config.addr)
     XCTAssertEqual(actualOutput.config.inspect, expectedOutput.config.inspect)
   }
 
-  func testStartTunnel() async throws {
-    let public_url = URL.temporaryDirectory()
-    let expectedInput = TunnelRequest(port: .random(in: 10 ... 100), name: UUID().uuidString, proto: UUID().uuidString)
-    let expectedOutput: Components.Schemas.TunnelResponse = .init(name: UUID().uuidString, public_url: public_url.absoluteString, config: .init(addr: UUID().uuidString, inspect: .random()))
-    let request = Operations.startTunnel.Output.created(.init(body: .json(expectedOutput)))
+  internal func testStartTunnel() async throws {
+    let publicURL = URL.temporaryDirectory()
+    let expectedInput = TunnelRequest(
+      port: .random(in: 10 ... 100),
+      name: UUID().uuidString,
+      proto: UUID().uuidString
+    )
+    let expectedOutput: Components.Schemas.TunnelResponse =
+      .init(
+        name: UUID().uuidString,
+        public_url: publicURL.absoluteString,
+        config: .init(addr: UUID().uuidString, inspect: .random())
+      )
+    let request = Operations.startTunnel.Output.created(
+      .init(body: .json(expectedOutput))
+    )
     let api = MockAPI(actualStartTunnelResult: .success(request))
     let client = NgrokClient(underlyingClient: api)
     let actualOutput = try await client.startTunnel(expectedInput)
@@ -65,10 +79,8 @@ class NgrokClientTests: XCTestCase {
     XCTAssertEqual(actualInput.proto, expectedInput.proto)
   }
 
-  func testStopTunnel() async throws {
+  internal func testStopTunnel() async throws {
     let expectedInput = UUID().uuidString
-
-    // let expectedOutput : Components.Schemas.TunnelResponse = .init(name: UUID().uuidString, public_url: public_url.absoluteString, config: .init(addr: UUID().uuidString, inspect: .random()))
     let api = MockAPI(actualStopTunnelResult: .success(.noContent(.init())))
     let client = NgrokClient(underlyingClient: api)
 
@@ -82,13 +94,27 @@ class NgrokClientTests: XCTestCase {
     XCTAssertEqual(actualInput, expectedInput)
   }
 
-  func testListTunnel() async throws {
+  internal func testListTunnel() async throws {
     let expectedTunnels: [Components.Schemas.TunnelResponse] = [
-      .init(name: UUID().uuidString, public_url: URL.temporaryDirectory().absoluteString, config: .init(addr: UUID().uuidString, inspect: .random())),
-      .init(name: UUID().uuidString, public_url: URL.temporaryDirectory().absoluteString, config: .init(addr: UUID().uuidString, inspect: .random())),
-      .init(name: UUID().uuidString, public_url: URL.temporaryDirectory().absoluteString, config: .init(addr: UUID().uuidString, inspect: .random()))
+      .init(
+        name: UUID().uuidString,
+        public_url: URL.temporaryDirectory().absoluteString,
+        config: .init(addr: UUID().uuidString, inspect: .random())
+      ),
+      .init(
+        name: UUID().uuidString,
+        public_url: URL.temporaryDirectory().absoluteString,
+        config: .init(addr: UUID().uuidString, inspect: .random())
+      ),
+      .init(
+        name: UUID().uuidString,
+        public_url: URL.temporaryDirectory().absoluteString,
+        config: .init(addr: UUID().uuidString, inspect: .random())
+      )
     ]
-    let api = MockAPI(actualListTunnelResult: .success(.ok(.init(body: .json(.init(tunnels: expectedTunnels))))))
+    let api = MockAPI(
+      actualListTunnelResult: .success(.ok(.init(body: .json(.init(tunnels: expectedTunnels)))))
+    )
     let client = NgrokClient(underlyingClient: api)
     let actualOutput = try await client.listTunnels()
 

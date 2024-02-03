@@ -1,5 +1,5 @@
 //
-//  MockNgrokProcess.swift
+//  MockNgrokCLIAPI.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -30,12 +30,19 @@
 import Foundation
 import Ngrokit
 
-package final class MockNgrokProcess: NgrokProcess {
-  package let id: UUID
+package final class MockNgrokCLIAPI: NgrokCLIAPI {
+  package let process: any NgrokProcess
+  package private(set) var httpPorts = [Int]()
 
-  package init(id: UUID) {
-    self.id = id
+  package convenience init(id: UUID) {
+    self.init(process: MockNgrokProcess(id: id))
   }
 
-  package func run(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
+  internal init(process: any NgrokProcess) {
+    self.process = process
+  }
+
+  package func process(forHTTPPort _: Int) -> any Ngrokit.NgrokProcess {
+    process
+  }
 }

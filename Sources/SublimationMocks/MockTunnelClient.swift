@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  MockTunnelClient.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -31,13 +31,6 @@ import Foundation
 import Sublimation
 
 package actor MockTunnelClient<Key: Sendable>: KVdbTunnelClient {
-  package init(
-    getValueResult: Result<URL, any Error>? = nil, saveValueError: (any Error)? = nil
-  ) {
-    self.getValueResult = getValueResult
-    self.saveValueError = saveValueError
-  }
-
   package struct GetParameters {
     package let key: Key
     package let bucketName: String
@@ -54,22 +47,29 @@ package actor MockTunnelClient<Key: Sendable>: KVdbTunnelClient {
 
   package private(set) var getValuesPassed = [GetParameters]()
   package private(set) var saveValuesPassed = [SaveParameters]()
+  package init(
+    getValueResult: Result<URL, any Error>? = nil, saveValueError: (any Error)? = nil
+  ) {
+    self.getValueResult = getValueResult
+    self.saveValueError = saveValueError
+  }
 
-  package func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
+  package func getValue(
+    ofKey key: Key,
+    fromBucket bucketName: String
+  ) async throws -> URL {
     getValuesPassed.append(.init(key: key, bucketName: bucketName))
     return try getValueResult!.get()
   }
 
-  package func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
+  package func saveValue(
+    _ value: URL,
+    withKey key: Key,
+    inBucket bucketName: String
+  ) async throws {
     saveValuesPassed.append(.init(value: value, key: key, bucketName: bucketName))
     if let saveValueError {
       throw saveValueError
     }
-  }
-}
-
-extension URL {
-  package static func random() -> URL {
-    URL(fileURLWithPath: NSTemporaryDirectory())
   }
 }

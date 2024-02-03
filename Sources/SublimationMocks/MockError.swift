@@ -1,5 +1,5 @@
 //
-//  MockNgrokProcess.swift
+//  MockError.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,15 +27,26 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import Ngrokit
+package enum MockError<T: Equatable & Sendable>: Error {
+  case value(T)
+}
 
-package final class MockNgrokProcess: NgrokProcess {
-  package let id: UUID
+extension Result {
+  package func mockErrorValue<T: Equatable & Sendable>() -> T? {
+    guard let mockError = error as? MockError<T> else {
+      return nil
+    }
 
-  package init(id: UUID) {
-    self.id = id
+    switch mockError {
+    case let .value(value):
+      return value
+    }
   }
 
-  package func run(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
+  package var error: (any Error)? {
+    guard case let .failure(failure) = self else {
+      return nil
+    }
+    return failure
+  }
 }

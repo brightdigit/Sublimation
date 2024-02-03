@@ -58,18 +58,29 @@
 import Foundation
 import Ngrokit
 
-package final class MockPipe: Pipable {
-  internal init(fileHandleForReading: MockDataHandle) {
-    self.fileHandleForReading = fileHandleForReading
-  }
-
-  package let fileHandleForReading: MockDataHandle
-
-  package typealias DataHandleType = MockDataHandle
-}
-
 package final class MockProcess: Processable {
-  internal init(executableFilePath: String, scheme: String, port: Int, terminationReason: TerminationReason, standardErrorPipe: MockPipe? = nil, pipeDataResult: Result<Data?, any Error> = .success(nil), runError: (any Error)? = nil) {
+  package typealias PipeType = MockPipe
+
+  package let executableFilePath: String
+  package let scheme: String
+  package let port: Int
+  package let pipeDataResult: Result<Data?, any Error>
+  package let runError: (any Error)?
+  package let terminationReason: Ngrokit.TerminationReason
+  package var standardErrorPipe: MockPipe?
+
+  package private(set) var isTerminationHandlerSet = false
+  package private(set) var isRunCalled = false
+
+  internal init(
+    executableFilePath: String,
+    scheme: String,
+    port: Int,
+    terminationReason: TerminationReason,
+    standardErrorPipe: MockPipe? = nil,
+    pipeDataResult: Result<Data?, any Error> = .success(nil),
+    runError: (any Error)? = nil
+  ) {
     self.executableFilePath = executableFilePath
     self.scheme = scheme
     self.port = port
@@ -79,27 +90,22 @@ package final class MockProcess: Processable {
     self.runError = runError
   }
 
-  package convenience init(executableFilePath: String, scheme: String, port: Int) {
-    self.init(executableFilePath: executableFilePath, scheme: scheme, port: port, terminationReason: .exit)
+  package convenience init(
+    executableFilePath: String,
+    scheme: String,
+    port: Int
+  ) {
+    self.init(
+      executableFilePath: executableFilePath,
+      scheme: scheme,
+      port: port,
+      terminationReason: .exit
+    )
   }
-
-  package let executableFilePath: String
-  package let scheme: String
-  package let port: Int
-  package let pipeDataResult: Result<Data?, any Error>
-  package let runError: (any Error)?
-  package var standardErrorPipe: MockPipe?
-
-  package private(set) var isTerminationHandlerSet: Bool = false
-  package private(set) var isRunCalled: Bool = false
 
   package nonisolated func createPipe() -> MockPipe {
     .init(fileHandleForReading: .init(pipeDataResult))
   }
-
-  package typealias PipeType = MockPipe
-
-  package let terminationReason: Ngrokit.TerminationReason
 
   package func setTerminationHandler(_: @escaping @Sendable (MockProcess) -> Void) {
     isTerminationHandlerSet = true

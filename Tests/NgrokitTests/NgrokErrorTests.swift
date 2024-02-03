@@ -31,6 +31,7 @@ import Ngrokit
 import XCTest
 
 class NgrokErrorTests: XCTestCase {
+  // swiftlint:disable line_length
   func testErrorDescriptions() {
     XCTAssertEqual(NgrokError.invalidMetadataLength.errorDescription, "Invalid metadata length")
     XCTAssertEqual(NgrokError.accountLimitExceeded.errorDescription, "You've hit your account limit for simultaneous ngrok agent sessions. Try stopping an existing agent or upgrading your account.")
@@ -68,6 +69,8 @@ class NgrokErrorTests: XCTestCase {
     XCTAssertEqual(NgrokError.websiteVisitWarning.localizedDescription, NSLocalizedString("You are about to visit HOSTPORT, served by SERVINGIP. This website is served for free through ngrok.com. You should only visit this website if you trust whoever sent the link to you.", comment: ""))
     XCTAssertEqual(NgrokError.tunnelConnectionFailed.localizedDescription, NSLocalizedString("Traffic was successfully tunneled to the ngrok agent, but the agent failed to establish a connection to the upstream web service", comment: ""))
   }
+
+  // swiftlint:enable line_length
 
   func testRawValues() {
     XCTAssertEqual(NgrokError.invalidMetadataLength.rawValue, 100)

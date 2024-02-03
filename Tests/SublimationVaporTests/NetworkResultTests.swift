@@ -32,7 +32,12 @@ import OpenAPIRuntime
 @testable import SublimationVapor
 import XCTest
 
-public func XCTAsyncAssert(_ expression: @autoclosure () async throws -> Bool, _ message: @autoclosure () -> String = "", file: StaticString = #filePath, line: UInt = #line) async rethrows {
+public func XCTAsyncAssert(
+  _ expression: @escaping () async throws -> Bool,
+  _ message: @autoclosure () -> String = "",
+  file: StaticString = #filePath,
+  line: UInt = #line
+) async rethrows {
   let expressionResult = try await expression()
   XCTAssert(expressionResult, message(), file: file, line: line)
 }
@@ -64,8 +69,14 @@ class NetworkResultTests: XCTestCase {
   func testError() {
     #if canImport(Network)
       let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
-      let clientPosixError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: posixError)
-      let actualPosixError: HTTPClient.NWPOSIXError? = NetworkResult<Void>(error: clientPosixError).underlyingClientError()
+      let clientPosixError = ClientError(
+        operationID: "",
+        operationInput: (),
+        causeDescription: "",
+        underlyingError: posixError
+      )
+      let actualPosixError: HTTPClient.NWPOSIXError? =
+        NetworkResult<Void>(error: clientPosixError).underlyingClientError()
       XCTAssertEqual(
         actualPosixError?.errorCode,
         posixError.errorCode
@@ -73,9 +84,15 @@ class NetworkResultTests: XCTestCase {
     #endif
     let timeoutError = HTTPClientError.connectTimeout
 
-    let clientTimeoutError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: timeoutError)
+    let clientTimeoutError = ClientError(
+      operationID: "",
+      operationInput: (),
+      causeDescription: "",
+      underlyingError: timeoutError
+    )
 
-    let actualTimeoutError: HTTPClientError? = NetworkResult<Void>(error: clientTimeoutError).underlyingClientError()
+    let actualTimeoutError: HTTPClientError? =
+      NetworkResult<Void>(error: clientTimeoutError).underlyingClientError()
     XCTAssertEqual(
       actualTimeoutError,
       timeoutError
@@ -90,21 +107,33 @@ class NetworkResultTests: XCTestCase {
   func testClosure() async {
     #if canImport(Network)
       let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
-      let clientPosixError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: posixError)
+      let clientPosixError = ClientError(
+        operationID: "",
+        operationInput: (),
+        causeDescription: "",
+        underlyingError: posixError
+      )
     #endif
     let timeoutError = HTTPClientError.connectTimeout
 
-    let clientTimeoutError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: timeoutError)
+    let clientTimeoutError = ClientError(
+      operationID: "",
+      operationInput: (),
+      causeDescription: "",
+      underlyingError: timeoutError
+    )
 
     #if canImport(Network)
-      let actualPosixError: HTTPClient.NWPOSIXError? = await NetworkResult<Void> { throw clientPosixError }.underlyingClientError()
+      let actualPosixError: HTTPClient.NWPOSIXError? =
+        await NetworkResult<Void> { throw clientPosixError }.underlyingClientError()
       XCTAssertEqual(
         actualPosixError?.errorCode,
         posixError.errorCode
       )
     #endif
 
-    let actualTimeoutError: HTTPClientError? = await NetworkResult<Void> { throw clientTimeoutError }.underlyingClientError()
+    let actualTimeoutError: HTTPClientError? =
+      await NetworkResult<Void> { throw clientTimeoutError }.underlyingClientError()
     XCTAssertEqual(
       actualTimeoutError,
       timeoutError
@@ -112,12 +141,12 @@ class NetworkResultTests: XCTestCase {
 
     #if canImport(Network)
 
-    await XCTAsyncAssert(await NetworkResult<Void> { throw posixError }.isFailure)
+      await XCTAsyncAssert { await NetworkResult<Void> { throw posixError }.isFailure }
     #endif
-    await XCTAsyncAssert(await NetworkResult<Void> { throw timeoutError }.isFailure)
-    await XCTAsyncAssert(await NetworkResult<Void> { throw timeoutError }.isFailure)
+    await XCTAsyncAssert { await NetworkResult<Void> { throw timeoutError }.isFailure }
+    await XCTAsyncAssert { await NetworkResult<Void> { throw timeoutError }.isFailure }
 
-    await XCTAsyncAssert(await NetworkResult {}.isSuccess)
+    await XCTAsyncAssert { await NetworkResult {}.isSuccess }
   }
 
   func testGet() async {

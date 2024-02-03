@@ -1,5 +1,5 @@
 //
-//  MockNgrokProcess.swift
+//  URL.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,14 +28,13 @@
 //
 
 import Foundation
-import Ngrokit
 
-package final class MockNgrokProcess: NgrokProcess {
-  package let id: UUID
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
 
-  package init(id: UUID) {
-    self.id = id
+extension URL {
+  package static func random() -> URL {
+    URL(fileURLWithPath: NSTemporaryDirectory())
   }
-
-  package func run(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
 }

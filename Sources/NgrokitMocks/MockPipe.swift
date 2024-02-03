@@ -1,5 +1,5 @@
 //
-//  MockNgrokProcess.swift
+//  MockPipe.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -30,12 +30,12 @@
 import Foundation
 import Ngrokit
 
-package final class MockNgrokProcess: NgrokProcess {
-  package let id: UUID
+package final class MockPipe: Pipable {
+  package typealias DataHandleType = MockDataHandle
 
-  package init(id: UUID) {
-    self.id = id
+  package let fileHandleForReading: MockDataHandle
+
+  internal init(fileHandleForReading: MockDataHandle) {
+    self.fileHandleForReading = fileHandleForReading
   }
-
-  package func run(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
 }
