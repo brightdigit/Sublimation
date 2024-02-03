@@ -31,13 +31,8 @@ import Logging
 @testable import SublimationVapor
 import XCTest
 
-struct MockServerApplication: ServerApplication {
-  let httpServerConfigurationPort: Int
-  let logger: Logger
-}
-
-class NgrokCLIAPIConfigurationTests: XCTestCase {
-  func testInit() {
+internal class NgrokCLIAPIConfigurationTests: XCTestCase {
+  internal func testInit() {
     let loggerLabel = UUID().uuidString
     let application = MockServerApplication(
       httpServerConfigurationPort: .random(in: 10 ... 10_000),

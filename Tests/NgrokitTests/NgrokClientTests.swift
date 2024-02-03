@@ -113,7 +113,9 @@ internal class NgrokClientTests: XCTestCase {
       )
     ]
     let api = MockAPI(
-      actualListTunnelResult: .success(.ok(.init(body: .json(.init(tunnels: expectedTunnels)))))
+      actualListTunnelResult: .success(
+        .ok(.init(body: .json(.init(tunnels: expectedTunnels))))
+      )
     )
     let client = NgrokClient(underlyingClient: api)
     let actualOutput = try await client.listTunnels()

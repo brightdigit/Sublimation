@@ -32,7 +32,7 @@ import OpenAPIRuntime
 @testable import SublimationVapor
 import XCTest
 
-public func XCTAsyncAssert(
+internal func XCTAsyncAssert(
   _ expression: @escaping () async throws -> Bool,
   _ message: @autoclosure () -> String = "",
   file: StaticString = #filePath,
@@ -42,31 +42,8 @@ public func XCTAsyncAssert(
   XCTAssert(expressionResult, message(), file: file, line: line)
 }
 
-extension NetworkResult {
-  var isSuccess: Bool {
-    guard case .success = self else {
-      return false
-    }
-    return true
-  }
-
-  var isFailure: Bool {
-    guard case .failure = self else {
-      return false
-    }
-    return true
-  }
-
-  func underlyingClientError<Failure: Error>() -> Failure? {
-    guard case let .connectionRefused(clientError) = self else {
-      return nil
-    }
-    return clientError.underlyingError as? Failure
-  }
-}
-
-class NetworkResultTests: XCTestCase {
-  func testError() {
+internal class NetworkResultTests: XCTestCase {
+  internal func testError() {
     #if canImport(Network)
       let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
       let clientPosixError = ClientError(
@@ -104,7 +81,7 @@ class NetworkResultTests: XCTestCase {
     XCTAssert(NetworkResult<Void>(error: timeoutError).isFailure)
   }
 
-  func testClosure() async {
+  internal func testClosure() async {
     #if canImport(Network)
       let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
       let clientPosixError = ClientError(
@@ -149,21 +126,36 @@ class NetworkResultTests: XCTestCase {
     await XCTAsyncAssert { await NetworkResult {}.isSuccess }
   }
 
-  func testGet() async {
+  internal func testGet() async {
     #if canImport(Network)
       let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
     #endif
     let timeoutError = HTTPClientError.connectTimeout
 
     #if canImport(Network)
-      let clientPosixError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: posixError)
+      let clientPosixError = ClientError(
+        operationID: "",
+        operationInput: (),
+        causeDescription: "",
+        underlyingError: posixError
+      )
     #endif
-    let clientTimeoutError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: timeoutError)
-    let clientOtherError = ClientError(operationID: "", operationInput: (), causeDescription: "", underlyingError: URLError(.unknown))
+    let clientTimeoutError = ClientError(
+      operationID: "",
+      operationInput: (),
+      causeDescription: "",
+      underlyingError: timeoutError
+    )
+    let clientOtherError = ClientError(
+      operationID: "",
+      operationInput: (),
+      causeDescription: "",
+      underlyingError: URLError(.unknown)
+    )
 
     #if canImport(Network)
       do {
-        let value = try await NetworkResult<Void> { throw clientPosixError }.get()
+        let value: Void? = try await NetworkResult<Void> { throw clientPosixError }.get()
         XCTAssertNil(value)
       } catch {
         XCTAssertNil(error)
@@ -171,7 +163,7 @@ class NetworkResultTests: XCTestCase {
     #endif
 
     do {
-      let value = try await NetworkResult<Void> { throw clientTimeoutError }.get()
+      let value: Void? = try await NetworkResult<Void> { throw clientTimeoutError }.get()
       XCTAssertNil(value)
     } catch {
       XCTAssertNil(error)
@@ -179,7 +171,7 @@ class NetworkResultTests: XCTestCase {
 
     var error: (any Error)?
     do {
-      let value = try await NetworkResult<Void> { throw clientOtherError }.get()
+      _ = try await NetworkResult<Void> { throw clientOtherError }.get()
       error = nil
     } catch let caughtError {
       error = caughtError
@@ -187,10 +179,33 @@ class NetworkResultTests: XCTestCase {
     XCTAssertNotNil(error)
 
     do {
-      let value = try await NetworkResult {}.get()
+      let value: ()? = try await NetworkResult {}.get()
       XCTAssertNotNil(value)
     } catch {
       XCTAssertNil(error)
     }
+  }
+}
+
+extension NetworkResult {
+  internal var isSuccess: Bool {
+    guard case .success = self else {
+      return false
+    }
+    return true
+  }
+
+  internal var isFailure: Bool {
+    guard case .failure = self else {
+      return false
+    }
+    return true
+  }
+
+  internal func underlyingClientError<Failure: Error>() -> Failure? {
+    guard case let .connectionRefused(clientError) = self else {
+      return nil
+    }
+    return clientError.underlyingError as? Failure
   }
 }

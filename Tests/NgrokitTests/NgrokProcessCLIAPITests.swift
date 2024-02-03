@@ -31,8 +31,8 @@
 import NgrokitMocks
 import XCTest
 
-class NgrokProcessCLIAPITests: XCTestCase {
-  func testProcess() async throws {
+internal class NgrokProcessCLIAPITests: XCTestCase {
+  internal func testProcess() async throws {
     let ngrokPath = UUID().uuidString
     let httpPort = Int.random(in: 10 ... 10_000)
     let api = NgrokProcessCLIAPI<MockProcess>(ngrokPath: ngrokPath)

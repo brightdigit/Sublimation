@@ -1,5 +1,5 @@
 //
-//  NgrokCLIAPIServerTests.swift
+//  MockServerApplication.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,11 +27,11 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import Logging
+@testable import SublimationVapor
 import XCTest
 
-class NgrokCLIAPIServerTests: XCTestCase {
-//
-//  func testStart() {
-//
-//  }
+internal struct MockServerApplication: ServerApplication {
+  internal let httpServerConfigurationPort: Int
+  internal let logger: Logger
 }

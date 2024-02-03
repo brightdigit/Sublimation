@@ -30,11 +30,10 @@
 import Sublimation
 
 package struct MockURL: KVdbURLConstructable {
+  package let kvDBBase: String
+  package let keyBucketPath: String
   package init(kvDBBase: String, keyBucketPath: String) {
     self.kvDBBase = kvDBBase
     self.keyBucketPath = keyBucketPath
   }
-
-  package let kvDBBase: String
-  package let keyBucketPath: String
 }

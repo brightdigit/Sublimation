@@ -34,7 +34,7 @@ import Foundation
 #endif
 
 extension URL {
-  package static func temporaryDirectory() -> URL {
+  public static func temporaryDirectory() -> URL {
     URL(fileURLWithPath: NSTemporaryDirectory())
   }
 }

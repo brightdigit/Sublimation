@@ -1,5 +1,5 @@
 //
-//  NgrokServerErrorTests.swift
+//  MockServerDelegate.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,8 +27,21 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import Ngrokit
+import NgrokitMocks
+@testable import SublimationVapor
 import XCTest
 
-class NgrokServerErrorTests: XCTestCase {
-  func testCantSaveTunnel() {}
+internal final class MockServerDelegate: NgrokServerDelegate {
+  internal let id: UUID
+
+  internal init(id: UUID) {
+    self.id = id
+  }
+
+  internal func server(
+    _: any SublimationVapor.NgrokServer, updatedTunnel _: Ngrokit.Tunnel
+  ) {}
+
+  internal func server(_: any SublimationVapor.NgrokServer, errorDidOccur _: any Error) {}
 }

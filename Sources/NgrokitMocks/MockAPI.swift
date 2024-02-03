@@ -36,14 +36,15 @@ import NgrokOpenAPIClient
 #endif
 
 package final actor MockAPI: APIProtocol {
-  let actualStopTunnelResult: Result<Operations.stopTunnel.Output, any Error>?
+  private let actualStopTunnelResult: Result<Operations.stopTunnel.Output, any Error>?
   package private(set) var stopTunnelPassed: [Operations.stopTunnel.Input] = []
 
-  let actualStartTunnelResult: Result<Operations.startTunnel.Output, any Error>?
+  private let actualStartTunnelResult: Result<Operations.startTunnel.Output, any Error>?
   package private(set) var startTunnelPassed: [Operations.startTunnel.Input] = []
 
-  let actualListTunnelResult: Result<Operations.listTunnels.Output, any Error>?
+  private let actualListTunnelResult: Result<Operations.listTunnels.Output, any Error>?
   package private(set) var listTunnelPassed: [Operations.listTunnels.Input] = []
+
   package init(
     actualStopTunnelResult: Result<Operations.stopTunnel.Output, any Error>? = nil,
     actualStartTunnelResult: Result<Operations.startTunnel.Output, any Error>? = nil,

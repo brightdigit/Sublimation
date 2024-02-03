@@ -42,8 +42,8 @@ package actor MockTunnelClient<Key: Sendable>: KVdbTunnelClient {
     package let bucketName: String
   }
 
-  let getValueResult: Result<URL, any Error>?
-  let saveValueError: (any Error)?
+  internal let getValueResult: Result<URL, any Error>?
+  internal let saveValueError: (any Error)?
 
   package private(set) var getValuesPassed = [GetParameters]()
   package private(set) var saveValuesPassed = [SaveParameters]()

@@ -32,19 +32,8 @@ import NgrokitMocks
 @testable import SublimationVapor
 import XCTest
 
-class MockServerDelegate: NgrokServerDelegate {
-  internal init(id: UUID) {
-    self.id = id
-  }
-
-  let id: UUID
-  func server(_: any SublimationVapor.NgrokServer, updatedTunnel _: Ngrokit.Tunnel) {}
-
-  func server(_: any SublimationVapor.NgrokServer, errorDidOccur _: any Error) {}
-}
-
-class NgrokCLIAPIServerFactoryTests: XCTestCase {
-  func testServer() {
+internal class NgrokCLIAPIServerFactoryTests: XCTestCase {
+  internal func testServer() {
     let loggerLabel = UUID().uuidString
     let application = MockServerApplication(
       httpServerConfigurationPort: .random(in: 10 ... 10_000),
@@ -53,8 +42,13 @@ class NgrokCLIAPIServerFactoryTests: XCTestCase {
     let delegateID = UUID()
     let processID = UUID()
     let configuration = NgrokCLIAPIConfiguration(serverApplication: application)
-    let factory = NgrokCLIAPIServerFactory<MockProcess>(cliAPI: MockNgrokCLIAPI(id: processID))
-    let server = factory.server(from: configuration, handler: MockServerDelegate(id: delegateID))
+    let factory = NgrokCLIAPIServerFactory<MockProcess>(
+      cliAPI: MockNgrokCLIAPI(id: processID)
+    )
+    let server = factory.server(
+      from: configuration,
+      handler: MockServerDelegate(id: delegateID)
+    )
     XCTAssertEqual(
       (server.delegate as? MockServerDelegate)?.id,
       delegateID

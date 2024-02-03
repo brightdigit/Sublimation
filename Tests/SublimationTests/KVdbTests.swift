@@ -41,15 +41,15 @@ import XCTest
 //  let keyBucketPath: String
 // }
 
-class KVdbTests: XCTestCase {
-  func testPath() {
+internal class KVdbTests: XCTestCase {
+  internal func testPath() {
     let key = UUID()
     let bucket = UUID().uuidString
     let actual = KVdb.path(forKey: key, atBucket: bucket)
     XCTAssertEqual(actual, "/\(bucket)/\(key)")
   }
 
-  func testConstruct() {
+  internal func testConstruct() {
     let key = UUID()
     let bucket = UUID().uuidString
     let url = KVdb.construct(MockURL.self, forKey: key, atBucket: bucket)

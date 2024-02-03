@@ -30,9 +30,9 @@
 import Ngrokit
 import XCTest
 
-class NgrokErrorTests: XCTestCase {
+internal class NgrokErrorTests: XCTestCase {
   // swiftlint:disable line_length
-  func testErrorDescriptions() {
+  internal func testErrorDescriptions() {
     XCTAssertEqual(NgrokError.invalidMetadataLength.errorDescription, "Invalid metadata length")
     XCTAssertEqual(NgrokError.accountLimitExceeded.errorDescription, "You've hit your account limit for simultaneous ngrok agent sessions. Try stopping an existing agent or upgrading your account.")
     XCTAssertEqual(NgrokError.unsupportedAgentVersion.errorDescription, "Your ngrok agent version is no longer supported. Only the most recent version of the ngrok agent is supported without an account. Update to a newer version with ngrok update or by downloading from https://ngrok.com/download. Sign up for an account to avoid forced version upgrades: https://ngrok.com/signup.")
@@ -51,7 +51,7 @@ class NgrokErrorTests: XCTestCase {
     XCTAssertEqual(NgrokError.tunnelConnectionFailed.errorDescription, "Traffic was successfully tunneled to the ngrok agent, but the agent failed to establish a connection to the upstream web service")
   }
 
-  func testLocalizedDescriptions() {
+  internal func testLocalizedDescriptions() {
     XCTAssertEqual(NgrokError.invalidMetadataLength.localizedDescription, NSLocalizedString("Invalid metadata length", comment: ""))
     XCTAssertEqual(NgrokError.accountLimitExceeded.localizedDescription, NSLocalizedString("You've hit your account limit for simultaneous ngrok agent sessions. Try stopping an existing agent or upgrading your account.", comment: ""))
     XCTAssertEqual(NgrokError.unsupportedAgentVersion.localizedDescription, NSLocalizedString("Your ngrok agent version is no longer supported. Only the most recent version of the ngrok agent is supported without an account. Update to a newer version with ngrok update or by downloading from https://ngrok.com/download. Sign up for an account to avoid forced version upgrades: https://ngrok.com/signup.", comment: ""))

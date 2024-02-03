@@ -29,8 +29,8 @@
 
 import XCTest
 
-class URLTests: XCTestCase {
-  func testKVdbURLConstructable() {
+internal class URLTests: XCTestCase {
+  internal func testKVdbURLConstructable() {
     let base = "http://www.apple.com"
     let keyBucketPath = UUID().uuidString
     let url = URL(kvDBBase: base, keyBucketPath: keyBucketPath)

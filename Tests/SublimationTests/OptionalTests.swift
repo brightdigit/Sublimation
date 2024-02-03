@@ -30,8 +30,8 @@
 @testable import Sublimation
 import XCTest
 
-class OptionalTests: XCTestCase {
-  func testFlatTuple() {
+internal class OptionalTests: XCTestCase {
+  internal func testFlatTuple() {
     let nilValue: Int? = nil
     let notNilValue: Int? = 12
     let expectedNotNil = (12, 12)

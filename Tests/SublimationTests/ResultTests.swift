@@ -52,9 +52,9 @@ import XCTest
 //  }
 // }
 
-class ResultTests: XCTestCase {
-  typealias MockResult = Result<UUID, any Error>
-  func testInit() {
+internal class ResultTests: XCTestCase {
+  internal typealias MockResult = Result<UUID, any Error>
+  internal func testInit {
     let successValue = UUID()
     let errorValue = UUID()
 

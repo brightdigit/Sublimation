@@ -59,8 +59,8 @@
 import NgrokitMocks
 import XCTest
 
-class NgrokMacProcessTests: XCTestCase {
-  func testInit() async {
+internal class NgrokMacProcessTests: XCTestCase {
+  internal func testInit() async {
     let ngrokPath = UUID().uuidString
     let httpPort = Int.random(in: 10 ... 10_000)
     let process = NgrokMacProcess(
@@ -74,7 +74,7 @@ class NgrokMacProcessTests: XCTestCase {
     XCTAssertEqual(actualProcess.scheme, "http")
   }
 
-  func testRunOnError() async throws {
+  internal func testRunOnError() async throws {
     let ngrokPath = UUID().uuidString
     let httpPort = Int.random(in: 10 ... 10_000)
     let process = NgrokMacProcess(
