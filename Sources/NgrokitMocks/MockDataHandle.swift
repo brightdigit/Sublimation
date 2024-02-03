@@ -1,5 +1,5 @@
 //
-//  KVdbTests.swift
+//  MockDataHandle.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,35 +27,35 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Sublimation
-import SublimationMocks
-import XCTest
+import Foundation
+import Ngrokit
 
-// struct MockURL: KVdbURLConstructable {
-//  internal init(kvDBBase: String, keyBucketPath: String) {
-//    self.kvDBBase = kvDBBase
-//    self.keyBucketPath = keyBucketPath
-//  }
-//
-//  let kvDBBase: String
-//  let keyBucketPath: String
-// }
+package struct MockDataHandle: DataHandle {
+  // swiftlint:disable line_length
+  package static let code: Data? = """
+  ERROR:  authentication failed: Your account is limited to 1 simultaneous ngrok agent session.
+  ERROR:  You can run multiple tunnels on a single agent session using a configuration file.
+  ERROR:  To learn more, see https://ngrok.com/docs/secure-tunnels/ngrok-agent/reference/config/
+  ERROR:
+  ERROR:  Active ngrok agent sessions in region 'us':
+  ERROR:    - ts_2bjiyVxWh6dMoaZUfjXNsHWFNta (2607:fb90:8da8:5b15:900b:13fd:c5e7:f9c6)
+  ERROR:
+  ERROR:  ERR_NGROK_108
+  ERROR:
+  """.data(using: .utf8)
+  // swiftlint:enable line_length
 
-class KVdbTests: XCTestCase {
-  func testPath() {
-    let key = UUID()
-    let bucket = UUID().uuidString
-    let actual = KVdb.path(forKey: key, atBucket: bucket)
-    XCTAssertEqual(actual, "/\(bucket)/\(key)")
+  private let actualResult: Result<Data?, any Error>
+
+  package init(_ actualResult: Result<Data?, any Error>) {
+    self.actualResult = actualResult
   }
 
-  func testConstruct() {
-    let key = UUID()
-    let bucket = UUID().uuidString
-    let url = KVdb.construct(MockURL.self, forKey: key, atBucket: bucket)
-    let expectedPath = KVdb.path(forKey: key, atBucket: bucket)
+  package static func withNgrokCode() -> MockDataHandle {
+    .init(.success(code))
+  }
 
-    XCTAssertEqual(url.kvDBBase, KVdb.baseString)
-    XCTAssertEqual(url.keyBucketPath, expectedPath)
+  package func readToEnd() throws -> Data? {
+    try actualResult.get()
   }
 }

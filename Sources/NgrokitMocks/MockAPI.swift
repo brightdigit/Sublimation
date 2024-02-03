@@ -1,5 +1,5 @@
 //
-//  NgrokClientTests.swift
+//  MockAPI.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -33,16 +33,17 @@ import NgrokOpenAPIClient
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
-import Foundation
 #endif
 
-extension URL {
-  package static func temporaryDirectory() -> URL {
-    URL(fileURLWithPath: NSTemporaryDirectory())
-  }
-}
-
 package final actor MockAPI: APIProtocol {
+  let actualStopTunnelResult: Result<Operations.stopTunnel.Output, any Error>?
+  package private(set) var stopTunnelPassed: [Operations.stopTunnel.Input] = []
+
+  let actualStartTunnelResult: Result<Operations.startTunnel.Output, any Error>?
+  package private(set) var startTunnelPassed: [Operations.startTunnel.Input] = []
+
+  let actualListTunnelResult: Result<Operations.listTunnels.Output, any Error>?
+  package private(set) var listTunnelPassed: [Operations.listTunnels.Input] = []
   package init(
     actualStopTunnelResult: Result<Operations.stopTunnel.Output, any Error>? = nil,
     actualStartTunnelResult: Result<Operations.startTunnel.Output, any Error>? = nil,
@@ -53,35 +54,36 @@ package final actor MockAPI: APIProtocol {
     self.actualListTunnelResult = actualListTunnelResult
   }
 
-  let actualStopTunnelResult: Result<Operations.stopTunnel.Output, any Error>?
-  package private(set) var stopTunnelPassed: [Operations.stopTunnel.Input] = []
-
-  let actualStartTunnelResult: Result<Operations.startTunnel.Output, any Error>?
-  package private(set) var startTunnelPassed: [Operations.startTunnel.Input] = []
-
-  let actualListTunnelResult: Result<Operations.listTunnels.Output, any Error>?
-  package private(set) var listTunnelPassed: [Operations.listTunnels.Input] = []
-
-  package func getTunnel(_: NgrokOpenAPIClient.Operations.getTunnel.Input) async throws -> NgrokOpenAPIClient.Operations.getTunnel.Output {
+  package func getTunnel(
+    _: NgrokOpenAPIClient.Operations.getTunnel.Input
+  ) async throws -> NgrokOpenAPIClient.Operations.getTunnel.Output {
     fatalError()
   }
 
-  package func stopTunnel(_ input: Operations.stopTunnel.Input) async throws -> Operations.stopTunnel.Output {
+  package func stopTunnel(
+    _ input: Operations.stopTunnel.Input
+  ) async throws -> Operations.stopTunnel.Output {
     stopTunnelPassed.append(input)
     return try actualStopTunnelResult!.get()
   }
 
-  package func startTunnel(_ input: Operations.startTunnel.Input) async throws -> Operations.startTunnel.Output {
+  package func startTunnel(
+    _ input: Operations.startTunnel.Input
+  ) async throws -> Operations.startTunnel.Output {
     startTunnelPassed.append(input)
     return try actualStartTunnelResult!.get()
   }
 
-  package func listTunnels(_ input: NgrokOpenAPIClient.Operations.listTunnels.Input) async throws -> NgrokOpenAPIClient.Operations.listTunnels.Output {
+  package func listTunnels(
+    _ input: NgrokOpenAPIClient.Operations.listTunnels.Input
+  ) async throws -> NgrokOpenAPIClient.Operations.listTunnels.Output {
     listTunnelPassed.append(input)
     return try actualListTunnelResult!.get()
   }
 
-  package func get_sol_api(_: NgrokOpenAPIClient.Operations.get_sol_api.Input) async throws -> NgrokOpenAPIClient.Operations.get_sol_api.Output {
+  package func get_sol_api(
+    _: NgrokOpenAPIClient.Operations.get_sol_api.Input
+  ) async throws -> NgrokOpenAPIClient.Operations.get_sol_api.Output {
     fatalError()
   }
 }

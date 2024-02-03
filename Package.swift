@@ -100,8 +100,8 @@ let package = Package(
     ),
     .testTarget(
       name: "SublimationVaporTests",
-      dependencies: ["SublimationVapor"
-                     , "NgrokitMocks"],
+      dependencies: ["SublimationVapor",
+                     "NgrokitMocks"],
       swiftSettings: swiftSettings
     )
   ]

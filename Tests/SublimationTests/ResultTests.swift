@@ -30,8 +30,9 @@
 @testable import Sublimation
 import SublimationMocks
 import XCTest
+
 //
-//extension Result {
+// extension Result {
 //  func mockErrorValue<T: Equatable & Sendable>() -> T? {
 //    guard let mockError = error as? MockError<T> else {
 //      return nil
@@ -49,7 +50,7 @@ import XCTest
 //    }
 //    return failure
 //  }
-//}
+// }
 
 class ResultTests: XCTestCase {
   typealias MockResult = Result<UUID, any Error>

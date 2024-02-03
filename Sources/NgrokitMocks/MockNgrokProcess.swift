@@ -1,5 +1,5 @@
 //
-//  ResultTests.swift
+//  MockNgrokProcess.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,46 +27,31 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import Foundation
 import Ngrokit
-import XCTest
 
-enum MockError<T: Equatable & Sendable>: Error {
-  case value(T)
-}
-
-extension Result {
-  func mockErrorValue<T: Equatable & Sendable>() -> T? {
-    guard let mockError = error as? MockError<T> else {
-      return nil
-    }
-
-    switch mockError {
-    case let .value(value):
-      return value
-    }
+package final class MockNgrokProcess: NgrokProcess {
+  package init(id: UUID) {
+    self.id = id
   }
 
-  var error: (any Error)? {
-    guard case let .failure(failure) = self else {
-      return nil
-    }
-    return failure
+  package let id: UUID
+  package func run(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
+}
+
+package final class MockNgrokCLIAPI: NgrokCLIAPI {
+  package convenience init(id: UUID) {
+    self.init(process: MockNgrokProcess(id: id))
+  }
+
+  internal init(process: any NgrokProcess) {
+    self.process = process
+  }
+
+  package let process: any NgrokProcess
+  package private(set) var httpPorts = [Int]()
+
+  package func process(forHTTPPort _: Int) -> any Ngrokit.NgrokProcess {
+    process
   }
 }
-//
-//class ResultTests: XCTestCase {
-//  typealias MockResult = Result<UUID, any Error>
-//  func testInit() {
-//    let successValue = UUID()
-//    let errorValue = UUID()
-//
-//    let successResult = MockResult(success: successValue, failure: nil)
-//    let failedResult = MockResult(success: UUID(), failure: MockError.value(errorValue))
-//    let emptyResult = MockResult(success: nil, failure: nil)
-//
-//    let actualErrorValue: UUID? = failedResult.mockErrorValue()
-//    try XCTAssertEqual(successResult.get(), successValue)
-//    XCTAssertEqual(actualErrorValue, errorValue)
-//    XCTAssert(emptyResult.error is Result<UUID, any Error>.EmptyError)
-//  }
-//}

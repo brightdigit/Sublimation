@@ -28,8 +28,8 @@
 //
 
 @testable import Ngrokit
-import NgrokOpenAPIClient
 import NgrokitMocks
+import NgrokOpenAPIClient
 import XCTest
 
 #if canImport(FoundationNetworking)

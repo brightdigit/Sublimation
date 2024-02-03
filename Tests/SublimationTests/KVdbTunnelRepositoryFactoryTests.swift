@@ -35,7 +35,6 @@ import XCTest
   import FoundationNetworking
 #endif
 
-
 class KVdbTunnelRepositoryFactoryTests: XCTestCase {
   func testSetupClient() async throws {
     let getURLExpected: URL = .random()

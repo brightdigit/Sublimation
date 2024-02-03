@@ -28,8 +28,8 @@
 //
 
 @testable import Ngrokit
-import XCTest
 import NgrokitMocks
+import XCTest
 
 class NgrokProcessCLIAPITests: XCTestCase {
   func testProcess() async throws {

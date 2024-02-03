@@ -32,7 +32,6 @@ import NgrokitMocks
 @testable import SublimationVapor
 import XCTest
 
-
 class MockServerDelegate: NgrokServerDelegate {
   internal init(id: UUID) {
     self.id = id

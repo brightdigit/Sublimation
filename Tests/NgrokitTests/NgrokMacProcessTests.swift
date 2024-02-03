@@ -56,8 +56,8 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 @testable import Ngrokit
-import XCTest
 import NgrokitMocks
+import XCTest
 
 class NgrokMacProcessTests: XCTestCase {
   func testInit() async {

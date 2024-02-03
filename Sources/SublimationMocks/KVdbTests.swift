@@ -29,16 +29,12 @@
 
 import Sublimation
 
-
-package struct MockURL : KVdbURLConstructable {
-  package  init(kvDBBase: String, keyBucketPath: String) {
+package struct MockURL: KVdbURLConstructable {
+  package init(kvDBBase: String, keyBucketPath: String) {
     self.kvDBBase = kvDBBase
     self.keyBucketPath = keyBucketPath
   }
-  
-  package let kvDBBase : String
+
+  package let kvDBBase: String
   package let keyBucketPath: String
-  
-  
-  
 }

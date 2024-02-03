@@ -31,10 +31,9 @@
 import NgrokitMocks
 import XCTest
 
-
 class DataHandleTests: XCTestCase {
   func testParseNgrokErrorCode() throws {
-    let dataHandle = MockDataHandle(.success(.code))
+    let dataHandle = MockDataHandle.withNgrokCode()
     let error = try dataHandle.parseNgrokErrorCode()
     XCTAssertEqual(error.rawValue, 108)
   }

@@ -55,8 +55,8 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
-import Ngrokit
 import Foundation
+import Ngrokit
 
 package final class MockPipe: Pipable {
   internal init(fileHandleForReading: MockDataHandle) {
@@ -93,7 +93,7 @@ package final class MockProcess: Processable {
   package private(set) var isTerminationHandlerSet: Bool = false
   package private(set) var isRunCalled: Bool = false
 
-  nonisolated package func createPipe() -> MockPipe {
+  package nonisolated func createPipe() -> MockPipe {
     .init(fileHandleForReading: .init(pipeDataResult))
   }
 
