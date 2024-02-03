@@ -1,5 +1,5 @@
 //
-//  ResultTests.swift
+//  ServerApplication.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,23 +27,16 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-@testable import Sublimation
-import SublimationMocks
-import XCTest
+import Logging
+import Vapor
 
-internal class ResultTests: XCTestCase {
-  internal typealias MockResult = Result<UUID, any Error>
-  internal func testInit () {
-    let successValue = UUID()
-    let errorValue = UUID()
+internal protocol ServerApplication {
+  var httpServerConfigurationPort: Int { get }
+  var logger: Logger { get }
+}
 
-    let successResult = MockResult(success: successValue, failure: nil)
-    let failedResult = MockResult(success: UUID(), failure: MockError.value(errorValue))
-    let emptyResult = MockResult(success: nil, failure: nil)
-
-    let actualErrorValue: UUID? = failedResult.mockErrorValue()
-    try XCTAssertEqual(successResult.get(), successValue)
-    XCTAssertEqual(actualErrorValue, errorValue)
-    XCTAssert(emptyResult.error is Result<UUID, any Error>.EmptyError)
+extension Vapor.Application: ServerApplication {
+  var httpServerConfigurationPort: Int {
+    http.server.configuration.port
   }
 }
