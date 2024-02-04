@@ -47,6 +47,7 @@ internal class NgrokClientTests: XCTestCase {
     XCTAssertEqual(actualOutput.config.inspect, expectedOutput.config.inspect)
   }
 
+  // swiftlint:disable:next function_body_length
   internal func testStartTunnel() async throws {
     let publicURL = URL.temporaryDirectory()
     let expectedInput = TunnelRequest(
@@ -69,8 +70,10 @@ internal class NgrokClientTests: XCTestCase {
 
     assertTunnelEqual(actualOutput, expectedOutput)
 
-    guard case let .json(actualInput) = await api.startTunnelPassed.last?.body else {
-      XCTFail()
+    let body = await api.startTunnelPassed.last?.body
+
+    guard case let .json(actualInput) = body else {
+      XCTFail("Incorrect result \(String(describing: body))")
       return
     }
 
@@ -86,8 +89,10 @@ internal class NgrokClientTests: XCTestCase {
 
     try await client.stopTunnel(withName: expectedInput)
 
-    guard let actualInput = await api.stopTunnelPassed.last?.path.name else {
-      XCTFail()
+    let name = await api.stopTunnelPassed.last?.path.name
+
+    guard let actualInput = name else {
+      XCTFail("Incorrect name \(String(describing: name))")
       return
     }
 

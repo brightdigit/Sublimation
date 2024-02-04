@@ -33,6 +33,7 @@ import NgrokitMocks
 import XCTest
 
 internal class NgrokCLIAPIServerFactoryTests: XCTestCase {
+  // swiftlint:disable:next function_body_length
   internal func testServer() {
     let loggerLabel = UUID().uuidString
     let application = MockServerApplication(

@@ -33,7 +33,7 @@ import XCTest
 
 internal class ResultTests: XCTestCase {
   internal typealias MockResult = Result<UUID, any Error>
-  internal func testInit () {
+  internal func testInit() {
     let successValue = UUID()
     let errorValue = UUID()
 

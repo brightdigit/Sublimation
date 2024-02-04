@@ -59,6 +59,7 @@ package actor MockTunnelClient<Key: Sendable>: KVdbTunnelClient {
     fromBucket bucketName: String
   ) async throws -> URL {
     getValuesPassed.append(.init(key: key, bucketName: bucketName))
+    // swiftlint:disable:next force_unwrapping
     return try getValueResult!.get()
   }
 

@@ -36,7 +36,7 @@ internal protocol ServerApplication {
 }
 
 extension Vapor.Application: ServerApplication {
-  var httpServerConfigurationPort: Int {
+  internal var httpServerConfigurationPort: Int {
     http.server.configuration.port
   }
 }

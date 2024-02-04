@@ -43,6 +43,7 @@ internal func XCTAsyncAssert(
 }
 
 internal class NetworkResultTests: XCTestCase {
+  // swiftlint:disable:next function_body_length
   internal func testError() {
     #if canImport(Network)
       let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
@@ -81,6 +82,7 @@ internal class NetworkResultTests: XCTestCase {
     XCTAssert(NetworkResult<Void>(error: timeoutError).isFailure)
   }
 
+  // swiftlint:disable:next function_body_length
   internal func testClosure() async {
     #if canImport(Network)
       let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")
@@ -126,6 +128,7 @@ internal class NetworkResultTests: XCTestCase {
     await XCTAsyncAssert { await NetworkResult {}.isSuccess }
   }
 
+  // swiftlint:disable:next function_body_length
   internal func testGet() async {
     #if canImport(Network)
       let posixError = HTTPClient.NWPOSIXError(.ECONNREFUSED, reason: "")

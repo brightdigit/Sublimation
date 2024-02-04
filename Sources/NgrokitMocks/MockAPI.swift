@@ -55,10 +55,11 @@ package final actor MockAPI: APIProtocol {
     self.actualListTunnelResult = actualListTunnelResult
   }
 
+  // swiftlint:disable unavailable_function force_unwrapping
   package func getTunnel(
     _: NgrokOpenAPIClient.Operations.getTunnel.Input
   ) async throws -> NgrokOpenAPIClient.Operations.getTunnel.Output {
-    fatalError()
+    fatalError("not implemented")
   }
 
   package func stopTunnel(
@@ -85,6 +86,7 @@ package final actor MockAPI: APIProtocol {
   package func get_sol_api(
     _: NgrokOpenAPIClient.Operations.get_sol_api.Input
   ) async throws -> NgrokOpenAPIClient.Operations.get_sol_api.Output {
-    fatalError()
+    fatalError("not implemented")
   }
+  // swiftlint:enable unavailable_function force_unwrapping
 }
