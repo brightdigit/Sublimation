@@ -39,18 +39,31 @@ import Foundation
   ///   property before executing the process.
   ///
   ///   - SeeAlso: `Processable`
-  public final class ProcessableProcess: Process, Processable {
+public final class ProcessableProcess: Processable {
     /// The type of pipe used for standard error.
     public typealias PipeType = Pipe
+    
+    private let process : Process
+  
+  
+  public var terminationReason: TerminationReason {
+    get {
+      self.process.terminationReason
+    }
+  }
 
     /// The pipe used for standard error.
-    public var standardErrorPipe: Pipe? {
+    public var standardError: Pipe? {
       get {
-        standardError as? Pipe
+        process.standardError as? Pipe
       }
       set {
-        standardError = newValue
+        process.standardError = newValue
       }
+    }
+    
+    private init(process: Process) {
+      self.process = process
     }
 
     ///     Initializes a new `ProcessableProcess` instance.
@@ -62,10 +75,11 @@ import Foundation
     ///
     ///     - Important: Make sure to set the `standardErrorPipe`
     ///     property before executing the process.
-    public init(executableFilePath: String, scheme: String, port: Int) {
-      super.init()
-      super.executableURL = .init(filePath: executableFilePath)
-      super.arguments = [scheme, port.description]
+    public convenience init(executableFilePath: String, scheme: String, port: Int) {
+      let process = Process()
+      process.executableURL = .init(filePath: executableFilePath)
+      process.arguments = [scheme, port.description]
+      self.init(process: process)
     }
 
     ///     Sets the termination handler closure for the process.
@@ -74,7 +88,7 @@ import Foundation
     public func setTerminationHandler(
       _ closure: @escaping @Sendable (ProcessableProcess) -> Void
     ) {
-      super.terminationHandler = { process in
+      process.terminationHandler = { process in
         guard let pprocess = process as? ProcessableProcess else {
           assertionFailure()
           closure(self)
@@ -90,6 +104,12 @@ import Foundation
     public func createPipe() -> Pipe {
       Pipe()
     }
+  
+  
+  public func run() throws {
+    try self.process.run()
+  }
+  
   }
 
   extension Pipe: Pipable {}

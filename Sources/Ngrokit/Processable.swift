@@ -64,7 +64,7 @@ public protocol Processable: Sendable, AnyObject {
   associatedtype PipeType: Pipable
 
   /// The pipe used for standard error output.
-  var standardErrorPipe: PipeType? { get set }
+  var standardError: PipeType? { get set }
 
   /// The reason for the process termination.
   var terminationReason: TerminationReason { get }

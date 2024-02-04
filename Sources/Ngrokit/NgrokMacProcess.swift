@@ -79,7 +79,7 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
       self.pipe = pipe
     } else {
       let newPipe: ProcessType.PipeType = process.createPipe()
-      self.process.standardErrorPipe = newPipe
+      self.process.standardError = newPipe
       self.pipe = newPipe
     }
   }
