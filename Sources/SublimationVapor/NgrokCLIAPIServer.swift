@@ -1,208 +1,217 @@
+//
+//  NgrokCLIAPIServer.swift
+//  Sublimation
+//
+//  Created by Leo Dion.
+//  Copyright © 2024 BrightDigit.
+//
+//  Permission is hereby granted, free of charge, to any person
+//  obtaining a copy of this software and associated documentation
+//  files (the “Software”), to deal in the Software without
+//  restriction, including without limitation the rights to use,
+//  copy, modify, merge, publish, distribute, sublicense, and/or
+//  sell copies of the Software, and to permit persons to whom the
+//  Software is furnished to do so, subject to the following
+//  conditions:
+//
+//  The above copyright notice and this permission notice shall be
+//  included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+//  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+//  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+//  OTHER DEALINGS IN THE SOFTWARE.
+//
+
 import Foundation
+import Logging
 import Ngrokit
+import OpenAPIRuntime
 
-import Prch
-import PrchModel
-// import class Prch.Client
-import PrchVapor
-import Vapor
-#if canImport(FoundationNetworking)
-  import FoundationNetworking
-  // swiftlint:disable:next identifier_name
-  private let NSEC_PER_SEC: UInt64 = 1_000_000_000
-#endif
-
-enum NgrokDefaults {
-  public static let defaultBaseURLComponents =
-    URLComponents(string: "http://127.0.0.1:4040")!
-}
-
-protocol NgrokServiceProtocol: ServiceProtocol where ServiceAPI == Ngrok.API {}
-
-class NgrokService<SessionType: Prch.Session>: Service, NgrokServiceProtocol
-  where SessionType.ResponseType.DataType == Ngrok.API.ResponseDataType,
-  SessionType.RequestDataType == Ngrok.API.RequestDataType {
-  internal init(session: SessionType) {
-    self.session = session
+/// A server implementation for Ngrok CLI API.
+///
+/// - Note: This server conforms to the `NgrokServer` and `Sendable` protocols.
+///
+/// - SeeAlso: `NgrokServer`
+/// - SeeAlso: `Sendable`
+public struct NgrokCLIAPIServer: NgrokServer, Sendable {
+  private enum TunnelAttemptResult {
+    case network(NetworkResult<Tunnel?>)
+    case error(ClientError)
   }
 
-  let session: SessionType
-
-  var authorizationManager: any SessionAuthenticationManager {
-    NullAuthorizationManager()
+  private struct TunnelResult {
+    let isOld: Bool
+    let tunnel: Tunnel
   }
 
-  typealias API = Ngrok.API
+  /// The delegate for the server.
+  internal let delegate: any NgrokServerDelegate
 
-  var api: Ngrok.API {
-    Ngrok.API.shared
-  }
-}
+  /// The client for interacting with Ngrok.
+  private let client: NgrokClient
 
-class NgrokCLIAPIServer: NgrokServer {
-  internal init(
-    cli: Ngrok.CLI,
-    prchClient: (any NgrokServiceProtocol)? = nil,
-    port: Int? = nil,
-    logger: Logger? = nil,
-    ngrokProcess: Process? = nil,
-    clientSearchTimeoutNanoseconds: UInt64 = NSEC_PER_SEC / 5,
-    cliProcessTimeout: DispatchTimeInterval = .seconds(2),
-    delegate: NgrokServerDelegate? = nil
+  /// The process for running Ngrok.
+  internal let process: any NgrokProcess
+
+  /// The port number to use.
+  internal let port: Int
+
+  /// The logger for logging server events.
+  internal let logger: Logger
+
+  ///   Initializes a new instance of `NgrokCLIAPIServer`.
+  ///
+  ///   - Parameters:
+  ///     - delegate: The delegate for the server.
+  ///     - client: The client for interacting with Ngrok.
+  ///     - process: The process for running Ngrok.
+  ///     - port: The port number to use.
+  ///     - logger: The logger for logging server events.
+  public init(
+    delegate: any NgrokServerDelegate,
+    client: NgrokClient,
+    process: any NgrokProcess,
+    port: Int,
+    logger: Logger
   ) {
-    self.cli = cli
-    prchClientMember = prchClient
+    self.delegate = delegate
+    self.client = client
+    self.process = process
     self.port = port
     self.logger = logger
-    self.ngrokProcess = ngrokProcess
-    self.cliProcessTimeout = cliProcessTimeout
-    self.clientSearchTimeoutNanoseconds = clientSearchTimeoutNanoseconds
-    self.delegate = delegate
   }
 
-  public convenience init(
-    ngrokPath: String,
-    prchClient: (any NgrokServiceProtocol)? = nil,
-    port: Int? = nil,
-    logger: Logger? = nil,
-    ngrokProcess: Process? = nil,
-    delegate: NgrokServerDelegate? = nil
-  ) {
-    self.init(
-      cli: .init(executableURL: .init(fileURLWithPath: ngrokPath)),
-      prchClient: prchClient,
-      port: port,
-      logger: logger,
-      ngrokProcess: ngrokProcess,
-      delegate: delegate
+  private static func attemptTunnel(
+    withClient client: NgrokClient
+  ) async -> TunnelAttemptResult {
+    let networkResult = await NetworkResult {
+      try await client.listTunnels().first
+    }
+    switch networkResult {
+    case let .connectionRefused(error):
+      return .error(error)
+
+    default:
+      return .network(networkResult)
+    }
+  }
+
+  private static func searchForCreatedTunnel(
+    withClient client: NgrokClient,
+    within timeout: TimeInterval,
+    logger: Logger
+  ) async throws -> Tunnel? {
+    let start = Date()
+    var networkResult: NetworkResult<Tunnel?>?
+    var lastError: ClientError?
+    var attempts = 0
+    while networkResult == nil, (-start.timeIntervalSinceNow) < timeout {
+      logger.debug("Attempt #\(attempts + 1)")
+      try await Task.sleep(for: .seconds(5), tolerance: .seconds(5))
+      let result = await attemptTunnel(withClient: client)
+      attempts += 1
+      switch result {
+      case let .network(newNetworkResult):
+        networkResult = newNetworkResult
+
+      case let .error(error):
+        lastError = error
+      }
+    }
+
+    if let lastError, networkResult == nil {
+      logger.error("Timeout Occured After \(-start.timeIntervalSinceNow) seconds.")
+      throw lastError
+    }
+
+    return try networkResult?.get()?.flatMap { $0 }
+  }
+
+  ///   Handles a CLI error.
+  ///
+  ///   - Parameter error: The error that occurred.
+  @Sendable
+  private func cliError(_ error: any Error) {
+    delegate.server(self, errorDidOccur: error)
+  }
+
+  private func searchForExistingTunnel(
+    within timeout: TimeInterval
+  ) async throws -> TunnelResult? {
+    logger.debug("Starting Search for Existing Tunnel")
+
+    let result = await NetworkResult {
+      try await client.listTunnels().first
+    }
+
+    switch result {
+    case .connectionRefused:
+      logger.notice(
+        "Ngrok not running. Waiting for Process and New Tunnel... (about 30 secs)"
+      )
+      try await process.run(onError: cliError(_:))
+
+    case let .success(tunnel):
+      logger.debug("Process Already Running.")
+      return tunnel.map { .init(isOld: true, tunnel: $0) }
+
+    case let .failure(error):
+      throw error
+    }
+
+    return try await Self.searchForCreatedTunnel(
+      withClient: client,
+      within: timeout,
+      logger: logger
+    )
+    .map {
+      .init(isOld: false, tunnel: $0)
+    }
+  }
+
+  private func newTunnel() async throws -> Tunnel {
+    if let tunnel = try await searchForExistingTunnel(within: 60.0) {
+      if tunnel.isOld {
+        try await client.stopTunnel(withName: tunnel.tunnel.name)
+        logger.info("Existing Tunnel Stopped. \(tunnel.tunnel.publicURL)")
+      } else {
+        return tunnel.tunnel
+      }
+    }
+
+    return try await client.startTunnel(
+      .init(
+        port: port,
+        name: "vapor-development"
+      )
     )
   }
 
-  let cli: Ngrok.CLI
-  let clientSearchTimeoutNanoseconds: UInt64
-  let cliProcessTimeout: DispatchTimeInterval
-  var prchClientMember: (any NgrokServiceProtocol)?
-  var port: Int?
-  var logger: Logger!
-  var ngrokProcess: Process? {
-    didSet {
-      self.ngrokProcess?.terminationHandler = self.ngrokProcessTerminated
-    }
-  }
-
-  weak var delegate: NgrokServerDelegate?
-
-  func setupLogger(_ logger: Logger) {
-    self.logger = logger
-  }
-
-  func ngrokProcessTerminated(_: Process) {
-    guard let port = self.port else {
+  ///   Runs the server.
+  public func run() async {
+    let start = Date()
+    let newTunnel: Tunnel
+    do {
+      newTunnel = try await self.newTunnel()
+    } catch {
+      delegate.server(self, errorDidOccur: error)
       return
     }
+    let seconds = Int(-start.timeIntervalSinceNow)
+    logger.notice("New Tunnel Created in \(seconds) secs: \(newTunnel.publicURL)")
 
-    startHttpTunnel(port: port)
+    delegate.server(self, updatedTunnel: newTunnel)
   }
 
-  var prchClient: any NgrokServiceProtocol {
-    guard let client = prchClientMember else {
-      fatalError()
-    }
-    return client
-  }
-
-  func setupClient(_ client: Vapor.Client) {
-    let service = NgrokService(session: SessionClient(client: client))
-    prchClientMember = service
-  }
-
-  public enum TunnelError: Error {
-    case noTunnelCreated
-  }
-
-  func startHttpTunnel(port: Int) {
+  ///   Starts the server.
+  public func start() {
     Task {
-      let tunnel: NgrokTunnel
-      do {
-        tunnel = try await self.startHttp(port: port)
-      } catch {
-        self.delegate?.server(self, failedWithError: error)
-        return
-      }
-      self.delegate?.server(self, updatedTunnel: tunnel)
+      await run()
     }
-  }
-
-  public func waitForTaskCompletion<R>(
-    withTimeoutInNanoseconds timeout: UInt64,
-    _ task: @escaping () async -> R
-  ) async -> R? {
-    await withTaskGroup(of: R?.self) { group in
-      await withUnsafeContinuation { continuation in
-        group.addTask {
-          continuation.resume()
-          return await task()
-        }
-      }
-      group.addTask {
-        await Task.yield()
-        try? await Task.sleep(nanoseconds: timeout)
-        return nil
-      }
-      defer { group.cancelAll() }
-      return await group.next()!
-    }
-  }
-
-  func startHttp(port: Int) async throws -> NgrokTunnel {
-    self.port = port
-    logger.debug("Starting Ngrok Tunnel...")
-    let tunnels: [NgrokTunnel]
-
-    let result = await waitForTaskCompletion(
-      withTimeoutInNanoseconds: clientSearchTimeoutNanoseconds
-    ) {
-      try? await self.prchClient.request(ListTunnelsRequest()).tunnels
-    }?.flatMap { $0 }
-
-    if let firstCallTunnels = result {
-      tunnels = firstCallTunnels
-    } else {
-      do {
-        logger.debug("Starting New Ngrok Client")
-        let ngrokProcess = try await cli.http(
-          port: port,
-          timeout: .now() + cliProcessTimeout
-        )
-        guard let tunnel = try await prchClient.request(
-          ListTunnelsRequest()
-        ).tunnels.first else {
-          ngrokProcess.terminate()
-          throw TunnelError.noTunnelCreated
-        }
-        self.ngrokProcess = ngrokProcess
-        logger.debug("Created Ngrok Process...")
-        return tunnel
-      } catch let Ngrok.CLI.RunError.earlyTermination(_, errorCode)
-        where errorCode == 108 {
-        logger.debug("Ngrok Process Already Created.")
-      } catch {
-        logger.debug("Error thrown: \(error.localizedDescription)")
-        throw error
-      }
-
-      logger.debug("Listing Tunnels")
-      tunnels = try await prchClient.request(ListTunnelsRequest()).tunnels
-    }
-
-    if let oldTunnel = tunnels.first {
-      logger.debug("Deleting Existing Tunnel: \(oldTunnel.public_url) ")
-      try await prchClient.request(StopTunnelRequest(name: oldTunnel.name))
-    }
-
-    logger.debug("Creating Tunnel...")
-    let tunnel = try await prchClient.request(StartTunnelRequest(body: .init(port: port)))
-
-    return tunnel
   }
 }

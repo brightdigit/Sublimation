@@ -3,7 +3,7 @@ import SublimationDemoConfiguration
 import SwiftUI
 
 extension View {
-  func taskPolyfill(_ action: @escaping @Sendable() async -> Void) -> some View {
+  func taskPolyfill(_ action: @escaping @Sendable () async -> Void) -> some View {
     if #available(iOS 15.0, *) {
       return self.task(action)
     } else {
@@ -72,17 +72,17 @@ struct ContentView: View {
       Image(systemName: "globe")
         .imageScale(.large)
         .foregroundColor(.accentColor)
-      Text(self.serverResponse)
+      Text(serverResponse)
     }
     .padding()
     .taskPolyfill {
       let serverResponse: String
       do {
-        let url = try await self.getBaseURL(
+        let url = try await getBaseURL(
           fromBucket: Configuration.bucketName,
           withKey: Configuration.key
         )
-        serverResponse = try await self.getServerResponse(from: url)
+        serverResponse = try await getServerResponse(from: url)
       } catch {
         serverResponse = error.localizedDescription
       }

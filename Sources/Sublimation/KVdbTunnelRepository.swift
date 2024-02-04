@@ -1,48 +1,51 @@
+//
+//  KVdbTunnelRepository.swift
+//  Sublimation
+//
+//  Created by Leo Dion.
+//  Copyright © 2024 BrightDigit.
+//
+//  Permission is hereby granted, free of charge, to any person
+//  obtaining a copy of this software and associated documentation
+//  files (the “Software”), to deal in the Software without
+//  restriction, including without limitation the rights to use,
+//  copy, modify, merge, publish, distribute, sublicense, and/or
+//  sell copies of the Software, and to permit persons to whom the
+//  Software is furnished to do so, subject to the following
+//  conditions:
+//
+//  The above copyright notice and this permission notice shall be
+//  included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+//  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+//  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+//  OTHER DEALINGS IN THE SOFTWARE.
+//
+
 import Foundation
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
-public class KVdbTunnelRepository<Key>: WritableTunnelRepository {
-  internal init(client: AnyKVdbTunnelClient<Key>? = nil, bucketName: String) {
+public final class KVdbTunnelRepository<Key: Sendable>: WritableTunnelRepository {
+  private let client: any KVdbTunnelClient<Key>
+  private let bucketName: String
+  public init(client: any KVdbTunnelClient<Key>, bucketName: String) {
     self.client = client
     self.bucketName = bucketName
   }
 
-  public init(bucketName: String) {
-    client = nil
-    self.bucketName = bucketName
-  }
-
-  public init<TunnelClientType: KVdbTunnelClient>(
-    client: TunnelClientType,
-    bucketName: String
-  ) where TunnelClientType.Key == Key {
-    self.client = client.eraseToAnyClient()
-    self.bucketName = bucketName
-  }
-
-  var client: AnyKVdbTunnelClient<Key>?
-  let bucketName: String
-
-  public func setupClient<TunnelClientType: KVdbTunnelClient>(
-    _ client: TunnelClientType
-  ) where TunnelClientType.Key == Key {
-    self.client = client.eraseToAnyClient()
-  }
-
   public func tunnel(forKey key: Key) async throws -> URL? {
-    guard let client = self.client else {
-      preconditionFailure()
-    }
-    return try await client.getValue(ofKey: key, fromBucket: bucketName)
+    try await client.getValue(ofKey: key, fromBucket: bucketName)
   }
 
   public func saveURL(_ url: URL, withKey key: Key) async throws {
-    guard let client = self.client else {
-      preconditionFailure()
-    }
     try await client.saveValue(url, withKey: key, inBucket: bucketName)
   }
 }

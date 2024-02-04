@@ -4,6 +4,9 @@ settings:
 packages:
   Prch:
     path: .
+projectReferences:
+    Demo:
+      path: ./Demo/SublimationDemoApp.xcodeproj
 aggregateTargets:
   Lint:
     buildScripts:

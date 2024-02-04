@@ -1,0 +1,215 @@
+openapi: 3.0.0
+info:
+  title: Ngrok Agent API
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:4040
+    description: Default Local Server
+paths:
+  /api:
+    get:
+      summary: Access the root API resource of a running ngrok agent
+      responses:
+        '200':
+          description: Successful response
+  /api/tunnels:
+    get:
+      summary: List Tunnels
+      operationId: listTunnels
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TunnelList'
+              example:
+                tunnels:
+                  - name: command_line
+                    uri: /api/tunnels/command_line
+                    public_url: https://d95211d2.ngrok.io
+                    proto: https
+                    config:
+                      addr: localhost:80
+                      inspect: true
+                    metrics:
+                      conns:
+                        count: 0
+                        gauge: 0
+                        rate1: 0
+                        rate5: 0
+                        rate15: 0
+                        p50: 0
+                        p90: 0
+                        p95: 0
+                        p99: 0
+                      http:
+                        count: 0
+                        rate1: 0
+                        rate5: 0
+                        rate15: 0
+                        p50: 0
+                        p90: 0
+                        p95: 0
+                        p99: 0
+                uri: /api/tunnels
+    post:
+      summary: Start tunnel
+      operationId: startTunnel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TunnelRequest'
+      responses:
+        '201':
+          description: Tunnel started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TunnelResponse'
+  /api/tunnels/{name}:
+    get:
+      summary: Tunnel detail
+      operationId: getTunnel
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                $ref: '#/components/schemas/TunnelResponse'
+    delete:
+      summary: Stop tunnel
+      operationId: stopTunnel
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Tunnel stopped successfully
+
+components:
+  schemas:
+    TunnelList:
+      type: object
+      required:
+        - tunnels
+      properties:
+        tunnels:
+          type: array
+          items:
+            $ref: '#/components/schemas/TunnelResponse'
+    TunnelRequest:
+      type: object
+      properties:
+        addr:
+          type: string
+        proto:
+          type: string
+        name:
+          type: string
+      required:
+        - addr
+        - proto
+        - name
+
+    TunnelResponse:
+      type: object
+      required:
+        - name
+        - public_url
+        - config
+      properties:
+        name:
+          type: string
+        uri:
+          type: string
+          format: uri
+        public_url:
+          type: string
+          format: uri
+        proto:
+          type: string
+        config:
+          type: object
+          properties:
+            addr:
+              type: string
+            inspect:
+              type: boolean
+          required:
+            - addr
+            - inspect
+        metrics:
+          type: object
+          properties:
+            conns:
+              type: object
+              properties:
+                count:
+                  type: integer
+                gauge:
+                  type: integer
+                rate1:
+                  type: integer
+                rate5:
+                  type: integer
+                rate15:
+                  type: integer
+                p50:
+                  type: integer
+                p90:
+                  type: integer
+                p95:
+                  type: integer
+                p99:
+                  type: integer
+              required:
+                - count
+                - gauge
+                - rate1
+                - rate5
+                - rate15
+                - p50
+                - p90
+                - p95
+                - p99
+            http:
+              type: object
+              properties:
+                count:
+                  type: integer
+                rate1:
+                  type: integer
+                rate5:
+                  type: integer
+                rate15:
+                  type: integer
+                p50:
+                  type: integer
+                p90:
+                  type: integer
+                p95:
+                  type: integer
+                p99:
+                  type: integer
+              required:
+                - count
+                - rate1
+                - rate5
+                - rate15
+                - p50
+                - p90
+                - p95
+                - p99
