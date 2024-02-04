@@ -39,7 +39,7 @@ package final class MockProcess: Processable {
   package let pipeDataResult: Result<Data?, any Error>
   package let runError: (any Error)?
   package let terminationReason: Ngrokit.TerminationReason
-  package var standardErrorPipe: MockPipe?
+  package var standardError: MockPipe?
 
   package private(set) var isTerminationHandlerSet = false
   package private(set) var isRunCalled = false
@@ -49,14 +49,14 @@ package final class MockProcess: Processable {
     scheme: String,
     port: Int,
     terminationReason: TerminationReason,
-    standardErrorPipe: MockPipe? = nil,
+    standardError: MockPipe? = nil,
     pipeDataResult: Result<Data?, any Error> = .success(nil),
     runError: (any Error)? = nil
   ) {
     self.executableFilePath = executableFilePath
     self.scheme = scheme
     self.port = port
-    self.standardErrorPipe = standardErrorPipe
+    self.standardError = standardError
     self.terminationReason = terminationReason
     self.pipeDataResult = pipeDataResult
     self.runError = runError
