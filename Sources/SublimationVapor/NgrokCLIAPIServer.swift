@@ -95,6 +95,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     switch networkResult {
     case let .connectionRefused(error):
       return .error(error)
+
     default:
       return .network(networkResult)
     }
@@ -117,6 +118,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
       switch result {
       case let .network(newNetworkResult):
         networkResult = newNetworkResult
+
       case let .error(error):
         lastError = error
       }

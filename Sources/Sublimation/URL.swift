@@ -56,9 +56,3 @@ extension URL: KVdbURLConstructable {
     self = URL(string: kvDBBase)!.appendingPathComponent(keyBucketPath)
   }
 }
-
-import Foundation
-
-#if canImport(FoundationNetworking)
-  import FoundationNetworking
-#endif

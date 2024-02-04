@@ -39,18 +39,15 @@ import Foundation
   ///   property before executing the process.
   ///
   ///   - SeeAlso: `Processable`
-public final class ProcessableProcess: Processable {
+  public final class ProcessableProcess: Processable {
     /// The type of pipe used for standard error.
     public typealias PipeType = Pipe
-    
-    private let process : Process
-  
-  
-  public var terminationReason: TerminationReason {
-    get {
-      self.process.terminationReason
+
+    private let process: Process
+
+    public var terminationReason: TerminationReason {
+      process.terminationReason
     }
-  }
 
     /// The pipe used for standard error.
     public var standardError: Pipe? {
@@ -61,7 +58,7 @@ public final class ProcessableProcess: Processable {
         process.standardError = newValue
       }
     }
-    
+
     private init(process: Process) {
       self.process = process
     }
@@ -104,12 +101,10 @@ public final class ProcessableProcess: Processable {
     public func createPipe() -> Pipe {
       Pipe()
     }
-  
-  
-  public func run() throws {
-    try self.process.run()
-  }
-  
+
+    public func run() throws {
+      try process.run()
+    }
   }
 
   extension Pipe: Pipable {}

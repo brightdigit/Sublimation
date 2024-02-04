@@ -102,9 +102,3 @@ public enum KVdb {
     return try await repository.tunnel(forKey: key)
   }
 }
-
-import Foundation
-
-#if canImport(FoundationNetworking)
-  import FoundationNetworking
-#endif

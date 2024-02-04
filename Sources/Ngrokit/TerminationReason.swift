@@ -31,6 +31,7 @@ import Foundation
 
 // swiftlint:disable file_types_order
 #if os(macOS)
+  ///   Represents the reason for the termination of a process.
   public typealias TerminationReason = Process.TerminationReason
 #else
 
