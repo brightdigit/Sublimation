@@ -29,23 +29,45 @@
 
 import NgrokOpenAPIClient
 
+/// Represents a request to create a tunnel.
 public struct TunnelRequest: Sendable {
+  /// The address of the tunnel.
   public let addr: String
+
+  /// The protocol to use for the tunnel.
   public let proto: String
+
+  /// The name of the tunnel.
   public let name: String
 
+  ///   Initializes a new `TunnelRequest` instance.
+  ///
+  ///   - Parameters:
+  ///      - addr: The address of the tunnel.
+  ///      - proto: The protocol to use for the tunnel.
+  ///      - name: The name of the tunnel.
   public init(addr: String, proto: String, name: String) {
     self.addr = addr
     self.proto = proto
     self.name = name
   }
 
+  ///   Initializes a new `TunnelRequest` instance.
+  ///
+  ///   - Parameters:
+  ///      - port: The port number of the tunnel.
+  ///      - name: The name of the tunnel.
+  ///      - proto: The protocol to use for the tunnel. Default value is "http".
   public init(port: Int, name: String, proto: String = "http") {
     self.init(addr: port.description, proto: proto, name: name)
   }
 }
 
 extension Components.Schemas.TunnelRequest {
+  ///   Initializes a new `Components.Schemas.TunnelRequest` instance.
+  ///
+  ///   - Parameters:
+  ///      - request: The `TunnelRequest` instance to initialize from.
   internal init(request: TunnelRequest) {
     self.init(addr: request.addr, proto: request.proto, name: request.name)
   }

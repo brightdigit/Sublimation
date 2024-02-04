@@ -31,8 +31,8 @@ import Foundation
 
 public enum RuntimeError: Error {
   case invalidURL(String)
-  case earlyTermination(TerminationReason, Int)
   case invalidErrorData(Data)
   case unknownEarlyTermination(String)
   case unknownError
+  case unknownNgrokErrorCode(Int)
 }

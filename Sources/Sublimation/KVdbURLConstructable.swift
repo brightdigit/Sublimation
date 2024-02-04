@@ -29,6 +29,28 @@
 
 import Foundation
 
+/// A protocol for constructing URLs for interacting with a key-value database.
+///
+/// Conforming types should provide an initializer
+/// that takes a base URL and a key bucket path.
+///
+/// Example usage:
+/// ```
+/// struct MyKVdbURLConstructor: KVdbURLConstructable {
+///   init(kvDBBase: String, keyBucketPath: String) {
+///     // Implementation details
+///   }
+/// }
+/// ```
+///
+/// - SeeAlso: `KVdbURLConstructor`
 public protocol KVdbURLConstructable {
+  ///   Initializes a URL constructor with the given base URL and key bucket path.
+  ///
+  ///   - Parameters:
+  ///     - kvDBBase: The base URL of the key-value database.
+  ///     - keyBucketPath: The path to the key bucket.
+  ///
+  ///   - Returns: An instance of the conforming type.
   init(kvDBBase: String, keyBucketPath: String)
 }

@@ -41,10 +41,6 @@ let package = Package(
       from: "1.0.0"
     ),
     .package(
-      url: "https://github.com/apple/swift-openapi-urlsession",
-      from: "1.0.0"
-    ),
-    .package(
       url: "https://github.com/swift-server/swift-openapi-async-http-client",
       from: "1.0.0"
     )
@@ -61,14 +57,6 @@ let package = Package(
       dependencies: [
         "NgrokOpenAPIClient",
         .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")
-      ],
-      swiftSettings: swiftSettings
-    ),
-    .testTarget(
-      name: "NgrokitTests",
-      dependencies: [
-        "Ngrokit",
-        .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession")
       ],
       swiftSettings: swiftSettings
     ),
@@ -89,6 +77,32 @@ let package = Package(
           name: "Vapor",
           package: "vapor"
         )
+      ],
+      swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "NgrokitMocks",
+      dependencies: ["Ngrokit"]
+    ),
+    .testTarget(
+      name: "NgrokitTests",
+      dependencies: ["Ngrokit", "NgrokitMocks"],
+      swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "SublimationMocks",
+      dependencies: ["Sublimation"]
+    ),
+    .testTarget(
+      name: "SublimationTests",
+      dependencies: ["Sublimation", "SublimationMocks"],
+      swiftSettings: swiftSettings
+    ),
+    .testTarget(
+      name: "SublimationVaporTests",
+      dependencies: [
+        "SublimationVapor",
+        "NgrokitMocks"
       ],
       swiftSettings: swiftSettings
     )

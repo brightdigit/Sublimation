@@ -30,17 +30,42 @@
 import Logging
 import Vapor
 
+/// Configuration for the Ngrok CLI API server.
+///
+/// - Note: This configuration conforms to `NgrokServerConfiguration` protocol.
+///
+/// - Note: This configuration conforms to `NgrokVaporConfiguration` protocol.
+///
+/// - SeeAlso: `NgrokCLIAPIServer`
 public struct NgrokCLIAPIConfiguration: NgrokServerConfiguration {
+  /// The type of server to use.
   public typealias Server = NgrokCLIAPIServer
+
+  /// The port number to run the server on.
   public let port: Int
+
+  /// The logger to use for logging.
   public let logger: Logger
 }
 
 extension NgrokCLIAPIConfiguration: NgrokVaporConfiguration {
-  public init(application: Application) {
+  ///   Initializes a new instance of
+  ///   `NgrokCLIAPIConfiguration` using a `ServerApplication`.
+  ///
+  ///   - Parameter serverApplication: The server application to use for configuration.
+  internal init(serverApplication: any ServerApplication) {
     self.init(
-      port: application.http.server.configuration.port,
-      logger: application.logger
+      port: serverApplication.httpServerConfigurationPort,
+      logger: serverApplication.logger
     )
+  }
+
+  ///   Initializes a new instance of `NgrokCLIAPIConfiguration`
+  ///   using a `Vapor.Application`.
+  ///
+  ///   - Parameter application: The Vapor application to use for configuration.
+
+  public init(application: Vapor.Application) {
+    self.init(serverApplication: application)
   }
 }

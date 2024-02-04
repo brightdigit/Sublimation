@@ -29,6 +29,7 @@
 
 extension Result {
   internal struct EmptyError: Error {}
+
   internal init(success: Success?, failure: Failure?) where Failure == any Error {
     if let failure {
       self = .failure(failure)

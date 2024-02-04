@@ -33,9 +33,13 @@ import Foundation
 #if os(macOS)
   public typealias TerminationReason = Process.TerminationReason
 #else
+
+  ///   Represents the reason for the termination of a process.
+  ///
+  ///   - exit: The process exited normally.
+  ///   - uncaughtSignal: The process terminated due to an uncaught signal.
   public enum TerminationReason: Int, Sendable {
     case exit = 1
-
     case uncaughtSignal = 2
   }
 #endif

@@ -27,59 +27,89 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if os(macOS)
-  import Foundation
+import Foundation
 
-  public actor NgrokMacProcess: NgrokProcess {
-    private var terminationHandler: (@Sendable (any Error) -> Void)?
-    private let process: Process
-    private let pipe: Pipe
+/// A class representing a Ngrok process on macOS.
+///
+/// This class conforms to the `NgrokProcess` protocol.
+///
+/// - Note: This class is an actor,
+/// meaning it can be safely accessed from multiple concurrent tasks.
+///
+/// - Author: Leo Dion
+/// - Version: 2024
+/// - Copyright: © BrightDigit
+///
+/// - SeeAlso: `NgrokProcess`
+public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
+  private var terminationHandler: (@Sendable (any Error) -> Void)?
+  internal let process: ProcessType
+  private let pipe: ProcessType.PipeType
 
-    public init(
-      ngrokPath: String,
-      httpPort: Int
-    ) {
-      let process = Process()
-      process.executableURL = .init(filePath: ngrokPath)
-      process.arguments = ["http", httpPort.description]
-      self.init(process: process)
-    }
+  ///   Initializes a new instance of `NgrokMacProcess`.
+  ///
+  ///   - Parameters:
+  ///     - ngrokPath: The path to the Ngrok executable.
+  ///     - httpPort: The port to use for the HTTP connection.
+  ///     - processType: The type of process to use.
+  ///
+  ///   - Returns: A new instance of `NgrokMacProcess`.
+  public init(
+    ngrokPath: String,
+    httpPort: Int,
+    processType _: ProcessType.Type
+  ) {
+    self.init(
+      process: .init(
+        executableFilePath: ngrokPath,
+        scheme: "http",
+        port: httpPort
+      )
+    )
+  }
 
-    private init(
-      process: Process,
-      pipe: Pipe? = nil,
-      terminationHandler: (@Sendable (any Error) -> Void)? = nil
-    ) {
-      self.terminationHandler = terminationHandler
-      self.process = process
-      if let pipe {
-        self.pipe = pipe
-      } else {
-        let pipe = Pipe()
-        self.process.standardError = pipe
-        self.pipe = pipe
-      }
-    }
-
-    @Sendable
-    private nonisolated func terminationHandler(forProcess process: Process) {
-      Task {
-        let error: RuntimeError
-        let errorCode: Int
-        do {
-          errorCode = try self.pipe.fileHandleForReading.parseNgrokErrorCode()
-          error = .earlyTermination(process.terminationReason, errorCode)
-        } catch let runtimeError as RuntimeError {
-          error = runtimeError
-        }
-        await self.terminationHandler?(error)
-      }
-    }
-
-    public func run(onError: @Sendable @escaping (any Error) -> Void) async throws {
-      process.terminationHandler = terminationHandler(forProcess:)
-      terminationHandler = onError
-      try process.run()
+  private init(
+    process: ProcessType,
+    pipe: ProcessType.PipeType? = nil,
+    terminationHandler: (@Sendable (any Error) -> Void)? = nil
+  ) {
+    self.terminationHandler = terminationHandler
+    self.process = process
+    if let pipe {
+      self.pipe = pipe
+    } else {
+      let newPipe: ProcessType.PipeType = process.createPipe()
+      self.process.standardErrorPipe = newPipe
+      self.pipe = newPipe
     }
   }
-#endif
+
+  ///   A private method that handles the termination of the process.
+  ///
+  ///   - Parameters:
+  ///     - forProcess: The process that has terminated.
+  @Sendable
+  private nonisolated func terminationHandler(forProcess _: any Processable) {
+    Task {
+      let error: any Error
+      do {
+        error = try self.pipe.fileHandleForReading.parseNgrokErrorCode()
+      } catch let runtimeError as RuntimeError {
+        error = runtimeError
+      }
+      await self.terminationHandler?(error)
+    }
+  }
+
+  ///   Runs the Ngrok process.
+  ///
+  ///   - Parameters:
+  ///     - onError: A closure that handles any errors that occur during the process.
+  ///
+  ///   - Throws: An error if the process fails to run.
+  public func run(onError: @Sendable @escaping (any Error) -> Void) async throws {
+    process.setTerminationHandler(terminationHandler(forProcess:))
+    terminationHandler = onError
+    try process.run()
+  }
+}

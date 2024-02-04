@@ -32,12 +32,28 @@ import Ngrokit
 import NIOCore
 import OpenAPIAsyncHTTPClient
 
-public struct NgrokCLIAPIServerFactory: NgrokServerFactory {
+/// A factory for creating Ngrok CLI API servers.
+///
+/// This factory conforms to the `NgrokServerFactory` protocol.
+///
+/// - Note: This factory requires the `NgrokCLIAPI` type to be `Processable`.
+///
+/// - SeeAlso: `NgrokServerFactory`
+public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: NgrokServerFactory {
+  /// The configuration type for the Ngrok CLI API server.
   public typealias Configuration = NgrokCLIAPIConfiguration
 
+  /// The Ngrok CLI API instance.
   private let cliAPI: any NgrokCLIAPI
+
+  /// The timeout duration for API requests.
   private let timeout: TimeAmount
 
+  ///   Initializes a new instance of `NgrokCLIAPIServerFactory`.
+  ///
+  ///   - Parameters:
+  ///     - cliAPI: The Ngrok CLI API instance.
+  ///     - timeout: The timeout duration for API requests. Default is 1 second.
   public init(
     cliAPI: any NgrokCLIAPI,
     timeout: TimeAmount = .seconds(1)
@@ -46,11 +62,27 @@ public struct NgrokCLIAPIServerFactory: NgrokServerFactory {
     self.timeout = timeout
   }
 
-  #if os(macOS)
-    public init(ngrokPath: String, timeout: TimeAmount = .seconds(1)) {
-      self.init(cliAPI: NgrokProcessCLIAPI(ngrokPath: ngrokPath), timeout: timeout)
-    }
-  #endif
+  ///   Initializes a new instance of `NgrokCLIAPIServerFactory`
+  ///   with the specified Ngrok path.
+  ///
+  ///   - Parameters:
+  ///     - ngrokPath: The path to the Ngrok executable.
+  ///     - timeout: The timeout duration for API requests. Default is 1 second.
+
+  public init(ngrokPath: String, timeout: TimeAmount = .seconds(1)) {
+    self.init(
+      cliAPI: NgrokProcessCLIAPI<ProcessType>(ngrokPath: ngrokPath),
+      timeout: timeout
+    )
+  }
+
+  ///   Creates a new Ngrok CLI API server.
+  ///
+  ///   - Parameters:
+  ///     - configuration: The configuration for the server.
+  ///     - handler: The delegate for the server.
+  ///
+  ///   - Returns: A new `NgrokCLIAPIServer` instance.
 
   public func server(
     from configuration: Configuration,

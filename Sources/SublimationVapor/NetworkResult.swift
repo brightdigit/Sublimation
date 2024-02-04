@@ -31,6 +31,13 @@ import AsyncHTTPClient
 import Foundation
 import OpenAPIRuntime
 
+/// Represents the result of a network operation.
+///
+/// - success: The operation was successful and contains the result value.
+/// - connectionRefused: The connection was refused by the server.
+/// - failure: The operation failed with an error.
+///
+/// - Note: This type is internal and should not be used outside of the framework.
 internal enum NetworkResult<T> {
   case success(T)
   case connectionRefused(ClientError)

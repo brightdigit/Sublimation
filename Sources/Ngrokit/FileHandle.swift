@@ -29,11 +29,26 @@
 
 import Foundation
 
-extension FileHandle {
-  // swiftlint:disable:next force_try
-  private static let errorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
+// swiftlint:disable:next force_try
+private let ngrokCLIErrorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
 
-  internal func parseNgrokErrorCode() throws -> Int {
+/// A protocol for handling data.
+public protocol DataHandle {
+  /// Reads data until the end.
+  ///
+  /// - Returns: The data read until the end, or `nil` if there is no more data.
+  /// - Throws: An error if there was a problem reading the data.
+  func readToEnd() throws -> Data?
+}
+
+extension FileHandle: DataHandle {}
+
+extension DataHandle {
+  /// Parses the ngrok error code from the data.
+  ///
+  /// - Returns: The parsed ngrok error code.
+  /// - Throws: An error if there was a problem parsing the error code.
+  internal func parseNgrokErrorCode() throws -> NgrokError {
     guard let data = try readToEnd() else {
       throw RuntimeError.unknownError
     }
@@ -42,7 +57,7 @@ extension FileHandle {
       throw RuntimeError.invalidErrorData(data)
     }
 
-    guard let match = FileHandle.errorRegex.firstMatch(
+    guard let match = ngrokCLIErrorRegex.firstMatch(
       in: text,
       range: .init(location: 0, length: text.count)
     ), match.numberOfRanges > 0 else {
@@ -55,6 +70,9 @@ extension FileHandle {
     guard let code = Int(text[range]) else {
       throw RuntimeError.unknownEarlyTermination(text)
     }
-    return code
+    guard let error = NgrokError(rawValue: code) else {
+      throw RuntimeError.unknownNgrokErrorCode(code)
+    }
+    return error
   }
 }

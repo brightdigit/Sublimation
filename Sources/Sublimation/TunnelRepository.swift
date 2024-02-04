@@ -29,7 +29,28 @@
 
 import Foundation
 
-public protocol TunnelRepository: Sendable {
+/// A repository for managing tunnels.
+/// This protocol defines the basic functionality for
+/// retrieving tunnels based on a given key.
+///
+/// - Note: The `Key` type must conform to the `Sendable` protocol.
+///
+/// - Important: This protocol inherits from the `Sendable` protocol.
+///
+/// - Warning: The `Key` associated type must also conform to the `Sendable` protocol.
+///
+/// - Requires: The `Key` associated type to be specified.
+public protocol TunnelRepository<Key>: Sendable {
+  /// The type of key used to retrieve tunnels.
   associatedtype Key: Sendable
+
+  ///   Retrieves a tunnel for the specified key.
+  ///
+  ///   - Parameter key: The key used to retrieve the tunnel.
+  ///
+  ///   - Throws: An error if the tunnel cannot be retrieved.
+  ///
+  ///   - Returns: The URL of the retrieved tunnel, if available.
+
   func tunnel(forKey key: Key) async throws -> URL?
 }
