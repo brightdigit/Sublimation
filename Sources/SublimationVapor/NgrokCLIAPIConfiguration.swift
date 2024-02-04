@@ -30,15 +30,13 @@
 import Logging
 import Vapor
 
-/**
- Configuration for the Ngrok CLI API server.
-
- - Note: This configuration conforms to `NgrokServerConfiguration` protocol.
-
- - Note: This configuration conforms to `NgrokVaporConfiguration` protocol.
-
- - SeeAlso: `NgrokCLIAPIServer`
- */
+/// Configuration for the Ngrok CLI API server.
+///
+/// - Note: This configuration conforms to `NgrokServerConfiguration` protocol.
+///
+/// - Note: This configuration conforms to `NgrokVaporConfiguration` protocol.
+///
+/// - SeeAlso: `NgrokCLIAPIServer`
 public struct NgrokCLIAPIConfiguration: NgrokServerConfiguration {
   /// The type of server to use.
   public typealias Server = NgrokCLIAPIServer
@@ -51,11 +49,10 @@ public struct NgrokCLIAPIConfiguration: NgrokServerConfiguration {
 }
 
 extension NgrokCLIAPIConfiguration: NgrokVaporConfiguration {
-  /**
-   Initializes a new instance of `NgrokCLIAPIConfiguration` using a `ServerApplication`.
-
-   - Parameter serverApplication: The server application to use for configuration.
-   */
+  ///   Initializes a new instance of
+  ///   `NgrokCLIAPIConfiguration` using a `ServerApplication`.
+  ///
+  ///   - Parameter serverApplication: The server application to use for configuration.
   internal init(serverApplication: any ServerApplication) {
     self.init(
       port: serverApplication.httpServerConfigurationPort,
@@ -63,11 +60,11 @@ extension NgrokCLIAPIConfiguration: NgrokVaporConfiguration {
     )
   }
 
-  /**
-   Initializes a new instance of `NgrokCLIAPIConfiguration` using a `Vapor.Application`.
+  ///   Initializes a new instance of `NgrokCLIAPIConfiguration`
+  ///   using a `Vapor.Application`.
+  ///
+  ///   - Parameter application: The Vapor application to use for configuration.
 
-   - Parameter application: The Vapor application to use for configuration.
-   */
   public init(application: Vapor.Application) {
     self.init(serverApplication: application)
   }

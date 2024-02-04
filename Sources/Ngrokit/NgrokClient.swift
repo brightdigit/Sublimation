@@ -35,37 +35,37 @@ import OpenAPIRuntime
   import FoundationNetworking
 #endif
 
-/**
- A client for interacting with the Ngrok API.
-
- Use this client to start and stop tunnels, as well as list existing tunnels.
-
- To create an instance of `NgrokClient`, you need to provide a transport and an optional server URL.
-
- Example usage:
-
- ```swift
- let client = NgrokClient(transport: URLSession.shared)
- ```
-
- - Note: The default server URL is `try! Servers.server1()`.
-
- - SeeAlso: `TunnelRequest`
- - SeeAlso: `Tunnel`
- */
+/// A client for interacting with the Ngrok API.
+///
+/// Use this client to start and stop tunnels, as well as list existing tunnels.
+///
+/// To create an instance of `NgrokClient`,
+/// you need to provide a transport and an optional server URL.
+///
+/// Example usage:
+///
+/// ```swift
+/// let client = NgrokClient(transport: URLSession.shared)
+/// ```
+///
+/// - Note: The default server URL is `try! Servers.server1()`.
+///
+/// - SeeAlso: `TunnelRequest`
+/// - SeeAlso: `Tunnel`
 public struct NgrokClient: Sendable {
+  // swiftlint:disable force_try
   /// The default server URL.
   public static let defaultServerURL = try! Servers.server1()
+  // swiftlint:enable force_try
 
   private let underlyingClient: any APIProtocol
 
-  /**
-   Initializes a new instance of `NgrokClient`.
-
-   - Parameters:
-     - transport: The transport to use for making API requests.
-     - serverURL: The server URL to use. If `nil`, the default server URL will be used.
-   */
+  ///   Initializes a new instance of `NgrokClient`.
+  ///
+  ///   - Parameters:
+  ///     - transport: The transport to use for making API requests.
+  ///     - serverURL: The server URL to use. If `nil`,
+  ///     the default server URL will be used.
   public init(transport: any ClientTransport, serverURL: URL? = nil) {
     let underlyingClient = NgrokOpenAPIClient.Client(
       serverURL: serverURL ?? Self.defaultServerURL,
@@ -78,15 +78,13 @@ public struct NgrokClient: Sendable {
     self.underlyingClient = underlyingClient
   }
 
-  /**
-   Starts a new tunnel.
-
-   - Parameter request: The tunnel request.
-
-   - Returns: The created tunnel.
-
-   - Throws: An error if the tunnel creation fails.
-   */
+  ///   Starts a new tunnel.
+  ///
+  ///   - Parameter request: The tunnel request.
+  ///
+  ///   - Returns: The created tunnel.
+  ///
+  ///   - Throws: An error if the tunnel creation fails.
   public func startTunnel(_ request: TunnelRequest) async throws -> Tunnel {
     let tunnelRequest: Components.Schemas.TunnelRequest
     tunnelRequest = .init(request: request)
@@ -99,24 +97,20 @@ public struct NgrokClient: Sendable {
     return tunnel
   }
 
-  /**
-   Stops a tunnel with the specified name.
-
-   - Parameter name: The name of the tunnel to stop.
-
-   - Throws: An error if the tunnel cannot be stopped.
-   */
+  ///   Stops a tunnel with the specified name.
+  ///
+  ///   - Parameter name: The name of the tunnel to stop.
+  ///
+  ///   - Throws: An error if the tunnel cannot be stopped.
   public func stopTunnel(withName name: String) async throws {
     _ = try await underlyingClient.stopTunnel(path: .init(name: name)).noContent
   }
 
-  /**
-   Lists all existing tunnels.
-
-   - Returns: An array of tunnels.
-
-   - Throws: An error if the tunnel listing fails.
-   */
+  ///   Lists all existing tunnels.
+  ///
+  ///   - Returns: An array of tunnels.
+  ///
+  ///   - Throws: An error if the tunnel listing fails.
   public func listTunnels() async throws -> [Tunnel] {
     try await underlyingClient
       .listTunnels()

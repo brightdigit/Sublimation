@@ -30,15 +30,14 @@
 import AsyncHTTPClient
 import Foundation
 import OpenAPIRuntime
-/**
- Represents the result of a network operation.
 
- - success: The operation was successful and contains the result value.
- - connectionRefused: The connection was refused by the server.
- - failure: The operation failed with an error.
-
- - Note: This type is internal and should not be used outside of the framework.
- */
+/// Represents the result of a network operation.
+///
+/// - success: The operation was successful and contains the result value.
+/// - connectionRefused: The connection was refused by the server.
+/// - failure: The operation failed with an error.
+///
+/// - Note: This type is internal and should not be used outside of the framework.
 internal enum NetworkResult<T> {
   case success(T)
   case connectionRefused(ClientError)
@@ -46,13 +45,6 @@ internal enum NetworkResult<T> {
 }
 
 extension NetworkResult {
-  /**
-   Initializes a `NetworkResult` with an error.
-
-   - Parameter error: The error that occurred.
-
-   - Note: This initializer is internal and should not be used outside of the framework.
-   */
   internal init(error: any Error) {
     guard let error = error as? ClientError else {
       self = .failure(error)
@@ -82,13 +74,6 @@ extension NetworkResult {
     self = .failure(error)
   }
 
-  /**
-   Initializes a `NetworkResult` with a closure that performs an asynchronous operation.
-
-   - Parameter closure: The closure that performs the asynchronous operation.
-
-   - Note: This initializer is internal and should not be used outside of the framework.
-   */
   internal init(_ closure: @escaping () async throws -> T) async {
     do {
       self = try await .success(closure())
@@ -97,15 +82,6 @@ extension NetworkResult {
     }
   }
 
-  /**
-   Retrieves the result value.
-
-   - Returns: The result value if the operation was successful, `nil` if the connection was refused, or throws an error if the operation failed.
-
-   - Throws: An error if the operation failed.
-
-   - Note: This method is internal and should not be used outside of the framework.
-   */
   internal func get() throws -> T? {
     switch self {
     case .connectionRefused:

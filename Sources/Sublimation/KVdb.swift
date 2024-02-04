@@ -32,48 +32,43 @@ import Foundation
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
-/**
- A utility class for interacting with KVdb.
 
- KVdb is a key-value database service.
-
- - Note: This class requires the `Foundation` framework.
-
- - SeeAlso: [KVdb](https://kvdb.io/)
-
- - Author: Leo Dion
-
- - Version: 2024
-
- - License: MIT License
- */
+/// A utility class for interacting with KVdb.
+///
+/// KVdb is a key-value database service.
+///
+/// - Note: This class requires the `Foundation` framework.
+///
+/// - SeeAlso: [KVdb](https://kvdb.io/)
+///
+/// - Author: Leo Dion
+///
+/// - Version: 2024
+///
+/// - License: MIT License
 public enum KVdb {
   /// The base URL string for KVdb.
   public static let baseString = "https://kvdb.io/"
 
-  /**
-   Constructs the path for a given key in a bucket.
-
-   - Parameters:
-     - key: The key for the value.
-     - bucketName: The name of the bucket.
-
-   - Returns: The constructed path.
-   */
+  ///   Constructs the path for a given key in a bucket.
+  ///
+  ///   - Parameters:
+  ///     - key: The key for the value.
+  ///     - bucketName: The name of the bucket.
+  ///
+  ///   - Returns: The constructed path.
   public static func path(forKey key: some Any, atBucket bucketName: String) -> String {
     "/\(bucketName)/\(key)"
   }
 
-  /**
-   Constructs a URL for a given key in a bucket.
-
-   - Parameters:
-     - URLType: The type of URL to construct.
-     - key: The key for the value.
-     - bucketName: The name of the bucket.
-
-   - Returns: The constructed URL.
-   */
+  ///   Constructs a URL for a given key in a bucket.
+  ///
+  ///   - Parameters:
+  ///     - URLType: The type of URL to construct.
+  ///     - key: The key for the value.
+  ///     - bucketName: The name of the bucket.
+  ///
+  ///   - Returns: The constructed URL.
   public static func construct<URLType: KVdbURLConstructable>(
     _: URLType.Type,
     forKey key: some Any,
@@ -85,18 +80,16 @@ public enum KVdb {
     )
   }
 
-  /**
-   Retrieves the URL for a given key in a bucket.
-
-   - Parameters:
-     - key: The key for the value.
-     - bucketName: The name of the bucket.
-     - session: The URLSession to use for the request. Defaults to `.ephemeral`.
-
-   - Returns: The URL for the key, or `nil` if it doesn't exist.
-
-   - Throws: An error if the request fails.
-   */
+  ///   Retrieves the URL for a given key in a bucket.
+  ///
+  ///   - Parameters:
+  ///     - key: The key for the value.
+  ///     - bucketName: The name of the bucket.
+  ///     - session: The URLSession to use for the request. Defaults to `.ephemeral`.
+  ///
+  ///   - Returns: The URL for the key, or `nil` if it doesn't exist.
+  ///
+  ///   - Throws: An error if the request fails.
   public static func url<Key: Sendable>(
     withKey key: Key,
     atBucket bucketName: String,

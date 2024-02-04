@@ -32,14 +32,12 @@ import Logging
 import Ngrokit
 import OpenAPIRuntime
 
-/**
- A server implementation for Ngrok CLI API.
-
- - Note: This server conforms to the `NgrokServer` and `Sendable` protocols.
-
- - SeeAlso: `NgrokServer`
- - SeeAlso: `Sendable`
- */
+/// A server implementation for Ngrok CLI API.
+///
+/// - Note: This server conforms to the `NgrokServer` and `Sendable` protocols.
+///
+/// - SeeAlso: `NgrokServer`
+/// - SeeAlso: `Sendable`
 public struct NgrokCLIAPIServer: NgrokServer, Sendable {
   private enum TunnelAttemptResult {
     case network(NetworkResult<Tunnel?>)
@@ -66,16 +64,14 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
   /// The logger for logging server events.
   internal let logger: Logger
 
-  /**
-   Initializes a new instance of `NgrokCLIAPIServer`.
-
-   - Parameters:
-     - delegate: The delegate for the server.
-     - client: The client for interacting with Ngrok.
-     - process: The process for running Ngrok.
-     - port: The port number to use.
-     - logger: The logger for logging server events.
-   */
+  ///   Initializes a new instance of `NgrokCLIAPIServer`.
+  ///
+  ///   - Parameters:
+  ///     - delegate: The delegate for the server.
+  ///     - client: The client for interacting with Ngrok.
+  ///     - process: The process for running Ngrok.
+  ///     - port: The port number to use.
+  ///     - logger: The logger for logging server events.
   public init(
     delegate: any NgrokServerDelegate,
     client: NgrokClient,
@@ -134,11 +130,9 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     return try networkResult?.get()?.flatMap { $0 }
   }
 
-  /**
-   Handles a CLI error.
-
-   - Parameter error: The error that occurred.
-   */
+  ///   Handles a CLI error.
+  ///
+  ///   - Parameter error: The error that occurred.
   @Sendable
   private func cliError(_ error: any Error) {
     delegate.server(self, errorDidOccur: error)
@@ -196,9 +190,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     )
   }
 
-  /**
-   Runs the server.
-   */
+  ///   Runs the server.
   public func run() async {
     let start = Date()
     let newTunnel: Tunnel
@@ -214,9 +206,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     delegate.server(self, updatedTunnel: newTunnel)
   }
 
-  /**
-   Starts the server.
-   */
+  ///   Starts the server.
   public func start() {
     Task {
       await run()

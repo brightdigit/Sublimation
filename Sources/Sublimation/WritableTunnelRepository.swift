@@ -28,26 +28,25 @@
 //
 
 import Foundation
-/**
- A repository for managing writable tunnels.
 
- This protocol extends the `TunnelRepository` protocol and adds the ability to save a URL with a key.
-
- - Note: The `Key` type parameter represents the type of key used to identify the tunnels.
-
- - SeeAlso: `TunnelRepository`
- */
+/// A repository for managing writable tunnels.
+///
+/// This protocol extends the `TunnelRepository` protocol
+/// and adds the ability to save a URL with a key.
+///
+/// - Note: The `Key` type parameter
+/// represents the type of key used to identify the tunnels.
+///
+/// - SeeAlso: `TunnelRepository`
 public protocol WritableTunnelRepository<Key>: TunnelRepository {
-  /**
-   Saves a URL with a key.
-
-   - Parameters:
-     - url: The URL to save.
-     - key: The key to associate with the URL.
-
-   - Throws: An error if the save operation fails.
-
-   - Note: This method is asynchronous.
-   */
+  ///   Saves a URL with a key.
+  ///
+  ///   - Parameters:
+  ///     - url: The URL to save.
+  ///     - key: The key to associate with the URL.
+  ///
+  ///   - Throws: An error if the save operation fails.
+  ///
+  ///   - Note: This method is asynchronous.
   func saveURL(_ url: URL, withKey key: Key) async throws
 }

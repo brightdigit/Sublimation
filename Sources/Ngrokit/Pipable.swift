@@ -28,15 +28,15 @@
 //
 
 import Foundation
-/**
- A protocol for types that can be piped.
 
- Types conforming to this protocol must also conform to `Sendable`.
-
- - Note: The associated type `DataHandleType` must conform to `DataHandle`.
-
- - Important: The `fileHandleForReading` property must be implemented to provide a handle for reading data.
- */
+/// A protocol for types that can be piped.
+///
+/// Types conforming to this protocol must also conform to `Sendable`.
+///
+/// - Note: The associated type `DataHandleType` must conform to `DataHandle`.
+///
+/// - Important: The `fileHandleForReading` property
+/// must be implemented to provide a handle for reading data.
 public protocol Pipable: Sendable {
   /// The associated type representing the data handle.
   associatedtype DataHandleType: DataHandle
@@ -44,5 +44,3 @@ public protocol Pipable: Sendable {
   /// The file handle used for reading data.
   var fileHandleForReading: DataHandleType { get }
 }
-
-import Foundation

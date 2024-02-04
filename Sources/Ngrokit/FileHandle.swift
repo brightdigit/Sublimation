@@ -29,8 +29,6 @@
 
 import Foundation
 
-
-/// A regular expression pattern for matching ngrok CLI error codes.
 // swiftlint:disable:next force_try
 private let ngrokCLIErrorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
 

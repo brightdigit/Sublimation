@@ -27,17 +27,15 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-/**
- An error type representing various errors that can occur when working with Ngrok server.
-
- - clientNotSetup: The Ngrok client is not properly set up.
- - noTunnelFound: No tunnel was found.
- - invalidURL: The URL is invalid.
- - cantSaveTunnel: Unable to save the tunnel with the given ID and data.
- */
-
 import Foundation
 
+/// An error type representing various errors that can occur
+/// when working with Ngrok server.
+///
+/// - clientNotSetup: The Ngrok client is not properly set up.
+/// - noTunnelFound: No tunnel was found.
+/// - invalidURL: The URL is invalid.
+/// - cantSaveTunnel: Unable to save the tunnel with the given ID and data.
 public enum NgrokServerError: Error {
   case clientNotSetup
   case noTunnelFound

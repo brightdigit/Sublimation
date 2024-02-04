@@ -29,32 +29,26 @@
 
 import Foundation
 
-/**
- A protocol for interacting with the Ngrok CLI API.
-
- This protocol extends the `Sendable` protocol.
-
- - Note: The `Sendable` protocol is not defined in this code snippet.
-
- - Important: The `NgrokCLIAPI` protocol is not defined in this code snippet.
-
- - Requires: The `NgrokProcess` type to be defined.
-
- - SeeAlso: `NgrokProcess`
- */
+/// A protocol for interacting with the Ngrok CLI API.
+///
+/// This protocol extends the `Sendable` protocol.
+///
+/// - Note: The `Sendable` protocol is not defined in this code snippet.
+///
+/// - Important: The `NgrokCLIAPI` protocol is not defined in this code snippet.
+///
+/// - Requires: The `NgrokProcess` type to be defined.
+///
+/// - SeeAlso: `NgrokProcess`
 public protocol NgrokCLIAPI: Sendable {
-  /**
-   Creates a process for the specified HTTP port.
-
-   - Parameter httpPort: The port number for the HTTP server.
-
-   - Returns: An instance of `NgrokProcess` for the specified port.
-   */
+  ///   Creates a process for the specified HTTP port.
+  ///
+  ///   - Parameter httpPort: The port number for the HTTP server.
+  ///
+  ///   - Returns: An instance of `NgrokProcess` for the specified port.
   func process(forHTTPPort httpPort: Int) -> any NgrokProcess
 }
 
-/**
- A type representing a process created by the Ngrok CLI API.
-
- - Note: The `NgrokProcess` type is not defined in this code snippet.
- */
+/// A type representing a process created by the Ngrok CLI API.
+///
+/// - Note: The `NgrokProcess` type is not defined in this code snippet.

@@ -35,44 +35,38 @@ import Vapor
   import FoundationNetworking
 #endif
 
-/**
- A client for interacting with the VaporTunnel service.
-
- This client conforms to the `KVdbTunnelClient` protocol.
-
- - Note: This client requires the Vapor framework.
-
- - Warning: This client is only compatible with Swift 5.5 or later.
-
- - Important: Make sure to import the necessary dependencies before using this client.
-
- - SeeAlso: `KVdbTunnelClient`
- */
+/// A client for interacting with the VaporTunnel service.
+///
+/// This client conforms to the `KVdbTunnelClient` protocol.
+///
+/// - Note: This client requires the Vapor framework.
+///
+/// - Warning: This client is only compatible with Swift 5.5 or later.
+///
+/// - Important: Make sure to import the necessary dependencies before using this client.
+///
+/// - SeeAlso: `KVdbTunnelClient`
 public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
   private let client: any Vapor.Client
 
-  /**
-   Initializes a new instance of the `VaporTunnelClient`.
-
-   - Parameter client: The Vapor client to use for making requests.
-   - Parameter keyType: The type of the key used for accessing values in the tunnel.
-
-   - Returns: A new instance of `VaporTunnelClient`.
-   */
+  ///   Initializes a new instance of the `VaporTunnelClient`.
+  ///
+  ///   - Parameter client: The Vapor client to use for making requests.
+  ///   - Parameter keyType: The type of the key used for accessing values in the tunnel.
+  ///
+  ///   - Returns: A new instance of `VaporTunnelClient`.
   public init(client: any Vapor.Client, keyType _: Key.Type) {
     self.client = client
   }
 
-  /**
-   Retrieves the value associated with a key from a specific bucket.
-
-   - Parameter key: The key used to access the value.
-   - Parameter bucketName: The name of the bucket where the value is stored.
-
-   - Throws: `NgrokServerError.invalidURL` if the retrieved URL is invalid.
-
-   - Returns: The URL associated with the key in the specified bucket.
-   */
+  ///   Retrieves the value associated with a key from a specific bucket.
+  ///
+  ///   - Parameter key: The key used to access the value.
+  ///   - Parameter bucketName: The name of the bucket where the value is stored.
+  ///
+  ///   - Throws: `NgrokServerError.invalidURL` if the retrieved URL is invalid.
+  ///
+  ///   - Returns: The URL associated with the key in the specified bucket.
   public func getValue(
     ofKey key: Key,
     fromBucket bucketName: String
@@ -90,15 +84,13 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
     return url
   }
 
-  /**
-   Saves a value with a key in a specific bucket.
-
-   - Parameter value: The URL value to save.
-   - Parameter key: The key used to associate the value.
-   - Parameter bucketName: The name of the bucket where the value will be stored.
-
-   - Throws: `NgrokServerError.cantSaveTunnel` if the tunnel cannot be saved.
-   */
+  ///   Saves a value with a key in a specific bucket.
+  ///
+  ///   - Parameter value: The URL value to save.
+  ///   - Parameter key: The key used to associate the value.
+  ///   - Parameter bucketName: The name of the bucket where the value will be stored.
+  ///
+  ///   - Throws: `NgrokServerError.cantSaveTunnel` if the tunnel cannot be saved.
   public func saveValue(
     _ value: URL,
     withKey key: Key,

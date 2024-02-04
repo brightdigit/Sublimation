@@ -32,40 +32,37 @@ import Foundation
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
-/**
- A client for interacting with a KVdb tunnel using URLSession.
 
- This client conforms to the `KVdbTunnelClient` protocol.
-
- - Note: This client requires the `FoundationNetworking` module to be imported.
-
- - Warning: The `saveValue(_:withKey:inBucket:)` method will throw a `NgrokServerError` if the save operation fails.
-
- - SeeAlso: `KVdbTunnelClient`
- */
+/// A client for interacting with a KVdb tunnel using URLSession.
+///
+/// This client conforms to the `KVdbTunnelClient` protocol.
+///
+/// - Note: This client requires the `FoundationNetworking` module to be imported.
+///
+/// - Warning: The `saveValue(_:withKey:inBucket:)` method will throw
+/// a `NgrokServerError` if the save operation fails.
+///
+/// - SeeAlso: `KVdbTunnelClient`
 public struct URLSessionClient<Key: Sendable>: KVdbTunnelClient {
   private let session: URLSession
 
-  /**
-   Initializes a new `URLSessionClient` with the specified session.
-
-   - Parameter session: The URLSession to use for network requests. Defaults to an ephemeral session.
-   */
+  ///   Initializes a new `URLSessionClient` with the specified session.
+  ///
+  ///   - Parameter session: The URLSession to use for network requests.
+  ///   Defaults to an ephemeral session.
   public init(session: URLSession = .ephemeral()) {
     self.session = session
   }
 
-  /**
-   Retrieves the value associated with a key from a specific bucket.
-
-   - Parameters:
-     - key: The key to retrieve the value for.
-     - bucketName: The name of the bucket to retrieve the value from.
-
-   - Returns: The URL value associated with the key.
-
-   - Throws: A `NgrokServerError` if the retrieval operation fails.
-   */
+  ///   Retrieves the value associated with a key from a specific bucket.
+  ///
+  ///   - Parameters:
+  ///     - key: The key to retrieve the value for.
+  ///     - bucketName: The name of the bucket to retrieve the value from.
+  ///
+  ///   - Returns: The URL value associated with the key.
+  ///
+  ///   - Throws: A `NgrokServerError` if the retrieval operation fails.
   public func getValue(
     ofKey key: Key,
     fromBucket bucketName: String
@@ -81,16 +78,14 @@ public struct URLSessionClient<Key: Sendable>: KVdbTunnelClient {
     return url
   }
 
-  /**
-   Saves a URL value with a specified key in a specific bucket.
-
-   - Parameters:
-     - value: The URL value to save.
-     - key: The key to associate with the value.
-     - bucketName: The name of the bucket to save the value in.
-
-   - Throws: A `NgrokServerError` if the save operation fails.
-   */
+  ///   Saves a URL value with a specified key in a specific bucket.
+  ///
+  ///   - Parameters:
+  ///     - value: The URL value to save.
+  ///     - key: The key to associate with the value.
+  ///     - bucketName: The name of the bucket to save the value in.
+  ///
+  ///   - Throws: A `NgrokServerError` if the save operation fails.
   public func saveValue(
     _ value: URL,
     withKey key: Key,

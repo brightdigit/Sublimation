@@ -33,43 +33,30 @@ import Foundation
   import FoundationNetworking
 #endif
 
-/**
- A factory for creating `KVdbTunnelRepository` instances.
-
- This factory is used to set up and configure a `KVdbTunnelRepository` with a specific bucket name.
-
- - Note: This factory conforms to the `WritableTunnelRepositoryFactory` protocol.
-
- - Author: Leo Dion
- - Version: 2024
- - Copyright: © BrightDigit
-
- - SeeAlso: `KVdbTunnelRepository`
- - SeeAlso: `WritableTunnelRepositoryFactory`
- */
-public struct KVdbTunnelRepositoryFactory<Key: Sendable>: WritableTunnelRepositoryFactory {
+/// This factory is used to set up and configure a
+/// `KVdbTunnelRepository` with a specific bucket name.
+public struct KVdbTunnelRepositoryFactory<Key: Sendable>:
+  WritableTunnelRepositoryFactory {
   /// The type of tunnel repository created by this factory.
   public typealias TunnelRepositoryType = KVdbTunnelRepository<Key>
 
   /// The name of the bucket to use.
   public let bucketName: String
 
-  /**
-   Initializes a new instance of the factory with the specified bucket name.
-
-   - Parameter bucketName: The name of the bucket to use.
-   */
+  ///   Initializes a new instance of the factory with the specified bucket name.
+  ///
+  ///   - Parameter bucketName: The name of the bucket to use.
   public init(bucketName: String) {
     self.bucketName = bucketName
   }
 
-  /**
-   Sets up a client and returns a new `KVdbTunnelRepository` instance.
-
-   - Parameter client: The tunnel client to use.
-   - Returns: A new `KVdbTunnelRepository` instance.
-   */
-  public func setupClient<TunnelClientType>(_ client: TunnelClientType) -> KVdbTunnelRepository<Key>
+  ///   Sets up a client and returns a new `KVdbTunnelRepository` instance.
+  ///
+  ///   - Parameter client: The tunnel client to use.
+  ///   - Returns: A new `KVdbTunnelRepository` instance.
+  public func setupClient<TunnelClientType>(
+    _ client: TunnelClientType
+  ) -> KVdbTunnelRepository<Key>
     where TunnelClientType: KVdbTunnelClient, TunnelClientType.Key == Key {
     .init(client: client, bucketName: bucketName)
   }

@@ -28,26 +28,28 @@
 //
 
 import Foundation
-/**
- An enumeration representing possible errors that can occur with Ngrok.
 
- - invalidMetadataLength: The metadata length is invalid.
- - accountLimitExceeded: The account limit for simultaneous ngrok agent sessions has been exceeded.
- - unsupportedAgentVersion: The ngrok agent version is no longer supported.
- - captchaFailed: The captcha solving failed.
- - accountViolation: Creating an ngrok account is disallowed due to violation of the terms of service.
- - gatewayError: Ngrok gateway error.
- - tunnelNotFound: The tunnel was not found.
- - accountBanned: The account associated with the hostname has been banned.
- - passwordTooShort: The password is too short.
- - accountCreationNotAllowed: Creating a new account is not allowed.
- - invalidCredentials: The email or password entered is not valid.
- - userAlreadyExists: A user with the email address already exists.
- - disallowedEmailProvider: Sign-ups are disallowed for the email provider.
- - htmlContentSignupRequired: Signing up for an ngrok account and installing the authtoken is required before serving HTML content.
- - websiteVisitWarning: A warning before visiting a website served by ngrok.com.
- - tunnelConnectionFailed: The ngrok agent failed to establish a connection to the upstream web service.
- */
+// swiftlint:disable line_length
+
+/// An enumeration representing possible errors that can occur with Ngrok.
+///
+/// - invalidMetadataLength: The metadata length is invalid.
+/// - accountLimitExceeded: The account limit for simultaneous ngrok agent sessions has been exceeded.
+/// - unsupportedAgentVersion: The ngrok agent version is no longer supported.
+/// - captchaFailed: The captcha solving failed.
+/// - accountViolation: Creating an ngrok account is disallowed due to violation of the terms of service.
+/// - gatewayError: Ngrok gateway error.
+/// - tunnelNotFound: The tunnel was not found.
+/// - accountBanned: The account associated with the hostname has been banned.
+/// - passwordTooShort: The password is too short.
+/// - accountCreationNotAllowed: Creating a new account is not allowed.
+/// - invalidCredentials: The email or password entered is not valid.
+/// - userAlreadyExists: A user with the email address already exists.
+/// - disallowedEmailProvider: Sign-ups are disallowed for the email provider.
+/// - htmlContentSignupRequired: Signing up for an ngrok account and installing the authtoken is required before serving HTML content.
+/// - websiteVisitWarning: A warning before visiting a website served by ngrok.com.
+/// - tunnelConnectionFailed: The ngrok agent failed to establish a connection to the upstream web service.
+///
 public enum NgrokError: Int, LocalizedError {
   case invalidMetadataLength = 100
   case accountLimitExceeded = 108
@@ -66,7 +68,6 @@ public enum NgrokError: Int, LocalizedError {
   case websiteVisitWarning = 6_024
   case tunnelConnectionFailed = 8_012
 
-  // swiftlint:disable line_length
   public var errorDescription: String? {
     switch self {
     case .invalidMetadataLength:

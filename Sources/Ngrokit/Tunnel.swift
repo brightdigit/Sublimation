@@ -29,26 +29,26 @@
 
 import Foundation
 import NgrokOpenAPIClient
-/**
- A struct representing a tunnel.
 
- - Note: This struct conforms to the `Sendable` protocol.
-
- - Parameters:
-   - name: The name of the tunnel.
-   - publicURL: The public URL of the tunnel.
-   - config: The configuration of the tunnel.
-
- - SeeAlso: `NgrokTunnelConfiguration`
-
- - Throws: `RuntimeError.invalidURL` if the public URL or the address URL is invalid.
-
- - SeeAlso: `RuntimeError`
-
- - Note: This struct has an additional initializer that takes a `TunnelResponse` object.
-
- - SeeAlso: `Components.Schemas.TunnelResponse`
- */
+/// A struct representing a tunnel.
+///
+/// - Note: This struct conforms to the `Sendable` protocol.
+///
+/// - Parameters:
+///   - name: The name of the tunnel.
+///   - publicURL: The public URL of the tunnel.
+///   - config: The configuration of the tunnel.
+///
+/// - SeeAlso: `NgrokTunnelConfiguration`
+///
+/// - Throws: `RuntimeError.invalidURL` if the public URL or the address URL is invalid.
+///
+/// - SeeAlso: `RuntimeError`
+///
+/// - Note: This struct has an additional initializer
+/// that takes a `TunnelResponse` object.
+///
+/// - SeeAlso: `Components.Schemas.TunnelResponse`
 public struct Tunnel: Sendable {
   /// The name of the tunnel.
   public let name: String
@@ -59,14 +59,12 @@ public struct Tunnel: Sendable {
   /// The configuration of the tunnel.
   public let config: NgrokTunnelConfiguration
 
-  /**
-   Initializes a new `Tunnel` instance.
-
-   - Parameters:
-     - name: The name of the tunnel.
-     - publicURL: The public URL of the tunnel.
-     - config: The configuration of the tunnel.
-   */
+  ///   Initializes a new `Tunnel` instance.
+  ///
+  ///   - Parameters:
+  ///     - name: The name of the tunnel.
+  ///     - publicURL: The public URL of the tunnel.
+  ///     - config: The configuration of the tunnel.
   public init(name: String, publicURL: URL, config: NgrokTunnelConfiguration) {
     self.name = name
     self.publicURL = publicURL
@@ -75,20 +73,20 @@ public struct Tunnel: Sendable {
 }
 
 extension Tunnel {
-  /**
-   Initializes a new `Tunnel` instance from a `TunnelResponse` object.
+  ///   Initializes a new `Tunnel` instance from a `TunnelResponse` object.
+  ///
+  ///   - Parameters:
+  ///     - response: The `TunnelResponse` object.
+  ///
+  ///   - Throws: `RuntimeError.invalidURL`
+  ///   if the public URL or the address URL is invalid.
+  ///
+  ///   - SeeAlso: `RuntimeError`
+  ///
+  ///   - Note: This initializer is internal and should not be used directly.
+  ///
+  ///   - SeeAlso: `Components.Schemas.TunnelResponse`
 
-   - Parameters:
-     - response: The `TunnelResponse` object.
-
-   - Throws: `RuntimeError.invalidURL` if the public URL or the address URL is invalid.
-
-   - SeeAlso: `RuntimeError`
-
-   - Note: This initializer is internal and should not be used directly.
-
-   - SeeAlso: `Components.Schemas.TunnelResponse`
-   */
   internal init(response: Components.Schemas.TunnelResponse) throws {
     guard let publicURL = URL(string: response.public_url) else {
       throw RuntimeError.invalidURL(response.public_url)
