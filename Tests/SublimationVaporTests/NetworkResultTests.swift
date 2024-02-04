@@ -176,8 +176,10 @@ internal class NetworkResultTests: XCTestCase {
     do {
       _ = try await NetworkResult<Void> { throw clientOtherError }.get()
       error = nil
-    } catch let caughtError {
+    } catch let caughtError as ClientError {
       error = caughtError
+    } catch {
+      XCTAssertNil(error)
     }
     XCTAssertNotNil(error)
 
