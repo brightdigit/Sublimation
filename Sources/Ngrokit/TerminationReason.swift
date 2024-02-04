@@ -33,10 +33,15 @@ import Foundation
 #if os(macOS)
   public typealias TerminationReason = Process.TerminationReason
 #else
-  public enum TerminationReason: Int, Sendable {
-    case exit = 1
+/**
+ Represents the reason for the termination of a process.
 
-    case uncaughtSignal = 2
-  }
+ - exit: The process exited normally.
+ - uncaughtSignal: The process terminated due to an uncaught signal.
+ */
+public enum TerminationReason: Int, Sendable {
+  case exit = 1
+  case uncaughtSignal = 2
+}
 #endif
 // swiftlint:enable file_types_order

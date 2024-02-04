@@ -33,8 +33,45 @@ import Foundation
   import FoundationNetworking
 #endif
 
+/**
+ A client for interacting with KVdb Tunnel.
+
+ - Note: This client conforms to the `Sendable` protocol.
+
+ - Note: The `Key` type must also conform to the `Sendable` protocol.
+
+ - Warning: This client is not thread-safe.
+
+ - Important: This client requires the `FoundationNetworking` module to be imported.
+
+ - SeeAlso: `KVdbTunnelClientProtocol`
+ */
 public protocol KVdbTunnelClient<Key>: Sendable {
+  /// The type of key used to access values in the KVdb Tunnel.
   associatedtype Key: Sendable
+
+  /**
+   Retrieves the value associated with the specified key from the specified bucket.
+
+   - Parameters:
+     - key: The key used to access the value.
+     - bucketName: The name of the bucket.
+
+   - Returns: The URL of the retrieved value.
+
+   - Throws: An error if the value cannot be retrieved.
+   */
   func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL
+
+  /**
+   Saves the specified value with the specified key in the specified bucket.
+
+   - Parameters:
+     - value: The URL of the value to be saved.
+     - key: The key used to access the value.
+     - bucketName: The name of the bucket.
+
+   - Throws: An error if the value cannot be saved.
+   */
   func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws
 }

@@ -38,6 +38,20 @@ import Vapor
   import FoundationNetworking
 #endif
 
+/**
+ A handler for managing the lifecycle of the Sublimation application.
+
+ - Note: This handler is responsible for starting and stopping the Ngrok server, as well as saving and handling tunnels.
+
+ - Important: This handler is designed to work with a specific configuration of `WritableTunnelRepositoryFactoryType` and `NgrokServerFactoryType`.
+
+ - Parameters:
+   - WritableTunnelRepositoryFactoryType: A factory type for creating a writable tunnel repository.
+   - NgrokServerFactoryType: A factory type for creating an Ngrok server.
+
+ - SeeAlso: `LifecycleHandler`
+ - SeeAlso: `NgrokServerDelegate`
+ */
 public actor SublimationLifecycleHandler<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   NgrokServerFactoryType: NgrokServerFactory
@@ -51,6 +65,16 @@ public actor SublimationLifecycleHandler<
   private var logger: Logger?
   private var server: (any NgrokServer)?
 
+  /**
+   Initializes the Sublimation lifecycle handler.
+
+   - Parameters:
+     - factory: The factory for creating an Ngrok server.
+     - repoFactory: The factory for creating a writable tunnel repository.
+     - key: The key for the tunnel repository.
+
+   - Note: This initializer sets the initial values for the properties of the handler.
+   */
   public init(
     factory: NgrokServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
@@ -82,6 +106,16 @@ public actor SublimationLifecycleHandler<
     self.server = server
   }
 
+  /**
+   Saves the tunnel URL to the tunnel repository.
+
+   - Parameters:
+     - tunnel: The tunnel to save.
+
+   - Note: This method is asynchronous.
+
+   - SeeAlso: `Tunnel`
+   */
   private func saveTunnel(_ tunnel: Tunnel) async {
     do {
       try await tunnelRepo?.saveURL(tunnel.publicURL, withKey: key)
@@ -96,22 +130,63 @@ public actor SublimationLifecycleHandler<
     )
   }
 
+  /**
+   Handles an error that occurred during tunnel operation.
+
+   - Parameters:
+     - error: The error that occurred.
+
+   - Note: This method is asynchronous.
+   */
   private func onError(_ error: any Error) async {
     logger?.error("Error running tunnel: \(error.localizedDescription)")
   }
 
+  /**
+   Called when an Ngrok server updates a tunnel.
+
+   - Parameters:
+     - server: The Ngrok server.
+     - tunnel: The updated tunnel.
+
+   - Note: This method is nonisolated.
+
+   - SeeAlso: `NgrokServer`
+   - SeeAlso: `Tunnel`
+   */
   public nonisolated func server(_: any NgrokServer, updatedTunnel tunnel: Tunnel) {
     Task {
       await self.saveTunnel(tunnel)
     }
   }
 
+  /**
+   Called when an error occurs in the Ngrok server.
+
+   - Parameters:
+     - server: The Ngrok server.
+     - error: The error that occurred.
+
+   - Note: This method is nonisolated.
+
+   - SeeAlso: `NgrokServer`
+   */
   public nonisolated func server(_: any NgrokServer, errorDidOccur error: any Error) {
     Task {
       await self.onError(error)
     }
   }
 
+  /**
+   Begins the Sublimation application from the given application.
+
+   - Parameters:
+     - application: The Vapor application.
+
+   - Note: This method is private and asynchronous.
+
+   - SeeAlso: `Application`
+   */
   private func beginFromApplication(_ application: Application) async {
     let server = factory.server(
       from: NgrokServerFactoryType.Configuration(application: application),
@@ -121,7 +196,6 @@ public actor SublimationLifecycleHandler<
     tunnelRepo = repoFactory.setupClient(
       VaporTunnelClient(
         client: application.client,
-
         keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self
       )
     )
@@ -129,17 +203,52 @@ public actor SublimationLifecycleHandler<
     server.start()
   }
 
+  /**
+   Called when the application is about to boot.
+
+   - Parameters:
+     - application: The Vapor application.
+
+   - Throws: An error if the application fails to begin.
+
+   - Note: This method is nonisolated.
+
+   - SeeAlso: `Application`
+   */
   public nonisolated func willBoot(_ application: Application) throws {
     Task {
       await self.beginFromApplication(application)
     }
   }
 
+  /**
+   Called when the application is shutting down.
+
+   - Parameters:
+     - application: The Vapor application.
+
+   - Note: This method is nonisolated.
+
+   - SeeAlso: `Application`
+   */
   public nonisolated func shutdown(_: Application) {}
 }
 
 #if os(macOS)
   extension SublimationLifecycleHandler {
+    /**
+     Initializes the Sublimation lifecycle handler with default values for macOS.
+
+     - Parameters:
+       - ngrokPath: The path to the Ngrok executable.
+       - bucketName: The name of the bucket for the tunnel repository.
+       - key: The key for the tunnel repository.
+
+     - Note: This initializer is only available on macOS.
+
+     - SeeAlso: `KVdbTunnelRepositoryFactory`
+     - SeeAlso: `NgrokCLIAPIServerFactory`
+     */
     public init<Key>(
       ngrokPath: String,
       bucketName: String,

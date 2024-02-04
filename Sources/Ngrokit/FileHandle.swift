@@ -29,16 +29,27 @@
 
 import Foundation
 
+
+/// A regular expression pattern for matching ngrok CLI error codes.
 // swiftlint:disable:next force_try
 private let ngrokCLIErrorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
 
+/// A protocol for handling data.
 public protocol DataHandle {
+  /// Reads data until the end.
+  ///
+  /// - Returns: The data read until the end, or `nil` if there is no more data.
+  /// - Throws: An error if there was a problem reading the data.
   func readToEnd() throws -> Data?
 }
 
 extension FileHandle: DataHandle {}
 
 extension DataHandle {
+  /// Parses the ngrok error code from the data.
+  ///
+  /// - Returns: The parsed ngrok error code.
+  /// - Throws: An error if there was a problem parsing the error code.
   internal func parseNgrokErrorCode() throws -> NgrokError {
     guard let data = try readToEnd() else {
       throw RuntimeError.unknownError

@@ -30,42 +30,74 @@
 import Foundation
 
 #if os(macOS)
+/**
+ A process that can be processed and executed.
 
-  public final class ProcessableProcess: Process, Processable {
-    public typealias PipeType = Pipe
+ - Note: This class is only available on macOS.
 
-    public var standardErrorPipe: Pipe? {
-      get {
-        standardError as? Pipe
-      }
-      set {
-        standardError = newValue
-      }
+ - Important: Make sure to set the `standardErrorPipe` property before executing the process.
+
+ - SeeAlso: `Processable`
+ */
+public final class ProcessableProcess: Process, Processable {
+  /// The type of pipe used for standard error.
+  public typealias PipeType = Pipe
+
+  /// The pipe used for standard error.
+  public var standardErrorPipe: Pipe? {
+    get {
+      standardError as? Pipe
     }
-
-    public init(executableFilePath: String, scheme: String, port: Int) {
-      super.init()
-      super.executableURL = .init(filePath: executableFilePath)
-      super.arguments = [scheme, port.description]
-    }
-
-    public func setTerminationHandler(
-      _ closure: @escaping @Sendable (ProcessableProcess) -> Void
-    ) {
-      super.terminationHandler = { process in
-        guard let pprocess = process as? ProcessableProcess else {
-          assertionFailure()
-          closure(self)
-          return
-        }
-        closure(pprocess)
-      }
-    }
-
-    public func createPipe() -> Pipe {
-      Pipe()
+    set {
+      standardError = newValue
     }
   }
 
-  extension Pipe: Pipable {}
+  /**
+   Initializes a new `ProcessableProcess` instance.
+
+   - Parameters:
+     - executableFilePath: The file path of the executable.
+     - scheme: The scheme to use.
+     - port: The port to use.
+
+   - Important: Make sure to set the `standardErrorPipe` property before executing the process.
+   */
+  public init(executableFilePath: String, scheme: String, port: Int) {
+    super.init()
+    super.executableURL = .init(filePath: executableFilePath)
+    super.arguments = [scheme, port.description]
+  }
+
+  /**
+   Sets the termination handler closure for the process.
+
+   - Parameter closure: The closure to be called when the process terminates.
+
+   - Important: Make sure to cast the `process` parameter to `ProcessableProcess` before using it in the closure.
+   */
+  public func setTerminationHandler(
+    _ closure: @escaping @Sendable (ProcessableProcess) -> Void
+  ) {
+    super.terminationHandler = { process in
+      guard let pprocess = process as? ProcessableProcess else {
+        assertionFailure()
+        closure(self)
+        return
+      }
+      closure(pprocess)
+    }
+  }
+
+  /**
+   Creates a new pipe.
+
+   - Returns: A new `Pipe` instance.
+   */
+  public func createPipe() -> Pipe {
+    Pipe()
+  }
+}
+
+extension Pipe: Pipable {}
 #endif

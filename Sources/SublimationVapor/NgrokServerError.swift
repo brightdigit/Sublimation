@@ -30,7 +30,22 @@
 import Sublimation
 import Vapor
 
+/**
+ An error that can occur when interacting with the Ngrok server.
+
+ - Note: This error is specific to the Sublimation framework.
+
+ - SeeAlso: `NgrokServerError.cantSaveTunnel(_:)`
+ */
 extension NgrokServerError {
+  /**
+   Creates a `NgrokServerError` instance representing a failure to save a tunnel.
+
+   - Parameters:
+     - response: The client response that triggered the error.
+
+   - Returns: A `NgrokServerError` instance with the appropriate error details.
+   */
   internal static func cantSaveTunnel(_ response: ClientResponse) -> NgrokServerError {
     let code = Int(response.status.code)
     let data = response.body.map { Data(buffer: $0, byteTransferStrategy: .automatic) }

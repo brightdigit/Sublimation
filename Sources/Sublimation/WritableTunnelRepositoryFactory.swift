@@ -33,5 +33,16 @@ import Foundation
   import FoundationNetworking
 #endif
 
+
+/**
+ A factory protocol for creating writable tunnel repositories.
+
+ This protocol extends the `TunnelRepositoryFactory` protocol and requires the associated `TunnelRepositoryType` to conform to the `WritableTunnelRepository` protocol.
+
+ - Note: This protocol is part of the `Sublimation` framework.
+
+ - SeeAlso: `TunnelRepositoryFactory`
+ - SeeAlso: `WritableTunnelRepository`
+ */
 public protocol WritableTunnelRepositoryFactory: TunnelRepositoryFactory
   where TunnelRepositoryType: WritableTunnelRepository {}

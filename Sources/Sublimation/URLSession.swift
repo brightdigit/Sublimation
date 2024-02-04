@@ -33,11 +33,28 @@ import Foundation
   import FoundationNetworking
 #endif
 
+/**
+ An extension to `URLSession` that provides asynchronous data fetching methods.
+ */
 extension URLSession {
+  /**
+   Creates a new ephemeral `URLSession` instance.
+
+   - Returns: A new ephemeral `URLSession` instance.
+   */
   public static func ephemeral() -> URLSession {
     URLSession(configuration: .ephemeral)
   }
 
+  /**
+   Fetches data asynchronously for the given request.
+
+   - Parameter request: The request to fetch data for.
+
+   - Returns: A tuple containing the fetched data and the URL response.
+
+   - Throws: An error if the data fetching operation fails.
+   */
   internal func dataAsync(for request: URLRequest) async throws -> (Data, URLResponse) {
     #if !canImport(FoundationNetworking)
       if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
@@ -58,6 +75,15 @@ extension URLSession {
     }
   }
 
+  /**
+   Fetches data asynchronously from the given URL.
+
+   - Parameter url: The URL to fetch data from.
+
+   - Returns: A tuple containing the fetched data and the URL response.
+
+   - Throws: An error if the data fetching operation fails.
+   */
   internal func dataAsync(from url: URL) async throws -> (Data, URLResponse) {
     #if !canImport(FoundationNetworking)
       if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {

@@ -33,9 +33,37 @@ import Foundation
   import FoundationNetworking
 #endif
 
+/**
+ A type representing a URL.
+
+ - Note: This type is an extension of `URL` and conforms to `KVdbURLConstructable`.
+
+ - SeeAlso: `KVdbURLConstructable`
+ */
 extension URL: KVdbURLConstructable {
+  /**
+   Initializes a `URL` instance with the given KVDB base and key bucket path.
+
+   - Parameters:
+     - kvDBBase: The base URL of the KVDB.
+     - keyBucketPath: The path to the key bucket.
+
+   - Note: This initializer is only available if `FoundationNetworking` is imported.
+
+   - Precondition: `kvDBBase` must be a valid URL.
+
+   - Postcondition: The resulting `URL` instance is constructed by appending `keyBucketPath` to `kvDBBase`.
+
+   - Complexity: O(1)
+   */
   public init(kvDBBase: String, keyBucketPath: String) {
     // swiftlint:disable:next force_unwrapping
     self = URL(string: kvDBBase)!.appendingPathComponent(keyBucketPath)
   }
 }
+
+import Foundation
+
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif

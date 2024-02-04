@@ -27,8 +27,26 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+/**
+ An extension to the `Result` type.
+
+ This extension adds a convenience initializer that allows creating a `Result` instance with optional success and failure values.
+
+ - Note: This extension is internal and should not be used outside of the module.
+
+ - Warning: The `EmptyError` type is an internal error type used when both success and failure values are `nil`.
+
+ - Parameters:
+   - success: An optional success value.
+   - failure: An optional failure value.
+
+ - Throws: An `EmptyError` if both success and failure values are `nil`.
+
+ - Returns: A `Result` instance with either a success or failure value.
+ */
 extension Result {
   internal struct EmptyError: Error {}
+
   internal init(success: Success?, failure: Failure?) where Failure == any Error {
     if let failure {
       self = .failure(failure)

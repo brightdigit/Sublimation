@@ -27,12 +27,88 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
+/**
+ A protocol for objects that can be processed.
+
+ - Note: This protocol is `Sendable` and `AnyObject`.
+
+ - Important: The associated type `PipeType` must conform to `Pipable`.
+
+ - SeeAlso: `Pipable`
+
+ - SeeAlso: `TerminationReason`
+
+ - SeeAlso: `PipeType`
+
+ - SeeAlso: `run()`
+
+ - SeeAlso: `setTerminationHandler(_:)`
+
+ - SeeAlso: `createPipe()`
+
+ - SeeAlso: `standardErrorPipe`
+
+ - SeeAlso: `terminationReason`
+
+ - Requires: `executableFilePath`, `scheme`, and `port` parameters to initialize.
+
+ - Requires: `run()` method to be implemented.
+
+ - Requires: `standardErrorPipe` property to be gettable and settable.
+
+ - Requires: `terminationReason` property to be gettable.
+
+ - Requires: `setTerminationHandler(_:)` method to be implemented.
+
+ */
 public protocol Processable: Sendable, AnyObject {
+  /// The associated type for the pipe used by the process.
   associatedtype PipeType: Pipable
+
+  /// The pipe used for standard error output.
   var standardErrorPipe: PipeType? { get set }
+
+  /// The reason for the process termination.
   var terminationReason: TerminationReason { get }
+
+  /**
+   Initializes a `Processable` object.
+
+   - Parameters:
+     - executableFilePath: The file path of the executable.
+     - scheme: The scheme to use.
+     - port: The port to use.
+
+   - Requires: This initializer must be implemented.
+   */
   init(executableFilePath: String, scheme: String, port: Int)
+
+  /**
+   Sets a closure to be called when the process terminates.
+
+   - Parameters:
+     - closure: The closure to be called.
+
+   - Requires: This method must be implemented.
+   */
   func setTerminationHandler(_ closure: @escaping @Sendable (Self) -> Void)
+
+  /**
+   Creates a new pipe.
+
+   - Returns: A new instance of `PipeType`.
+
+   - Requires: This method must be implemented.
+   */
   func createPipe() -> PipeType
+
+  /**
+   Runs the process.
+
+   - Throws: An error if the process fails.
+
+   - Requires: This method must be implemented.
+   */
   func run() throws
 }
