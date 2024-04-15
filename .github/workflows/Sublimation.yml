@@ -92,8 +92,8 @@ jobs:
             iPhoneName: "iPhone 15 Pro"
           - xcode: "/Applications/Xcode_15.3.app"
             os: macos-14
-            iOSVersion: "17.2"
-            watchOSVersion: "10.2"
+            iOSVersion: "17.4"
+            watchOSVersion: "10.4"
             watchName: "Apple Watch Ultra 2 (49mm)"
             iPhoneName: "iPhone 15 Pro Max"
     steps:
