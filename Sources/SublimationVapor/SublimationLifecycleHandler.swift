@@ -204,8 +204,8 @@ public actor SublimationLifecycleHandler<
       await self.beginFromApplication(application)
     }
   }
-  
-  public nonisolated func didBoot(_ application: Application) throws {}
+
+  public nonisolated func didBoot(_: Application) throws {}
 
   ///   Called when the application is shutting down.
   ///

@@ -3,7 +3,7 @@
 import PackageDescription
 
 let swiftSettings: [SwiftSetting] = [
-//  .enableUpcomingFeature("BareSlashRegexLiterals"),
+  //  .enableUpcomingFeature("BareSlashRegexLiterals"),
 //  .enableUpcomingFeature("ConciseMagicFile"),
 //  .enableUpcomingFeature("ExistentialAny"),
 //  .enableUpcomingFeature("ForwardTrailingClosures"),
