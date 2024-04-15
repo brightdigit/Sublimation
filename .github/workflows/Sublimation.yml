@@ -77,18 +77,24 @@ jobs:
             iOSVersion: "17.0.1"
             watchOSVersion: "10.0"
             watchName: "Apple Watch Series 9 (41mm)"
-            iPhoneName: "iPhone 15 Pro"
+            iPhoneName: "iPhone 15"
           - xcode: "/Applications/Xcode_15.1.app"
             os: macos-13
             iOSVersion: "17.2"
             watchOSVersion: "10.2"
             watchName: "Apple Watch Series 9 (45mm)"
-            iPhoneName: "iPhone 15 Pro"
+            iPhoneName: "iPhone 15 Plus"          
           - xcode: "/Applications/Xcode_15.2.app"
             os: macos-14
             iOSVersion: "17.2"
             watchOSVersion: "10.2"
             watchName: "Apple Watch Ultra (49mm)"
+            iPhoneName: "iPhone 15 Pro"
+          - xcode: "/Applications/Xcode_15.3.app"
+            os: macos-14
+            iOSVersion: "17.2"
+            watchOSVersion: "10.2"
+            watchName: "Apple Watch Ultra 2 (49mm)"
             iPhoneName: "iPhone 15 Pro Max"
     steps:
       - uses: actions/checkout@v4
@@ -103,7 +109,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-
       - name: Cache mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_15.2')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_15.3')
         id: cache-mint
         uses: actions/cache@v4
         env:
@@ -120,7 +126,7 @@ jobs:
       - name: Setup Xcode
         run: sudo xcode-select -s ${{ matrix.xcode }}/Contents/Developer
       - name: Install mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_15.2')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_15.3')
         run: |
           brew update
           brew install mint
@@ -142,7 +148,7 @@ jobs:
       #     files: ${{ join(fromJSON(steps.coverage-files.outputs.files), ',') }}     
       - name: Lint
         run: ./scripts/lint.sh
-        if: startsWith(matrix.xcode,'/Applications/Xcode_15.2')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_15.3')
       # - name: Dump PIF
       #   if: startsWith(matrix.xcode,'/Applications/Xcode_14')
       #   run: |
