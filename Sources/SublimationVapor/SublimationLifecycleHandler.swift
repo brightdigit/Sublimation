@@ -205,6 +205,8 @@ public actor SublimationLifecycleHandler<
     }
   }
 
+  public nonisolated func didBoot(_: Application) throws {}
+
   ///   Called when the application is shutting down.
   ///
   ///   - Parameters:
