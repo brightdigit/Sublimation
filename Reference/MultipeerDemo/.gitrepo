@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:leogdion/MultipeerDemo.git
+	branch = sublimation
+	commit = c4c2ca8845d9b9613290d533cfe4fcef75c9d691
+	parent = 89d77c961e2cddb8c979122b86f7ff604f5f15a7
+	method = merge
+	cmdver = 0.4.6
