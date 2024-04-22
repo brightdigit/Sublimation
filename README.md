@@ -117,13 +117,13 @@ let package = Package(
 )
 ```
 
-`SublimationVapor` is the product which gives us the `SublimationLifecycleHandler` we'll use to integrate `Sublimation` with your Vapor app. Simply add `SublimationLifecycleHandler` to your application:
+`SublimationVapor` is the product which gives us the `TunnelSublimationLifecycleHandler` we'll use to integrate `Sublimation` with your Vapor app. Simply add `TunnelSublimationLifecycleHandler` to your application:
 
 ```swift
 let app = Application(env)
 ...
 app.lifecycle.use(
-  SublimationLifecycleHandler(
+  TunnelSublimationLifecycleHandler(
     ngrokPath: "/opt/homebrew/bin/ngrok",
     bucketName: "bucket-name",
     key: "application key name"

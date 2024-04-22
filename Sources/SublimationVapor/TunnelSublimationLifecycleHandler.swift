@@ -1,5 +1,5 @@
 //
-//  SublimationLifecycleHandler.swift
+//  TunnelSublimationLifecycleHandler.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -52,7 +52,7 @@ import Vapor
 ///   - NgrokServerFactoryType: A factory type for creating an Ngrok server.
 ///
 /// - SeeAlso: `NgrokServerDelegate`
-public actor SublimationLifecycleHandler<
+public actor TunnelSublimationLifecycleHandler<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   NgrokServerFactoryType: NgrokServerFactory
 >: LifecycleHandler, NgrokServerDelegate
@@ -219,7 +219,7 @@ public actor SublimationLifecycleHandler<
 }
 
 #if os(macOS)
-  extension SublimationLifecycleHandler {
+  extension TunnelSublimationLifecycleHandler {
     ///     Initializes the Sublimation lifecycle handler with default values for macOS.
     ///
     ///     - Parameters:
