@@ -32,23 +32,44 @@ import Vapor
 import Network
 
 
+extension HTTPServer.Configuration {
+  public var addressDescription: String {
+    let scheme = self.tlsConfiguration == nil ? "http" : "https"
+    let addressDescription: String
+    switch self.address {
+    case .hostname(let hostname, let port):
+        return "\(scheme)://\(hostname ?? self.hostname):\(port ?? self.port)"
+    case .unixDomainSocket(let socketPath):
+      return "\(scheme)+unix: \(socketPath)"
+    }
+  }
+}
+
 public final class SublimationLifecycleHandler: LifecycleHandler {
   public init() {
   }
   
   var listenerQ : NWListener?
-  func start() -> NWListener? {
+  func start(addressDescription: String) -> NWListener? {
       print("listener will start")
-      guard let listener = try? NWListener(using: .tcp) else { return nil }
+    
+    guard let listener = try? NWListener(using: .tcp) else { return nil }
       listener.stateUpdateHandler = { newState in
           print("listener did change state, new: \(newState)")
       }
       listener.newConnectionHandler = { connection in
           connection.cancel()
-      }       
-    listener.service = .init(type: "_ssh._tcp")
+      }
+    let txtRecord : NWTXTRecord = .init([
+      "Sublimation" : addressDescription
+    ])
+    
+    var service = NWListener.Service(type: "_http._tcp", txtRecord: txtRecord.data)
+    service.txtRecordObject =  txtRecord
+    
+    listener.service = service
     listener.serviceRegistrationUpdateHandler = { change in
-        print(change)
+        dump(change)
     }
     listener.start(queue: .global(qos: .default))
       return listener
@@ -60,17 +81,17 @@ public final class SublimationLifecycleHandler: LifecycleHandler {
       listener.cancel()
   }
   
-  func startStop() {
-      if let listener = self.listenerQ {
-          self.listenerQ = nil
-          self.stop(listener: listener)
-      } else {
-          self.listenerQ = self.start()
-      }
-  }
+//  func startStop() {
+//      if let listener = self.listenerQ {
+//          self.listenerQ = nil
+//          self.stop(listener: listener)
+//      } else {
+//          self.listenerQ = self.start()
+//      }
+//  }
   
   public func willBoot(_ application: Application) throws {
-    self.listenerQ = self.start()
+    self.listenerQ = self.start(addressDescription: application.http.server.configuration.addressDescription)
   }
   
   public func shutdown(_ application: Application) {

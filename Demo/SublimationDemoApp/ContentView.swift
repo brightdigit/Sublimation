@@ -23,8 +23,11 @@ class AppModel {
     
     func start() -> NWBrowser {
         print("browser will start")
-        let descriptor = NWBrowser.Descriptor.bonjour(type: "_ssh._tcp", domain: "local.")
-        let browser = NWBrowser(for: descriptor, using: .tcp)
+      
+      
+        let descriptor = NWBrowser.Descriptor.bonjourWithTXTRecord(type: "_http._tcp", domain: "local.")
+      let browser = NWBrowser(for: descriptor, using: .tcp)
+      
         browser.stateUpdateHandler = { newState in
             print("browser did change state, new: \(newState)")
         }
@@ -33,11 +36,13 @@ class AppModel {
             for change in changes {
                 switch change {
                 case .added(let result):
-                    print("+ \(result.endpoint)")
-                  
+                  dump(result.metadata)
+                  print("+ \(result.endpoint)")
+                  //dump(result.endpoint)
                 case .removed(let result):
                     print("- \(result.endpoint)")
                 case .changed(old: let old, new: let new, flags: _):
+                  dump(new.metadata)
                     print("± \(old.endpoint) \(new.endpoint)")
                 case .identical:
                     fallthrough
