@@ -3,23 +3,42 @@ import Network
 import SublimationDemoConfiguration
 import SwiftUI
 
-extension View {
-  func taskPolyfill(_ action: @escaping @Sendable () async -> Void) -> some View {
-    if #available(iOS 15.0, *) {
-      return self.task(action)
-    } else {
-      return onAppear {
-        Task {
-          await action()
-        }
-      }
-    }
+
+
+struct AvailableService {
+  internal init(key: String, baseURL: URL) {
+    self.key = key
+    self.baseURL = baseURL
   }
+  
+  let key : String
+  let baseURL : URL
 }
 
+extension AvailableService {
+  init?(result: NWBrowser.Result) {
+    guard case let .service(key, _, _, _) = result.endpoint else {
+      return nil
+    }
+    guard case let .bonjour(txtRecord) =  result.metadata else {
+      return nil
+    }
+    guard case let .string(urlString) = txtRecord.getEntry(for: "Sublimation") else {
+      return nil
+    }
+    guard let baseURL = URL(string: urlString) else {
+      return nil
+    }
+    self.init(key: key, baseURL: baseURL)
+  }
+}
+@Observable
 class AppModel {
 
+  @ObservationIgnored
     var browserQ: NWBrowser? = nil
+  
+  var availableService : AvailableService?
     
     func start() -> NWBrowser {
         print("browser will start")
@@ -36,14 +55,29 @@ class AppModel {
             for change in changes {
                 switch change {
                 case .added(let result):
-                  dump(result.metadata)
-                  print("+ \(result.endpoint)")
-                  //dump(result.endpoint)
+                  dump(result)
+                  if let service = AvailableService(result: result) {
+                    if let availableService = self.availableService, availableService.key == service.key {
+                      self.availableService = service
+                    } else {
+                      self.availableService = service
+                    }
+                  }
                 case .removed(let result):
-                    print("- \(result.endpoint)")
-                case .changed(old: let old, new: let new, flags: _):
-                  dump(new.metadata)
-                    print("± \(old.endpoint) \(new.endpoint)")
+                  
+                  if let service = AvailableService(result: result) {
+                    if self.availableService?.key == service.key {
+                      self.availableService = nil
+                    }
+                  }
+                case .changed(old: let old, new: let new, flags: .metadataChanged):
+                  if let oldService = AvailableService(result: old), let newService = AvailableService(result: new), oldService.key == self.availableService?.key {
+                    self.availableService = newService
+                  } else if let newService = AvailableService(result: new), self.availableService == nil {
+                    self.availableService = newService
+                  }
+                case .changed(old: let old, new: let new, flags: let flags):
+                    print("± \(old.endpoint) \(new.endpoint) \(flags)")
                 case .identical:
                     fallthrough
                 @unknown default:
@@ -72,7 +106,7 @@ class AppModel {
 }
 
 struct ContentView: View {
-  let model = AppModel()
+  var model = AppModel()
   @State var serverResponse: String = ""
 
   enum DemoError: LocalizedError {
@@ -95,16 +129,16 @@ struct ContentView: View {
     }
   }
 
-  func getBaseURL(
-    fromBucket bucketName: String,
-    withKey key: String
-  ) async throws -> URL {
-    //self.model.
-//    guard let url = try await KVdb.url(withKey: key, atBucket: bucketName) else {
-    throw DemoError.noURLSetAt(bucketName, key)
-//    }
-//    return url
-  }
+//  func getBaseURL(
+//    fromBucket bucketName: String,
+//    withKey key: String
+//  ) async throws -> URL {
+//    //self.model.
+////    guard let url = try await KVdb.url(withKey: key, atBucket: bucketName) else {
+//    throw DemoError.noURLSetAt(bucketName, key)
+////    }
+////    return url
+//  }
 
   func getServerResponse(
     from url: URL,
@@ -129,24 +163,26 @@ struct ContentView: View {
       Image(systemName: "globe")
         .imageScale(.large)
         .foregroundColor(.accentColor)
+      Text("\(self.model.availableService?.baseURL.absoluteString ?? "")")
       Text(serverResponse)
     }
     .padding()
-    .taskPolyfill {
+
+    .task(id: self.model.availableService?.baseURL, {
+      guard let baseURL = self.model.availableService?.baseURL else {
+        return
+      }
       let serverResponse: String
       do {
-        let url = try await getBaseURL(
-          fromBucket: Configuration.bucketName,
-          withKey: Configuration.key
-        )
-        serverResponse = try await getServerResponse(from: url)
+        serverResponse = try await getServerResponse(from: baseURL)
       } catch {
         serverResponse = error.localizedDescription
       }
       await MainActor.run {
         self.serverResponse = serverResponse
       }
-    }
+    })
+
     .onAppear(perform: {
       model.startStop()
     })

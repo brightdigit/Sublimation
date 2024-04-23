@@ -48,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		B3020FCE2923E5B20080243A /* Sublimation */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Sublimation; path = ..; sourceTree = "<group>"; };
+		B321FBF02BD7FA7500902DF8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B3641FF629231A7200A483BA /* SublimationDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SublimationDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3641FF929231A7200A483BA /* SublimationDemoAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SublimationDemoAppApp.swift; sourceTree = "<group>"; };
 		B3641FFB29231A7200A483BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -122,6 +123,7 @@
 		B3641FF829231A7200A483BA /* SublimationDemoApp */ = {
 			isa = PBXGroup;
 			children = (
+				B321FBF02BD7FA7500902DF8 /* Info.plist */,
 				B3641FF929231A7200A483BA /* SublimationDemoAppApp.swift */,
 				B3641FFB29231A7200A483BA /* ContentView.swift */,
 				B3641FFD29231A7400A483BA /* Assets.xcassets */,
@@ -474,7 +476,9 @@
 				DEVELOPMENT_TEAM = MLT7M394S7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SublimationDemoApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SublimationDemoApp;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Network usage is required for macOS/iOS communication";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -507,7 +511,9 @@
 				DEVELOPMENT_TEAM = MLT7M394S7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SublimationDemoApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SublimationDemoApp;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Network usage is required for macOS/iOS communication";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

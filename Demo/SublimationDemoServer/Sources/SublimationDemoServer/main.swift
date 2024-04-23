@@ -1,4 +1,5 @@
 import SublimationDemoConfiguration
+import Network
 import SublimationVapor
 import Vapor
 
@@ -17,5 +18,16 @@ app.lifecycle.use(
   SublimationLifecycleHandler(
   )
 )
+
+#if os(macOS)
+if let name = Host.current().addresses.first(where: { address in
+  guard address != "127.0.0.1" else {
+    return false
+  }
+  return !address.contains(":")
+}) {
+  app.http.server.configuration.hostname = name
+}
+#endif
 
 try app.run()

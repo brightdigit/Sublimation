@@ -37,11 +37,27 @@ extension HTTPServer.Configuration {
     let scheme = self.tlsConfiguration == nil ? "http" : "https"
     let addressDescription: String
     switch self.address {
-    case .hostname(let hostname, let port):
-        return "\(scheme)://\(hostname ?? self.hostname):\(port ?? self.port)"
+    case .hostname(let originalHostName, let port):
+      let actualHostName : String
+      let originalHostName = originalHostName ?? self.hostname
+      if originalHostName == "127.0.0.1" {
+        dump(Host.current())
+        actualHostName = Host.current().addresses.first(where: { address in
+          guard address != originalHostName else {
+            return false
+          }
+          return !address.contains(":")
+        }) ?? originalHostName
+      } else {
+        actualHostName = originalHostName
+      }
+      print(actualHostName)
+        return "\(scheme)://\(actualHostName):\(port ?? self.port)"
     case .unixDomainSocket(let socketPath):
       return "\(scheme)+unix: \(socketPath)"
     }
+    
+    
   }
 }
 
@@ -69,6 +85,7 @@ public final class SublimationLifecycleHandler: LifecycleHandler {
     
     listener.service = service
     listener.serviceRegistrationUpdateHandler = { change in
+      
         dump(change)
     }
     listener.start(queue: .global(qos: .default))
