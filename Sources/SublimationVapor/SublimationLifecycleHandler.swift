@@ -29,5 +29,54 @@
 
 import Foundation
 import Vapor
+import Network
 
-public final class SublimationLifecycleHandler: LifecycleHandler {}
+
+public final class SublimationLifecycleHandler: LifecycleHandler {
+  public init() {
+  }
+  
+  var listenerQ : NWListener?
+  func start() -> NWListener? {
+      print("listener will start")
+      guard let listener = try? NWListener(using: .tcp) else { return nil }
+      listener.stateUpdateHandler = { newState in
+          print("listener did change state, new: \(newState)")
+      }
+      listener.newConnectionHandler = { connection in
+          connection.cancel()
+      }       
+    listener.service = .init(type: "_ssh._tcp")
+    listener.serviceRegistrationUpdateHandler = { change in
+        print(change)
+    }
+    listener.start(queue: .global(qos: .default))
+      return listener
+  }
+  
+  func stop(listener: NWListener) {
+      print("listener will stop")
+      listener.stateUpdateHandler = nil
+      listener.cancel()
+  }
+  
+  func startStop() {
+      if let listener = self.listenerQ {
+          self.listenerQ = nil
+          self.stop(listener: listener)
+      } else {
+          self.listenerQ = self.start()
+      }
+  }
+  
+  public func willBoot(_ application: Application) throws {
+    self.listenerQ = self.start()
+  }
+  
+  public func shutdown(_ application: Application) {
+    if let listenerQ = self.listenerQ {
+      self.stop(listener: listenerQ)
+    }
+    self.listenerQ = nil
+  }
+}

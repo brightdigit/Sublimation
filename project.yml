@@ -7,6 +7,8 @@ packages:
 projectReferences:
     Demo:
       path: ./Demo/SublimationDemoApp.xcodeproj
+    Multipeer:
+      path: ./Reference/MultipeerDemo/MultipeerDemo.xcodeproj
 aggregateTargets:
   Lint:
     buildScripts:

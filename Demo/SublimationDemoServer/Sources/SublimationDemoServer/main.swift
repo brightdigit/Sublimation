@@ -14,10 +14,7 @@ app.get { _ in
 }
 
 app.lifecycle.use(
-  TunnelSublimationLifecycleHandler(
-    ngrokPath: Configuration.ngrokPath,
-    bucketName: Configuration.bucketName,
-    key: Configuration.key
+  SublimationLifecycleHandler(
   )
 )
 
