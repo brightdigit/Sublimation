@@ -157,3 +157,13 @@ At the point, you'll have the base url of your Vapor application and can begin u
 # License 
 
 This code is distributed under the MIT license. See the [LICENSE](https://github.com/brightdigit/Sublimation/LICENSE) file for more info.
+
+# References
+
+* [How to create and advertise a Bonj…](https://forums.developer.apple.com/forums/thread/740932)
+* [Get IP & Port from NWBrowser](https://forums.developer.apple.com/forums/thread/122638)
+* [NSNetService](https://developer.apple.com/documentation/foundation/nsnetservice)
+* [Deprecation of NSNetService and al…](https://forums.developer.apple.com/forums/thread/682744)
+* [DNSServiceResolve(_:_:_:_:_:_:_:_:)](https://developer.apple.com/documentation/dnssd/1804744-dnsserviceresolve)
+* [hostName](https://developer.apple.com/documentation/foundation/nsnetservice/1413300-hostname)
+* [endpoint](https://developer.apple.com/documentation/network/nwbrowser/result/3200384-endpoint)
