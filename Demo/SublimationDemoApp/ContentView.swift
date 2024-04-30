@@ -106,7 +106,7 @@ import SwiftUI
 //}
 
 struct ContentView: View {
-  var model = AppModel()
+  let networkExplorer = NetworkExplorer()
   @State var serverResponse: String = ""
 
   enum DemoError: LocalizedError {
@@ -151,28 +151,26 @@ struct ContentView: View {
       Image(systemName: "globe")
         .imageScale(.large)
         .foregroundColor(.accentColor)
-      Text("\(self.model.availableService?.baseURL.absoluteString ?? "")")
+      //Text("\(self.model.availableService?.baseURL.absoluteString ?? "")")
       Text(serverResponse)
     }
     .padding()
 
-    .task(id: self.model.availableService?.baseURL, {
-      guard let baseURL = self.model.availableService?.baseURL else {
-        return
-      }
-      let serverResponse: String
-      do {
-        serverResponse = try await getServerResponse(from: baseURL)
-      } catch {
-        serverResponse = error.localizedDescription
-      }
-      await MainActor.run {
-        self.serverResponse = serverResponse
-      }
-    })
-
     .onAppear(perform: {
-      model.startStop()
+      Task {
+        let urls = await networkExplorer.urls()
+        let baseURL = urls.first!
+        print(baseURL)
+        let serverResponse: String
+        do {
+          serverResponse = try await getServerResponse(from: baseURL)
+        } catch {
+          serverResponse = error.localizedDescription
+        }
+        await MainActor.run {
+          self.serverResponse = serverResponse
+        }
+      }
     })
   }
 }

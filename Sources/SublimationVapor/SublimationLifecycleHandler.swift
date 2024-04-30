@@ -66,7 +66,8 @@ public final class SublimationLifecycleHandler: LifecycleHandler {
   }
   
   var listenerQ : NWListener?
-  func start(addressDescription: String) -> NWListener? {
+  func start(isTLS: Bool, port: Int) -> NWListener? {
+    let suffix = [isTLS ? "https" : "http", port.description]
       print("listener will start")
     
     guard let listener = try? NWListener(using: .tcp) else { return nil }
@@ -76,10 +77,22 @@ public final class SublimationLifecycleHandler: LifecycleHandler {
       listener.newConnectionHandler = { connection in
           connection.cancel()
       }
-    let txtRecord : NWTXTRecord = .init([
-      "Sublimation" : addressDescription
-    ])
+    var dictionary = [
+      "Sublimation_TLS": isTLS ? "true" : "false",  "Sublimation_Port": port.description
+    ]
+    for address in Host.current().addresses {
+      guard !(["127.0.0.1", "::1", "localhost"].contains(address)) else {
+        continue
+      }
+      guard !address.contains(":") else {
+        continue
+      }
+      let index = dictionary.count - 2
+      dictionary["Sublimation_Address_\(index)"] = address
+    }
     
+    let txtRecord : NWTXTRecord = .init(dictionary)
+    dump(txtRecord)
     var service = NWListener.Service(type: "_http._tcp", txtRecord: txtRecord.data)
     service.txtRecordObject =  txtRecord
     
@@ -99,7 +112,10 @@ public final class SublimationLifecycleHandler: LifecycleHandler {
   }
   
   public func willBoot(_ application: Application) throws {
-    self.listenerQ = self.start(addressDescription: application.http.server.configuration.addressDescription)
+    
+    self.listenerQ = self.start(
+      isTLS: application.http.server.configuration.tlsConfiguration != nil,
+      port: application.http.server.configuration.port)
   }
   
   public func shutdown(_ application: Application) {

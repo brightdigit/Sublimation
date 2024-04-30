@@ -19,15 +19,15 @@ app.lifecycle.use(
   )
 )
 
-#if os(macOS)
-if let name = Host.current().addresses.first(where: { address in
-  guard address != "127.0.0.1" else {
-    return false
-  }
-  return !address.contains(":")
-}) {
-  app.http.server.configuration.hostname = name
-}
-#endif
+//#if os(macOS)
+//if let name = Host.current().addresses.first(where: { address in
+//  guard address != "127.0.0.1" else {
+//    return false
+//  }
+//  return !address.contains(":")
+//}) {
+//}
+//#endif
 
+app.http.server.configuration.hostname = "::"
 try app.run()
