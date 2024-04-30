@@ -90,6 +90,7 @@ public enum KVdb {
   ///   - Returns: The URL for the key, or `nil` if it doesn't exist.
   ///
   ///   - Throws: An error if the request fails.
+  @available(*, deprecated)
   public static func url<Key: Sendable>(
     withKey key: Key,
     atBucket bucketName: String,

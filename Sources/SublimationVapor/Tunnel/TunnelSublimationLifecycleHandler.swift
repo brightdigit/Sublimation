@@ -52,6 +52,7 @@ import Vapor
 ///   - NgrokServerFactoryType: A factory type for creating an Ngrok server.
 ///
 /// - SeeAlso: `NgrokServerDelegate`
+@available(*, deprecated)
 public actor TunnelSublimationLifecycleHandler<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   NgrokServerFactoryType: NgrokServerFactory
