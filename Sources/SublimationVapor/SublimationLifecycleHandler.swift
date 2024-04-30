@@ -98,15 +98,6 @@ public final class SublimationLifecycleHandler: LifecycleHandler {
       listener.cancel()
   }
   
-//  func startStop() {
-//      if let listener = self.listenerQ {
-//          self.listenerQ = nil
-//          self.stop(listener: listener)
-//      } else {
-//          self.listenerQ = self.start()
-//      }
-//  }
-  
   public func willBoot(_ application: Application) throws {
     self.listenerQ = self.start(addressDescription: application.http.server.configuration.addressDescription)
   }
