@@ -31,35 +31,35 @@ import Foundation
 import Vapor
 import Network
 
-
-extension HTTPServer.Configuration {
-  public var addressDescription: String {
-    let scheme = self.tlsConfiguration == nil ? "http" : "https"
-    let addressDescription: String
-    switch self.address {
-    case .hostname(let originalHostName, let port):
-      let actualHostName : String
-      let originalHostName = originalHostName ?? self.hostname
-      if originalHostName == "127.0.0.1" {
-        dump(Host.current())
-        actualHostName = Host.current().addresses.first(where: { address in
-          guard address != originalHostName else {
-            return false
-          }
-          return !address.contains(":")
-        }) ?? originalHostName
-      } else {
-        actualHostName = originalHostName
-      }
-      print(actualHostName)
-        return "\(scheme)://\(actualHostName):\(port ?? self.port)"
-    case .unixDomainSocket(let socketPath):
-      return "\(scheme)+unix: \(socketPath)"
-    }
-    
-    
-  }
-}
+//
+//extension HTTPServer.Configuration {
+//  public var addressDescription: String {
+//    let scheme = self.tlsConfiguration == nil ? "http" : "https"
+//    let addressDescription: String
+//    switch self.address {
+//    case .hostname(let originalHostName, let port):
+//      let actualHostName : String
+//      let originalHostName = originalHostName ?? self.hostname
+//      if originalHostName == "127.0.0.1" {
+//        dump(Host.current())
+//        actualHostName = Host.current().addresses.first(where: { address in
+//          guard address != originalHostName else {
+//            return false
+//          }
+//          return !address.contains(":")
+//        }) ?? originalHostName
+//      } else {
+//        actualHostName = originalHostName
+//      }
+//      print(actualHostName)
+//        return "\(scheme)://\(actualHostName):\(port ?? self.port)"
+//    case .unixDomainSocket(let socketPath):
+//      return "\(scheme)+unix: \(socketPath)"
+//    }
+//    
+//    
+//  }
+//}
 
 public final class SublimationLifecycleHandler: LifecycleHandler {
   public init() {

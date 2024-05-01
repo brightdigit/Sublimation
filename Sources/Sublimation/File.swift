@@ -13,6 +13,44 @@ enum URLScheme : String {
   case https
 }
 
+public struct PrefixContinuation<Element> {
+  var elements = [Element]()
+  var continuation : AsyncStream<Element>.Continuation?
+}
+public final class BonjourServerFinder {
+  let browser : NWBrowser
+  let queue : DispatchQueue
+  
+  var continuation : AsyncStream<Server>.Continuation?
+//  public init (autoStart: Bool, queue: DispatchQueue = .global()) {
+//    
+//  }
+  public  convenience init(bonjourWithType type: String = "_http._tcp", domain: String = "local.", using parameters: NWParameters = .tcp, queue: DispatchQueue = .global(), autoStart : Bool = false) {
+    self.init(for: .bonjourWithTXTRecord(type: type, domain: domain), using: parameters)
+  }
+  convenience init(for descriptor: NWBrowser.Descriptor, using parameters: NWParameters, queue: DispatchQueue = .global(), autoStart : Bool = false) {
+    self.init(browser: .init(for: descriptor, using: parameters))
+  }
+  init(browser: NWBrowser, queue: DispatchQueue = .global(), autoStart : Bool = false) {
+    self.browser = browser
+    self.queue = queue
+//    browser.stateUpdateHandler = {
+//      self.currentState = $0
+//    }
+//    browser.browseResultsChangedHandler = self.onResultsChanged(to:withChanges:)
+  }
+  public func servers () -> AsyncStream<Server> {
+    return AsyncStream { continuation in
+      
+    }
+  }
+}
+public struct Server {
+  public let hosts : [String]
+  public let isTLS : Bool
+  public let port : Int
+}
+
 public final class NetworkExplorer : Sendable {
   let browser : NWBrowser
   let queue : DispatchQueue = .global()
@@ -42,6 +80,7 @@ public final class NetworkExplorer : Sendable {
     guard case let .bonjour(txtRecord) =  result.metadata else {
       return nil
     }
+    print(key)
     var offset  = 0
     var port = 80
     var isTLS = false

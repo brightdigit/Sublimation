@@ -155,7 +155,12 @@ struct ContentView: View {
       Text(serverResponse)
     }
     .padding()
-
+    .task {
+      let finder = BonjourServerFinder()
+      for await server in finder.servers() {
+        
+      }
+    }
     .onAppear(perform: {
       Task {
         let urls = await networkExplorer.urls()
