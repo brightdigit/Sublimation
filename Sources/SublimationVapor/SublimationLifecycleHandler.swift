@@ -31,56 +31,36 @@ import Foundation
 import Vapor
 import Network
 
-//
-//extension HTTPServer.Configuration {
-//  public var addressDescription: String {
-//    let scheme = self.tlsConfiguration == nil ? "http" : "https"
-//    let addressDescription: String
-//    switch self.address {
-//    case .hostname(let originalHostName, let port):
-//      let actualHostName : String
-//      let originalHostName = originalHostName ?? self.hostname
-//      if originalHostName == "127.0.0.1" {
-//        dump(Host.current())
-//        actualHostName = Host.current().addresses.first(where: { address in
-//          guard address != originalHostName else {
-//            return false
-//          }
-//          return !address.contains(":")
-//        }) ?? originalHostName
-//      } else {
-//        actualHostName = originalHostName
-//      }
-//      print(actualHostName)
-//        return "\(scheme)://\(actualHostName):\(port ?? self.port)"
-//    case .unixDomainSocket(let socketPath):
-//      return "\(scheme)+unix: \(socketPath)"
-//    }
-//    
-//    
-//  }
-//}
+private actor BonjourListener {
 
-public final class SublimationLifecycleHandler: LifecycleHandler {
-  public init() {
+  
+  func stop () {
+    assert(self.listener != nil)
+      listener?.stateUpdateHandler = nil
+      listener?.cancel()
+    listener = nil
   }
   
-  var listenerQ : NWListener?
-  func start(isTLS: Bool, port: Int) -> NWListener? {
-    let suffix = [isTLS ? "https" : "http", port.description]
-      print("listener will start")
-    
-    guard let listener = try? NWListener(using: .tcp) else { return nil }
+  var listener: NWListener?
+}
+
+extension BonjourListener {
+  func start(isTLS: Bool, port: Int) {
+    #warning("Add Logger")
+    guard let listener = try? NWListener(using: .tcp) else { return  }
+    #warning("Store State")
       listener.stateUpdateHandler = { newState in
           print("listener did change state, new: \(newState)")
       }
       listener.newConnectionHandler = { connection in
           connection.cancel()
       }
+#warning("Refactor Dictionary")
     var dictionary = [
       "Sublimation_TLS": isTLS ? "true" : "false",  "Sublimation_Port": port.description
     ]
     for address in Host.current().addresses {
+#warning("Add Filter options")
       guard !(["127.0.0.1", "::1", "localhost"].contains(address)) else {
         continue
       }
@@ -88,6 +68,7 @@ public final class SublimationLifecycleHandler: LifecycleHandler {
         continue
       }
       let index = dictionary.count - 2
+      #warning("Max count")
       dictionary["Sublimation_Address_\(index)"] = address
     }
     
@@ -102,26 +83,32 @@ public final class SublimationLifecycleHandler: LifecycleHandler {
         dump(change)
     }
     listener.start(queue: .global(qos: .default))
-      return listener
+    self.listener = listener
+  }
+}
+
+public final class SublimationLifecycleHandler: LifecycleHandler {
+  public init() {
+    listenerQ = BonjourListener()
   }
   
-  func stop(listener: NWListener) {
-      print("listener will stop")
-      listener.stateUpdateHandler = nil
-      listener.cancel()
-  }
+  private let listenerQ : BonjourListener
+
+
   
   public func willBoot(_ application: Application) throws {
-    
-    self.listenerQ = self.start(
-      isTLS: application.http.server.configuration.tlsConfiguration != nil,
-      port: application.http.server.configuration.port)
+    Task {
+      await self.listenerQ.start(
+        isTLS: application.http.server.configuration.tlsConfiguration != nil,
+        port: application.http.server.configuration.port)
+    }
   }
   
   public func shutdown(_ application: Application) {
-    if let listenerQ = self.listenerQ {
-      self.stop(listener: listenerQ)
-    }
-    self.listenerQ = nil
+    
+      Task {
+        await listenerQ.stop()
+      }
+    
   }
 }

@@ -3,118 +3,17 @@ import Network
 import SublimationDemoConfiguration
 import SwiftUI
 
-
-//
-//struct AvailableService {
-//  internal init(key: String, baseURL: URL) {
-//    self.key = key
-//    self.baseURL = baseURL
-//  }
-//  
-//  let key : String
-//  let baseURL : URL
-//}
-//
-//extension AvailableService {
-//  init?(result: NWBrowser.Result) {
-//    guard case let .service(key, _, _, _) = result.endpoint else {
-//      return nil
-//    }
-//    guard case let .bonjour(txtRecord) =  result.metadata else {
-//      return nil
-//    }
-//    guard case let .string(urlString) = txtRecord.getEntry(for: "Sublimation") else {
-//      return nil
-//    }
-//    guard let baseURL = URL(string: urlString) else {
-//      return nil
-//    }
-//    self.init(key: key, baseURL: baseURL)
-//  }
-//}
-//@Observable
-//class AppModel {
-//
-//  @ObservationIgnored
-//    var browserQ: NWBrowser? = nil
-//  
-//  var availableService : AvailableService?
-//    
-//    func start() -> NWBrowser {
-//        print("browser will start")
-//      
-//      
-//        let descriptor = NWBrowser.Descriptor.bonjourWithTXTRecord(type: "_http._tcp", domain: "local.")
-//      let browser = NWBrowser(for: descriptor, using: .tcp)
-//      
-//        browser.stateUpdateHandler = { newState in
-//            print("browser did change state, new: \(newState)")
-//        }
-//        browser.browseResultsChangedHandler = { updated, changes in
-//            print("browser results did change:")
-//            for change in changes {
-//                switch change {
-//                case .added(let result):
-//                  dump(result)
-//                  if let service = AvailableService(result: result) {
-//                    if let availableService = self.availableService, availableService.key == service.key {
-//                      self.availableService = service
-//                    } else {
-//                      self.availableService = service
-//                    }
-//                  }
-//                case .removed(let result):
-//                  
-//                  if let service = AvailableService(result: result) {
-//                    if self.availableService?.key == service.key {
-//                      self.availableService = nil
-//                    }
-//                  }
-//                case .changed(old: let old, new: let new, flags: .metadataChanged):
-//                  if let oldService = AvailableService(result: old), let newService = AvailableService(result: new), oldService.key == self.availableService?.key {
-//                    self.availableService = newService
-//                  } else if let newService = AvailableService(result: new), self.availableService == nil {
-//                    self.availableService = newService
-//                  }
-//                case .changed(old: let old, new: let new, flags: let flags):
-//                    print("± \(old.endpoint) \(new.endpoint) \(flags)")
-//                case .identical:
-//                    fallthrough
-//                @unknown default:
-//                    print("?")
-//                }
-//            }
-//        }
-//        browser.start(queue: .main)
-//        return browser
-//    }
-//    
-//    func stop(browser: NWBrowser) {
-//        print("browser will stop")
-//        browser.stateUpdateHandler = nil
-//        browser.cancel()
-//    }
-//    
-//    func startStop() {
-//        if let browser = self.browserQ {
-//            self.browserQ = nil
-//            self.stop(browser: browser)
-//        } else {
-//            self.browserQ = self.start()
-//        }
-//    }
-//}
-
 struct ContentView: View {
-  let networkExplorer = NetworkExplorer()
+  let networkExplorer = NetworkExplorer(logger: .init(subsystem: Bundle.main.bundleIdentifier!, category: "bonjour"))
+  @State var baseURL: String = ""
   @State var serverResponse: String = ""
-
+  
   enum DemoError: LocalizedError {
     case noURLSetAt(String, String)
     case invalidStringData(Data)
     case invalidResponse(URLResponse)
     case httpErrorStatusCode(Int)
-
+    
     var errorDescription: String? {
       switch self {
       case let .noURLSetAt(bucket, key):
@@ -145,35 +44,34 @@ struct ContentView: View {
     }
     return response
   }
-
+  
   var body: some View {
     VStack {
       Image(systemName: "globe")
         .imageScale(.large)
         .foregroundColor(.accentColor)
-      //Text("\(self.model.availableService?.baseURL.absoluteString ?? "")")
+      Text(self.baseURL)
       Text(serverResponse)
     }
     .padding()
-    .task {
-      let finder = BonjourServerFinder()
-      for await server in finder.servers() {
-        
-      }
-    }
     .onAppear(perform: {
       Task {
-        let urls = await networkExplorer.urls()
-        let baseURL = urls.first!
-        print(baseURL)
-        let serverResponse: String
-        do {
-          serverResponse = try await getServerResponse(from: baseURL)
-        } catch {
-          serverResponse = error.localizedDescription
-        }
-        await MainActor.run {
-          self.serverResponse = serverResponse
+        for await baseURL in await networkExplorer.urls {
+          var shouldCancel = false
+          let serverResponse: String
+          do {
+            serverResponse = try await getServerResponse(from: baseURL)
+            shouldCancel = true
+          } catch {
+            serverResponse = error.localizedDescription
+          }
+          await MainActor.run {
+            self.baseURL = baseURL.absoluteString
+            self.serverResponse = serverResponse
+          }
+          if shouldCancel {
+            break
+          }
         }
       }
     })
