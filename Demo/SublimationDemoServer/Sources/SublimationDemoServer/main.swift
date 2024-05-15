@@ -15,7 +15,7 @@ app.get { _ in
 }
 
 app.lifecycle.use(
-  SublimationLifecycleHandler(
+  BonjourSublimationLifecycleHandler(
   )
 )
 

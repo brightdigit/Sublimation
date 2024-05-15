@@ -27,16 +27,18 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import Foundation
 import Network
-
 import Logging
+import Vapor
 
-internal actor BonjourListener {
-  internal static let httpTCPServiceType = "_http._tcp"
+public actor BonjourSublimatory : Sublimatory {
+  public static let httpTCPServiceType = "_http._tcp"
   private let serviceType: String
   private let maximumCount: Int?
+  private let addresses : @Sendable () async -> [String]
   // TODO: Create a Filter Builder
-  private let address: @Sendable (String) -> Bool
+  private let addressFilter: @Sendable (String) -> Bool
   private let listenerParameters: NWParameters
   private var logger: Logger?
   private var listener: NWListener? {
@@ -65,21 +67,42 @@ internal actor BonjourListener {
 
   internal private(set) var state: NWListener.State?
 
-  internal init(
+  public init(
     listenerParameters: NWParameters = .tcp,
     serviceType: String = httpTCPServiceType,
-    logger: Logger? = nil,
     maximumCount: Int? = nil,
-    address: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:),
-    listener: NWListener? = nil
+    addresses: @escaping @Sendable () async -> [String],
+    addressFilter: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:)
   ) {
     self.listenerParameters = listenerParameters
     self.serviceType = serviceType
-    self.logger = logger
     self.maximumCount = maximumCount
-    self.address = address
-    self.listener = listener
+    self.addressFilter = addressFilter
+    self.addresses = addresses
   }
+  
+#if os(macOS)
+  public init(
+    listenerParameters: NWParameters = .tcp,
+    serviceType: String = httpTCPServiceType,
+    maximumCount: Int? = nil,
+    addressFilter: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:)
+  ) {
+    self.init(
+      listenerParameters: listenerParameters,
+      serviceType: serviceType,
+      maximumCount: maximumCount,
+      addresses: Self.addressesFromHost,
+      addressFilter: addressFilter
+      
+    )
+  }
+  
+  @Sendable
+  public static func addressesFromHost () -> [String] {
+    Host.current().addresses
+  }
+  #endif
 
   internal func stop() {
     assert(listener != nil)
@@ -92,23 +115,34 @@ internal actor BonjourListener {
     state = newState
     logger?.debug("Listener changed state to \(newState).")
   }
+  public func willBoot(from application: Vapor.Application) async {
+    await self.start(
+      isTLS: application.http.server.configuration.tlsConfiguration != nil,
+      port: application.http.server.configuration.port,
+      logger: application.logger
+    )
+  }
+  
+  
+  public func shutdown(from application: Vapor.Application) async {
+    self.stop()
+  }
 }
 
-extension BonjourListener {
+extension BonjourSublimatory {
   internal func start(
     isTLS: Bool,
     port: Int,
-    logger: Logger,
-    addresses: @autoclosure @Sendable () -> [String]
-  ) {
+    logger: Logger
+  ) async {
     self.logger = logger
-
+    let addresses = await self.addresses()
     let txtRecord: NWTXTRecord = .init(
       isTLS: isTLS,
       port: port,
       maximumCount: maximumCount,
-      filter: address,
-      addresses: addresses()
+      filter: addressFilter,
+      addresses: addresses
     )
     let listener: NWListener
     do {
