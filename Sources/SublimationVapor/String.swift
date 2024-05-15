@@ -1,5 +1,5 @@
 //
-//  SublimationLifecycleHandler.swift
+//  String.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,34 +27,15 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import Network
-import Sublimation
-import Vapor
-
-public final class SublimationLifecycleHandler: LifecycleHandler {
-  public init() {
-    listenerQ = BonjourListener()
-  }
-
-  private let listenerQ: BonjourListener
-
-  #if os(macOS)
-    public func willBoot(_ application: Application) throws {
-      Task {
-        await self.listenerQ.start(
-          isTLS: application.http.server.configuration.tlsConfiguration != nil,
-          port: application.http.server.configuration.port,
-          logger: application.logger,
-          addresses: Host.current().addresses
-        )
-      }
+extension String {
+  @Sendable
+  static func isIPv4NotLocalhost(_ address: String) -> Bool {
+    guard !(["127.0.0.1", "::1", "localhost"].contains(address)) else {
+      return false
     }
-  #endif
-
-  public func shutdown(_: Application) {
-    Task {
-      await listenerQ.stop()
+    guard !address.contains(":") else {
+      return false
     }
+    return true
   }
 }

@@ -1,5 +1,5 @@
 //
-//  AvailableService.swift
+//  LoggingActor.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,36 +27,28 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-// import Foundation
-// import Network
-// import Observation
-//
-// @available(*, deprecated)
-// public struct AvailableService {
-//  public  init(key: String, baseURL: URL) {
-//    self.key = key
-//    self.baseURL = baseURL
-//  }
-//
-//  public let key : String
-//  public let baseURL : URL
-// }
-//
-// @available(*, deprecated)
-// extension AvailableService {
-//  public init?(result: NWBrowser.Result) {
-//    guard case let .service(key, _, _, _) = result.endpoint else {
-//      return nil
-//    }
-//    guard case let .bonjour(txtRecord) =  result.metadata else {
-//      return nil
-//    }
-//    guard case let .string(urlString) = txtRecord.getEntry(for: "Sublimation") else {
-//      return nil
-//    }
-//    guard let baseURL = URL(string: urlString) else {
-//      return nil
-//    }
-//    self.init(key: key, baseURL: baseURL)
-//  }
-// }
+#if canImport(Logging)
+  import Logging
+#else
+  import os.log
+#endif
+
+internal actor LoggingActor {
+  internal init(logger: @escaping @Sendable () -> Logger) {
+    self.logger = logger()
+  }
+
+  let logger: Logger
+
+  private func logWith(_ closure: @Sendable @escaping (Logger) -> Void) {
+    Task {
+      closure(self.logger)
+    }
+  }
+
+  nonisolated func log(_ closure: @Sendable @escaping (Logger) -> Void) {
+    Task {
+      await self.logWith(closure)
+    }
+  }
+}

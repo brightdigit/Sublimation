@@ -1,5 +1,5 @@
 //
-//  SublimationLifecycleHandler.swift
+//  NWTXTRecord.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,34 +27,46 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
 import Network
-import Sublimation
-import Vapor
 
-public final class SublimationLifecycleHandler: LifecycleHandler {
-  public init() {
-    listenerQ = BonjourListener()
+extension NWTXTRecord {
+  init(_ dictionary: [SublimationKey: any CustomStringConvertible]) {
+    self.init(.init(sublimationTxt: dictionary))
   }
 
-  private let listenerQ: BonjourListener
+  public init(
+    isTLS: Bool,
+    port: Int,
+    maximumCount: Int?,
+    filter: @Sendable @escaping (String) -> Bool,
+    addresses: @autoclosure () -> [String]
+  ) {
+    var dictionary: [SublimationKey: any CustomStringConvertible] = [
+      .tls: isTLS,
+      .port: port
+    ]
 
-  #if os(macOS)
-    public func willBoot(_ application: Application) throws {
-      Task {
-        await self.listenerQ.start(
-          isTLS: application.http.server.configuration.tlsConfiguration != nil,
-          port: application.http.server.configuration.port,
-          logger: application.logger,
-          addresses: Host.current().addresses
-        )
+    let allAddresses = addresses()
+    let addresses: any Sequence<String>
+    if let maximumCount {
+      addresses = allAddresses.prefix(maximumCount)
+    } else {
+      addresses = allAddresses
+    }
+    for address in addresses {
+      guard filter(address) else {
+        continue
       }
+      let index = dictionary.count - 2
+      dictionary[.address(index)] = address
     }
-  #endif
+    self.init(dictionary)
+  }
 
-  public func shutdown(_: Application) {
-    Task {
-      await listenerQ.stop()
+  public func getEntry<T: SublimationValue>(for key: SublimationKey) -> T? {
+    guard case let .string(string) = getEntry(for: key.stringValue) else {
+      return nil
     }
+    return T(string)
   }
 }

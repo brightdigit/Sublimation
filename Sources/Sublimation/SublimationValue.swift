@@ -1,5 +1,5 @@
 //
-//  MultipeerDemoApp.swift
+//  SublimationValue.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,13 +27,12 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import SwiftUI
-
-@main
-struct MultipeerDemoApp: App {
-  var body: some Scene {
-    WindowGroup {
-      ContentView()
-    }
-  }
+public protocol SublimationValue: CustomStringConvertible {
+  init?(_ string: String)
 }
+
+extension Bool: SublimationValue {}
+
+extension Int: SublimationValue {}
+
+extension String: SublimationValue {}

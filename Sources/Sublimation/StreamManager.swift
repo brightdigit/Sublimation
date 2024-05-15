@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  StreamManager.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,49 +28,46 @@
 //
 
 import Foundation
-import SwiftUI
 
-struct ContentView: View {
-  let dateFormatter: DateFormatter = {
-    let formatter: DateFormatter = .init()
-    formatter.timeStyle = .medium
-    formatter.dateStyle = .none
-    return formatter
-  }()
+internal actor StreamManager {
+  private var streamContinuations = [UUID: AsyncStream<URL>.Continuation]()
 
-  @StateObject var object = AdvertiserManager()
-  var body: some View {
-    Form {
-      Section {
-        HStack {
-          Text("My ID:")
-          Text(object.id.description)
-        }
-      }
-      Section(header: Text("Connected To:")) {
-        ForEach(object.peersArray, id: \.self) { peer in
-          Text(peer.description)
-        }
-      }
-      Section(header: Text("Last Messages")) {
-        ForEach(object.items) { item in
-          HStack {
-            Text(dateFormatter.string(from: item.date))
-            Spacer()
-            Text(item.sourceID.description)
-          }
-        }
-      }
+  func yield(_ urls: [URL], logger: LoggingActor?) {
+    if streamContinuations.isEmpty {
+      logger?.log { $0.debug("Missing Continuations.") }
     }
-    .padding()
-    .onAppear {
-      object.start()
+    for streamContinuation in streamContinuations {
+      for url in urls {
+        streamContinuation.value.yield(url)
+      }
+      logger?.log { $0.debug("Yielded to Stream \(streamContinuation.key)") }
     }
   }
-}
 
-struct ContentView_Previews: PreviewProvider {
-  static var previews: some View {
-    ContentView()
+  private func onTerminationOf(_ id: UUID) -> Bool {
+    streamContinuations.removeValue(forKey: id)
+    return streamContinuations.isEmpty
+  }
+
+  public var isEmpty: Bool {
+    streamContinuations.isEmpty
+  }
+
+  public func append(_ continuation: AsyncStream<URL>.Continuation, onCancel: @Sendable @escaping () async -> Void) {
+    let id = UUID()
+    streamContinuations[id] = continuation
+    continuation.onTermination = { _ in
+      // self.logger?.debug("Removing Stream \(id)")
+      Task {
+        let shouldCancel =
+          await self.onTerminationOf(id)
+
+        // self.streamContinuations.removeValue(forKey: id)
+
+        if shouldCancel {
+          await onCancel()
+        }
+      }
+    }
   }
 }

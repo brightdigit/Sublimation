@@ -1,5 +1,5 @@
 //
-//  SublimationLifecycleHandler.swift
+//  SublimationKey.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,34 +27,53 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import Network
-import Sublimation
-import Vapor
-
-public final class SublimationLifecycleHandler: LifecycleHandler {
-  public init() {
-    listenerQ = BonjourListener()
-  }
-
-  private let listenerQ: BonjourListener
-
-  #if os(macOS)
-    public func willBoot(_ application: Application) throws {
-      Task {
-        await self.listenerQ.start(
-          isTLS: application.http.server.configuration.tlsConfiguration != nil,
-          port: application.http.server.configuration.port,
-          logger: application.logger,
-          addresses: Host.current().addresses
-        )
-      }
+extension [String: String] {
+  public init(sublimationTxt: [SublimationKey: any CustomStringConvertible]) {
+    let pairs = sublimationTxt.map { (key: SublimationKey, value: any CustomStringConvertible) in
+      (key.stringValue, value.description)
     }
-  #endif
+    self.init(uniqueKeysWithValues: pairs)
+  }
+}
 
-  public func shutdown(_: Application) {
-    Task {
-      await listenerQ.stop()
+public enum SublimationKey: Hashable {
+  case tls
+  case port
+  case address(Int)
+}
+
+extension SublimationKey {
+  var stringValue: String {
+    let value: (any CustomStringConvertible)?
+    switch self {
+    case let .address(index):
+      value = index
+    default:
+      value = nil
+    }
+    let prefix = SublimationKeyValues(key: self).rawValue
+    guard let value else {
+      return prefix
+    }
+    return [prefix, value.description].joined(separator: "_")
+  }
+}
+
+enum SublimationKeyValues: String {
+  case tls = "Sublimation_TLS"
+  case port = "Sublimation_Port"
+  case address = "Sublimation_Address"
+}
+
+extension SublimationKeyValues {
+  init(key: SublimationKey) {
+    switch key {
+    case .address:
+      self = .address
+    case .port:
+      self = .port
+    case .tls:
+      self = .tls
     }
   }
 }
