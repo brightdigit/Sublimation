@@ -1,5 +1,5 @@
 //
-//  SublimationKey.swift
+//  NWBrowser.Result.Change.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,53 +27,16 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-private enum SublimationKeyValues: String {
-  case tls = "Sublimation_TLS"
-  case port = "Sublimation_Port"
-  case address = "Sublimation_Address"
-}
+import Network
 
-public enum SublimationKey: Hashable {
-  case tls
-  case port
-  case address(Int)
-}
-
-extension SublimationKey {
-  internal var stringValue: String {
-    let value: (any CustomStringConvertible)? = switch self {
-    case let .address(index):
-      index
-    default:
+extension NWBrowser.Result.Change {
+  internal var newMetadataChange: NWBrowser.Result? {
+    if case let .added(result) = self {
+      result
+    } else if case let .changed(_, new, .metadataChanged) = self {
+      new
+    } else {
       nil
     }
-    let prefix = SublimationKeyValues(key: self).rawValue
-    guard let value else {
-      return prefix
-    }
-    return [prefix, value.description].joined(separator: "_")
-  }
-}
-
-extension SublimationKeyValues {
-  fileprivate init(key: SublimationKey) {
-    switch key {
-    case .address:
-      self = .address
-    case .port:
-      self = .port
-    case .tls:
-      self = .tls
-    }
-  }
-}
-
-extension [String: String] {
-  public init(sublimationTxt: [SublimationKey: any CustomStringConvertible]) {
-    let pairs = sublimationTxt
-      .map { (key: SublimationKey, value: any CustomStringConvertible) in
-        (key.stringValue, value.description)
-      }
-    self.init(uniqueKeysWithValues: pairs)
   }
 }

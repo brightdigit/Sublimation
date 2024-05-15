@@ -27,10 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Logging)
+#if canImport(os)
+  import os
+#elseif canImport(Logging)
   import Logging
-#else
-  import os.log
 #endif
 
 internal actor LoggingActor {

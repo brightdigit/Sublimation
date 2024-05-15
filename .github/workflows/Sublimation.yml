@@ -3,6 +3,8 @@ on:
   push:
     branches-ignore:
       - '*WIP'
+env:
+  PACKAGE_NAME: Sublimation      
 jobs:
   build-ubuntu:
     name: Build on Ubuntu
@@ -13,7 +15,7 @@ jobs:
     strategy:
       matrix:
         runs-on: [ubuntu-20.04, ubuntu-22.04]
-        swift-version: [5.9]
+        swift-version: ["5.10"]
     steps:
       - uses: actions/checkout@v4
       - name: Set Ubuntu Release DOT
@@ -72,25 +74,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - xcode: "/Applications/Xcode_15.0.1.app"
-            os: macos-13
-            iOSVersion: "17.0.1"
-            watchOSVersion: "10.0"
-            watchName: "Apple Watch Series 9 (41mm)"
-            iPhoneName: "iPhone 15"
-          - xcode: "/Applications/Xcode_15.1.app"
-            os: macos-13
-            iOSVersion: "17.2"
-            watchOSVersion: "10.2"
-            watchName: "Apple Watch Series 9 (45mm)"
-            iPhoneName: "iPhone 15 Plus"          
-          - xcode: "/Applications/Xcode_15.2.app"
+          - xcode: "/Applications/Xcode_15.3.app"
             os: macos-14
             iOSVersion: "17.2"
             watchOSVersion: "10.2"
             watchName: "Apple Watch Ultra (49mm)"
             iPhoneName: "iPhone 15 Pro"
-          - xcode: "/Applications/Xcode_15.3.app"
+          - xcode: "/Applications/Xcode_15.4.app"
             os: macos-14
             iOSVersion: "17.4"
             watchOSVersion: "10.4"
@@ -105,9 +95,9 @@ jobs:
           cache-name: cache-spm
         with:
           path: .build
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-${{ hashFiles('Package.resolved') }}
+          key: ${{ matrix.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-${{ hashFiles('Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-
+            ${{ matrix.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-
       - name: Cache mint
         if: startsWith(matrix.xcode,'/Applications/Xcode_15.3')
         id: cache-mint
@@ -132,50 +122,94 @@ jobs:
           brew install mint
       - name: Build
         run: swift build
-      # - name: Run Swift Package tests
-      #   run: swift test -v --enable-code-coverage
-      # - uses: sersoft-gmbh/swift-coverage-action@v4
-      #   id: coverage-files
-      #   with:
-      #     fail-on-empty-output: true
-      # - name: Upload SPM coverage to Codecov
-      #   uses: codecov/codecov-action@v4       
-      #   with:
-      #     fail_ci_if_error: true
-      #     flags: SPM
-      #     verbose: true        
-      #     token: ${{ secrets.CODECOV_TOKEN }}  
-      #     files: ${{ join(fromJSON(steps.coverage-files.outputs.files), ',') }}     
+      - name: Run Swift Package tests
+        run: swift test --enable-code-coverage
+      - uses: sersoft-gmbh/swift-coverage-action@v4
+        id: coverage-files-spm
+        with:
+          fail-on-empty-output: true
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4        
+        with:
+          files: ${{ join(fromJSON(steps.coverage-files-spm.outputs.files), ',') }} 
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: macOS,${{ env.XCODE_NAME }},${{ matrix.runs-on }}
+      - name: Clean up spm build directory
+        run: rm -rf .build
       - name: Lint
         run: ./scripts/lint.sh
         if: startsWith(matrix.xcode,'/Applications/Xcode_15.3')
-      # - name: Dump PIF
-      #   if: startsWith(matrix.xcode,'/Applications/Xcode_14')
-      #   run: |
-      #     swift package dump-pif > /dev/null
-      #     MAX_ATTEMPT=3
-      #     ATTEMPT=0
-      #     while [ -z $SUCCESS ] && [ "$ATTEMPT" -le "$MAX_ATTEMPT" ]; do
-      #       xcodebuild clean -scheme Sublimation -destination 'generic/platform=iOS' | grep -q "CLEAN SUCCEEDED" && SUCCESS=true
-      #       ATTEMPT=$(($ATTEMPT+1))
-      #     done
       - name: Run iOS target tests
-        run:  xcodebuild build test -scheme Sublimation-Package -sdk iphonesimulator -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName}},OS=${{ matrix.iOSVersion }}'
+        run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }} -sdk "iphonesimulator" -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
       - uses: sersoft-gmbh/swift-coverage-action@v4
-      - name: Upload iOS coverage to Codecov
+        id: coverage-files-iOS
+        with:
+          fail-on-empty-output: true
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4       
         with:
           fail_ci_if_error: true
-          flags: iOS,iOS-${{ matrix.iOSVersion }}
           verbose: true        
-          token: ${{ secrets.CODECOV_TOKEN }}          
+          token: ${{ secrets.CODECOV_TOKEN }}  
+          files: ${{ join(fromJSON(steps.coverage-files-iOS.outputs.files), ',') }}   
+          flags: iOS,iOS${{ matrix.iOSVersion }},macOS,${{ env.XCODE_NAME }}  
       - name: Run watchOS target tests
-        run: xcodebuild build test -scheme Sublimation-Package -sdk watchsimulator -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}'
+        run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }} -sdk "watchsimulator" -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}' -enableCodeCoverage YES build test
       - uses: sersoft-gmbh/swift-coverage-action@v4
-      - name: Upload watchOS coverage to Codecov
-        uses: codecov/codecov-action@v4
+        id: coverage-files-watchOS
+        with:
+          fail-on-empty-output: true
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4       
         with:
           fail_ci_if_error: true
-          flags: watchOS,watchOS${{ matrix.watchOSVersion }}
-          verbose: true
+          verbose: true        
+          token: ${{ secrets.CODECOV_TOKEN }}  
+          files: ${{ join(fromJSON(steps.coverage-files-watchOS.outputs.files), ',') }}   
+          flags: watchOS,watchOS${{ matrix.watchOSVersion }},macOS,${{ env.XCODE_NAME }}
+  build-self:
+      name: Build on Self-Hosting macOS
+      runs-on: [self-hosted, macOS]
+      if: github.event.repository.owner.login == github.event.organization.login && !contains(github.event.head_commit.message, 'ci skip')
+      steps:
+      - uses: actions/checkout@v4
+      - name: Cache swift package modules
+        id: cache-spm-macos
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-spm
+        with:
+          path: .build
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Cache mint
+        id: cache-mint
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-mint
+        with:
+          path: .mint
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Mintfile') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-      
+      - name: Build
+        run: swift build
+      - name: Run Swift Package tests
+        run: swift test --enable-code-coverage
+      - uses: sersoft-gmbh/swift-coverage-action@v4
+        with:
+          fail-on-empty-output: true
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4        
+        with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          flags: macOS,${{ env.XCODE_NAME }}
+      - name: Clean up spm build directory
+        run: rm -rf .build
+      - name: Lint
+        run: ./scripts/lint.sh

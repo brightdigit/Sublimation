@@ -1,5 +1,5 @@
 //
-//  SublimationKey.swift
+//  URL+KVdbURLConstructable.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,53 +27,32 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-private enum SublimationKeyValues: String {
-  case tls = "Sublimation_TLS"
-  case port = "Sublimation_Port"
-  case address = "Sublimation_Address"
-}
+import Foundation
 
-public enum SublimationKey: Hashable {
-  case tls
-  case port
-  case address(Int)
-}
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
 
-extension SublimationKey {
-  internal var stringValue: String {
-    let value: (any CustomStringConvertible)? = switch self {
-    case let .address(index):
-      index
-    default:
-      nil
-    }
-    let prefix = SublimationKeyValues(key: self).rawValue
-    guard let value else {
-      return prefix
-    }
-    return [prefix, value.description].joined(separator: "_")
-  }
-}
-
-extension SublimationKeyValues {
-  fileprivate init(key: SublimationKey) {
-    switch key {
-    case .address:
-      self = .address
-    case .port:
-      self = .port
-    case .tls:
-      self = .tls
-    }
-  }
-}
-
-extension [String: String] {
-  public init(sublimationTxt: [SublimationKey: any CustomStringConvertible]) {
-    let pairs = sublimationTxt
-      .map { (key: SublimationKey, value: any CustomStringConvertible) in
-        (key.stringValue, value.description)
-      }
-    self.init(uniqueKeysWithValues: pairs)
+/// A type representing a URL.
+///
+/// - Note: This type is an extension of `URL` and conforms to `KVdbURLConstructable`.
+///
+/// - SeeAlso: `KVdbURLConstructable`
+extension URL: KVdbURLConstructable {
+  ///   Initializes a `URL` instance with the given KVDB base and key bucket path.
+  ///
+  ///   - Parameters:
+  ///     - kvDBBase: The base URL of the KVDB.
+  ///     - keyBucketPath: The path to the key bucket.
+  ///
+  ///   - Note: This initializer is only available if `FoundationNetworking` is imported.
+  ///
+  ///   - Precondition: `kvDBBase` must be a valid URL.
+  ///
+  ///   - Postcondition: The resulting `URL` instance is constructed
+  ///   by appending `keyBucketPath` to `kvDBBase`.
+  public init(kvDBBase: String, keyBucketPath: String) {
+    // swiftlint:disable:next force_unwrapping
+    self = URL(string: kvDBBase)!.appendingPathComponent(keyBucketPath)
   }
 }

@@ -47,11 +47,10 @@ extension NWTXTRecord {
     ]
 
     let allAddresses = addresses()
-    let addresses: any Sequence<String>
-    if let maximumCount {
-      addresses = allAddresses.prefix(maximumCount)
+    let addresses: any Sequence<String> = if let maximumCount {
+      allAddresses.prefix(maximumCount)
     } else {
-      addresses = allAddresses
+      allAddresses
     }
     for address in addresses {
       guard filter(address) else {
@@ -63,10 +62,14 @@ extension NWTXTRecord {
     self.init(dictionary)
   }
 
-  public func getEntry<T: SublimationValue>(for key: SublimationKey) -> T? {
+  public func getEntry<T: SublimationValue>(for key: SublimationKey, of _: T.Type) -> EntryResult<T> {
     guard case let .string(string) = getEntry(for: key.stringValue) else {
-      return nil
+      return .empty
     }
-    return T(string)
+    return .init(string: string)
+  }
+
+  public func getEntry<T: SublimationValue>(for key: SublimationKey) -> EntryResult<T> {
+    self.getEntry(for: key, of: T.self)
   }
 }

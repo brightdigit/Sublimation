@@ -30,7 +30,7 @@
 import Network
 
 internal actor NetworkBrowser {
-  private var currentState: NWBrowser.State?
+  internal private(set) var currentState: NWBrowser.State?
   private let browser: NWBrowser
   private var parseResult: ((NWBrowser.Result) -> Void)?
 
@@ -73,19 +73,8 @@ internal actor NetworkBrowser {
       return
     }
     for change in changes {
-      switch change {
-      case let .added(result):
+      if let result = change.newMetadataChange {
         parseResult(result)
-      case .removed:
-        break
-      case .changed(old: _, new: let new, flags: .metadataChanged):
-        parseResult(new)
-      case .identical:
-        break
-      case .changed:
-        break
-      @unknown default:
-        break
       }
     }
   }

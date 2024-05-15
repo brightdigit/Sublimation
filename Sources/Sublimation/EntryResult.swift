@@ -1,5 +1,5 @@
 //
-//  URL.swift
+//  EntryResult.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -29,30 +29,39 @@
 
 import Foundation
 
-#if canImport(FoundationNetworking)
-  import FoundationNetworking
-#endif
+public enum EntryResult<T: SublimationValue> {
+  case empty
+  case failure(String)
+  case success(T)
+}
 
-/// A type representing a URL.
-///
-/// - Note: This type is an extension of `URL` and conforms to `KVdbURLConstructable`.
-///
-/// - SeeAlso: `KVdbURLConstructable`
-extension URL: KVdbURLConstructable {
-  ///   Initializes a `URL` instance with the given KVDB base and key bucket path.
-  ///
-  ///   - Parameters:
-  ///     - kvDBBase: The base URL of the KVDB.
-  ///     - keyBucketPath: The path to the key bucket.
-  ///
-  ///   - Note: This initializer is only available if `FoundationNetworking` is imported.
-  ///
-  ///   - Precondition: `kvDBBase` must be a valid URL.
-  ///
-  ///   - Postcondition: The resulting `URL` instance is constructed
-  ///   by appending `keyBucketPath` to `kvDBBase`.
-  public init(kvDBBase: String, keyBucketPath: String) {
-    // swiftlint:disable:next force_unwrapping
-    self = URL(string: kvDBBase)!.appendingPathComponent(keyBucketPath)
+extension EntryResult {
+  public var invalidEntryString: String? {
+    if case let .failure(string) = self {
+      return string
+    }
+    return nil
+  }
+
+  public var value: T? {
+    if case let .success(value) = self {
+      return value
+    }
+    return nil
+  }
+
+  public var isEmpty: Bool {
+    if case .empty = self {
+      return true
+    }
+    return false
+  }
+
+  internal init(string: String) {
+    if let value = T(string) {
+      self = .success(value)
+    } else {
+      self = .failure(string)
+    }
   }
 }

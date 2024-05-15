@@ -31,7 +31,6 @@ import Foundation
 import Ngrokit
 
 package struct MockDataHandle: DataHandle {
-  // swiftlint:disable line_length
   package static let code: Data? = """
   ERROR:  authentication failed: Your account is limited to 1 simultaneous ngrok agent session.
   ERROR:  You can run multiple tunnels on a single agent session using a configuration file.
@@ -43,7 +42,6 @@ package struct MockDataHandle: DataHandle {
   ERROR:  ERR_NGROK_108
   ERROR:
   """.data(using: .utf8)
-  // swiftlint:enable line_length
 
   private let actualResult: Result<Data?, any Error>
 

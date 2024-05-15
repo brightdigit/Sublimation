@@ -29,25 +29,52 @@
 
 import Network
 
-#if canImport(Logging)
-  import Logging
-#else
-  import os
-#endif
+import Logging
 
 internal actor BonjourListener {
-  private var logger: Logger?
+  internal static let httpTCPServiceType = "_http._tcp"
+  private let serviceType: String
   private let maximumCount: Int?
+  // TODO: Create a Filter Builder
   private let address: @Sendable (String) -> Bool
-  private var listener: NWListener?
-  private var state: NWListener.State?
+  private let listenerParameters: NWParameters
+  private var logger: Logger?
+  private var listener: NWListener? {
+    didSet {
+      guard let listener else {
+        return
+      }
+
+      listener.stateUpdateHandler = { newState in
+        Task {
+          await self.updateState(newState)
+        }
+      }
+      listener.newConnectionHandler = { connection in
+        Task {
+          await self.logger?.debug("Cancelling connection: \(connection.debugDescription)")
+        }
+        connection.cancel()
+      }
+
+      listener.serviceRegistrationUpdateHandler = { _ in
+        // TODO: put this in an AsyncStream
+      }
+    }
+  }
+
+  internal private(set) var state: NWListener.State?
 
   internal init(
+    listenerParameters: NWParameters = .tcp,
+    serviceType: String = httpTCPServiceType,
     logger: Logger? = nil,
     maximumCount: Int? = nil,
     address: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:),
     listener: NWListener? = nil
   ) {
+    self.listenerParameters = listenerParameters
+    self.serviceType = serviceType
     self.logger = logger
     self.maximumCount = maximumCount
     self.address = address
@@ -75,21 +102,6 @@ extension BonjourListener {
     addresses: @autoclosure @Sendable () -> [String]
   ) {
     self.logger = logger
-    let listener: NWListener
-    do {
-      listener = try NWListener(using: .tcp)
-    } catch {
-      logger.error("Unable to create listener: \(error.localizedDescription)")
-      return
-    }
-    listener.stateUpdateHandler = { newState in
-      Task {
-        await self.updateState(newState)
-      }
-    }
-    listener.newConnectionHandler = { connection in
-      connection.cancel()
-    }
 
     let txtRecord: NWTXTRecord = .init(
       isTLS: isTLS,
@@ -98,13 +110,31 @@ extension BonjourListener {
       filter: address,
       addresses: addresses()
     )
-    var service = NWListener.Service(type: "_http._tcp", txtRecord: txtRecord.data)
-    service.txtRecordObject = txtRecord
-    listener.service = service
-    listener.serviceRegistrationUpdateHandler = { change in
-      logger.debug("New Change: \(change)")
+    let listener: NWListener
+    do {
+      listener = try NWListener(
+        using: listenerParameters,
+        serviceType: self.serviceType,
+        txtRecord: txtRecord
+      )
+    } catch {
+      assertionFailure("Unable to create listener: \(error.localizedDescription)")
+      logger.error("Unable to create listener: \(error.localizedDescription)")
+      return
     }
-    listener.start(queue: .global(qos: .default))
+
     self.listener = listener
+    listener.start(queue: .global(qos: .default))
+  }
+}
+
+extension NWListener {
+  fileprivate convenience init(
+    using parameters: NWParameters,
+    serviceType: String,
+    txtRecord: NWTXTRecord
+  ) throws {
+    try self.init(using: parameters)
+    self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
   }
 }

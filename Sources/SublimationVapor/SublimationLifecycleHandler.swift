@@ -35,6 +35,12 @@ import Vapor
 public final class SublimationLifecycleHandler: LifecycleHandler {
   private let listenerQ: BonjourListener
 
+  public var state: NWListener.State? {
+    get async {
+      await listenerQ.state
+    }
+  }
+
   public init() {
     listenerQ = BonjourListener()
   }

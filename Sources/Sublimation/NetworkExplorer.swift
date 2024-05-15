@@ -30,17 +30,29 @@
 import Foundation
 import Network
 
-#if canImport(Logging)
+#if canImport(os)
+  import os
+#elseif canImport(Logging)
   import Logging
-#else
-  import os.log
 #endif
 
-public final actor NetworkExplorer {
+public actor NetworkExplorer {
+  public static let defaultPort = 80
+  public static let defaultTLS = false
+
   private let browser: NetworkBrowser
   private let queue: DispatchQueue = .global()
   private let logger: LoggingActor?
   private let streams = StreamManager()
+
+  private let defaultPort: Int
+  private let defaultTLS: Bool
+
+  public var state: NWBrowser.State? {
+    get async {
+      await self.browser.currentState
+    }
+  }
 
   public var urls: AsyncStream<URL> {
     get async {
@@ -70,11 +82,15 @@ public final actor NetworkExplorer {
     bonjourWithType type: String = "_http._tcp",
     domain: String = "local.",
     using parameters: NWParameters = .tcp,
+    defaultPort: Int = defaultPort,
+    defaultTLS: Bool = defaultTLS,
     logger: (@Sendable () -> Logger)? = nil
   ) {
     self.init(
       for: .bonjourWithTXTRecord(type: type, domain: domain),
       using: parameters,
+      defaultPort: defaultPort,
+      defaultTLS: defaultTLS,
       logger: logger
     )
   }
@@ -82,19 +98,35 @@ public final actor NetworkExplorer {
   public init(
     for descriptor: NWBrowser.Descriptor,
     using parameters: NWParameters,
+    defaultPort: Int = defaultPort,
+    defaultTLS: Bool = defaultTLS,
     logger: (@Sendable () -> Logger)? = nil
   ) {
-    self.init(browser: .init(for: descriptor, using: parameters), logger: logger)
+    self.init(
+      browser: .init(for: descriptor, using: parameters),
+      logger: logger,
+      defaultPort: defaultPort,
+      defaultTLS: defaultTLS
+    )
   }
 
-  private init(browser: NetworkBrowser, logger: (@Sendable () -> Logger)?) {
+  private init(
+    browser: NetworkBrowser,
+    logger: (@Sendable () -> Logger)?,
+    defaultPort: Int,
+    defaultTLS: Bool
+  ) {
     self.logger = logger.map(LoggingActor.init(logger:))
     self.browser = browser
+    self.defaultTLS = defaultTLS
+    self.defaultPort = defaultPort
   }
 
   private static func urls(
     from result: NWBrowser.Result,
-    logger: LoggingActor?
+    logger: LoggingActor?,
+    defaultPort: Int,
+    defaultTLS: Bool
   ) -> [URL]? {
     guard case .service = result.endpoint else {
       logger?.log { $0.debug("Not service.") }
@@ -104,38 +136,16 @@ public final actor NetworkExplorer {
       logger?.log { $0.debug("No txt record.") }
       return nil
     }
-    var offset = 0
-    var port = 80
-    var isTLS = false
-    if let portValue: Int = txtRecord.getEntry(for: .port) {
-      port = portValue
-      logger?.log { $0.debug("Found port: \(portValue)") }
-      offset += 1
-    }
-    if let boolValue: Bool = txtRecord.getEntry(for: .tls) {
-      isTLS = boolValue
-      logger?.log { $0.debug("Found TLS: \(boolValue)") }
-      offset += 1
-    }
-    let scheme = isTLS ? "https" : "http"
-    logger?.log { $0.debug("Scheme: \(scheme)") }
-    let addressCount = txtRecord.count - offset
-    logger?.log { $0.debug("Parsing \(addressCount) Addresses") }
-    return (0 ..< addressCount).compactMap { index -> URL? in
-      guard let host: String = txtRecord.getEntry(for: .address(index)) else {
-        logger?.log { $0.debug("Invalid Address At Index: \(index)") }
-        return nil
-      }
-      var components = URLComponents()
-      components.scheme = scheme
-      components.host = host
-      components.port = port
-      return components.url
-    }
+    return URL.urls(from: txtRecord, logger: logger, defaultPort: defaultPort, defaultTLS: defaultTLS)
   }
 
   private func parseResult(_ result: NWBrowser.Result) {
-    guard let urls = Self.urls(from: result, logger: logger) else {
+    guard let urls = Self.urls(
+      from: result,
+      logger: logger,
+      defaultPort: defaultPort,
+      defaultTLS: defaultTLS
+    ) else {
       return
     }
     let logger = logger
