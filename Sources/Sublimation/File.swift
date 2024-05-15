@@ -1,49 +1,143 @@
 //
 //  File.swift
-//  
+//  Sublimation
 //
-//  Created by Leo Dion on 4/30/24.
+//  Created by Leo Dion.
+//  Copyright © 2024 BrightDigit.
+//
+//  Permission is hereby granted, free of charge, to any person
+//  obtaining a copy of this software and associated documentation
+//  files (the “Software”), to deal in the Software without
+//  restriction, including without limitation the rights to use,
+//  copy, modify, merge, publish, distribute, sublicense, and/or
+//  sell copies of the Software, and to permit persons to whom the
+//  Software is furnished to do so, subject to the following
+//  conditions:
+//
+//  The above copyright notice and this permission notice shall be
+//  included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+//  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+//  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+//  OTHER DEALINGS IN THE SOFTWARE.
 //
 
 import Foundation
 import Network
-@preconcurrency import os.log
+import os.log
 
-enum URLScheme : String {
+enum URLScheme: String {
   case http
   case https
 }
 
-//public struct PrefixContinuation<Element> {
-//  var elements = [Element]()
-//  var continuation : AsyncStream<Element>.Continuation?
-//}
-//public final class BonjourServerFinder {
-//  let browser : NWBrowser
-//  let queue : DispatchQueue
-//  
-//  var continuation : AsyncStream<Server>.Continuation?
-//  public  convenience init(bonjourWithType type: String = "_http._tcp", domain: String = "local.", using parameters: NWParameters = .tcp, queue: DispatchQueue = .global(), autoStart : Bool = false) {
-//    self.init(for: .bonjourWithTXTRecord(type: type, domain: domain), using: parameters)
-//  }
-//  convenience init(for descriptor: NWBrowser.Descriptor, using parameters: NWParameters, queue: DispatchQueue = .global(), autoStart : Bool = false) {
-//    self.init(browser: .init(for: descriptor, using: parameters))
-//  }
-//  init(browser: NWBrowser, queue: DispatchQueue = .global(), autoStart : Bool = false) {
-//    self.browser = browser
-//    self.queue = queue
-//  }
-//  public func servers () -> AsyncStream<Server> {
-//    return AsyncStream { continuation in
-//      
-//    }
-//  }
-//}
-//public struct Server {
-//  public let hosts : [String]
-//  public let isTLS : Bool
-//  public let port : Int
-//}
+extension [String: String] {
+  public init(sublimationTxt: [SublimationKey: any CustomStringConvertible]) {
+    let pairs = sublimationTxt.map { (key: SublimationKey, value: any CustomStringConvertible) in
+      (key.stringValue, value.description)
+    }
+    self.init(uniqueKeysWithValues: pairs)
+  }
+}
+
+public enum SublimationKey: Hashable {
+  case tls
+  case port
+  case address(Int)
+}
+
+extension SublimationKey {
+  var stringValue: String {
+    let value: (any CustomStringConvertible)?
+    switch self {
+    case let .address(index):
+      value = index
+    default:
+      value = nil
+    }
+    let prefix = SublimationKeyValues(key: self).rawValue
+    guard let value else {
+      return prefix
+    }
+    return [prefix, value.description].joined(separator: "_")
+  }
+}
+
+enum SublimationKeyValues: String {
+  case tls = "Sublimation_TLS"
+  case port = "Sublimation_Port"
+  case address = "Sublimation_Address"
+}
+
+extension SublimationKeyValues {
+  init(key: SublimationKey) {
+    switch key {
+    case .address:
+      self = .address
+    case .port:
+      self = .port
+    case .tls:
+      self = .tls
+    }
+  }
+}
+
+public protocol SublimationValue: CustomStringConvertible {
+  init?(_ string: String)
+}
+
+extension Bool: SublimationValue {}
+
+extension Int: SublimationValue {}
+
+extension String: SublimationValue {}
+
+extension NWTXTRecord {
+  init(_ dictionary: [SublimationKey: any CustomStringConvertible]) {
+    self.init(.init(sublimationTxt: dictionary))
+  }
+
+  public init(
+    isTLS: Bool,
+    port: Int,
+    maximumCount: Int?,
+    filter: @Sendable @escaping (String) -> Bool,
+    addresses: @autoclosure () -> [String]
+  ) {
+    var dictionary: [SublimationKey: any CustomStringConvertible] = [
+      .tls: isTLS,
+      .port: port
+    ]
+
+    let allAddresses = addresses()
+    let addresses: any Sequence<String>
+    if let maximumCount {
+      addresses = allAddresses.prefix(maximumCount)
+    } else {
+      addresses = allAddresses
+    }
+    for address in addresses {
+      guard filter(address) else {
+        continue
+      }
+      let index = dictionary.count - 2
+      dictionary[.address(index)] = address
+    }
+    self.init(dictionary)
+  }
+
+  public func getEntry<T: SublimationValue>(for key: SublimationKey) -> T? {
+    guard case let .string(string) = getEntry(for: key.stringValue) else {
+      return nil
+    }
+    return T(string)
+  }
+}
 
 private actor NetworkBrowser {
   public init(for descriptor: NWBrowser.Descriptor, using parameters: NWParameters) {
@@ -64,29 +158,28 @@ private actor NetworkBrowser {
   private init(browser: NWBrowser) {
     self.browser = browser
   }
-  
+
   func start(queue: DispatchQueue, parser: @Sendable @escaping (NWBrowser.Result) -> Void) {
-    self.browser.start(queue: queue)
-    self.parseResult = parser
+    browser.start(queue: queue)
+    parseResult = parser
   }
-  func onUpdateState (_ state: NWBrowser.State) {
-    self.currentState = state
+
+  func onUpdateState(_ state: NWBrowser.State) {
+    currentState = state
   }
-  func onResultsChanged (to newResults: Set<NWBrowser.Result>, withChanges changes: Set<NWBrowser.Result.Change>) {
+
+  func onResultsChanged(to _: Set<NWBrowser.Result>, withChanges changes: Set<NWBrowser.Result.Change>) {
     guard let parseResult else {
       return
     }
     for change in changes {
       switch change {
-        
-      case .added(let result):
+      case let .added(result):
         parseResult(result)
-        break
-      case .removed(_):
+      case .removed:
         break
       case .changed(old: _, new: let new, flags: .metadataChanged):
         parseResult(new)
-        break
       case .identical:
         break
       case .changed:
@@ -96,54 +189,52 @@ private actor NetworkBrowser {
       }
     }
   }
-  
-  func stop () {
-    self.browser.stateUpdateHandler = nil
-    self.browser.cancel()
+
+  func stop() {
+    browser.stateUpdateHandler = nil
+    browser.cancel()
   }
-  
-  var currentState : NWBrowser.State?
-  let browser : NWBrowser
-  var parseResult : ((NWBrowser.Result) -> Void)?
+
+  var currentState: NWBrowser.State?
+  let browser: NWBrowser
+  var parseResult: ((NWBrowser.Result) -> Void)?
 }
 
 private actor StreamManager {
   private var streamContinuations = [UUID: AsyncStream<URL>.Continuation]()
-  
+
   func yield(_ urls: [URL], logger: Logger?) {
     if streamContinuations.isEmpty {
-      
       logger?.debug("Missing Continuations.")
     }
     for streamContinuation in streamContinuations {
-  
-    for url in urls {
-      streamContinuation.value.yield(url)
-    }
+      for url in urls {
+        streamContinuation.value.yield(url)
+      }
       logger?.debug("Yielded to Stream \(streamContinuation.key)")
+    }
   }
-  }
-  
+
   private func onTerminationOf(_ id: UUID) -> Bool {
-    self.streamContinuations.removeValue(forKey: id)
-    return self.streamContinuations.isEmpty
-  }
-  
-  public var isEmpty : Bool {
+    streamContinuations.removeValue(forKey: id)
     return streamContinuations.isEmpty
   }
-  
+
+  public var isEmpty: Bool {
+    streamContinuations.isEmpty
+  }
+
   public func append(_ continuation: AsyncStream<URL>.Continuation, onCancel: @Sendable @escaping () async -> Void) {
     let id = UUID()
-    self.streamContinuations[id] = continuation
-    continuation.onTermination = { termination in
-      //self.logger?.debug("Removing Stream \(id)")
+    streamContinuations[id] = continuation
+    continuation.onTermination = { _ in
+      // self.logger?.debug("Removing Stream \(id)")
       Task {
         let shouldCancel =
-        await self.onTerminationOf(id)
-        
-        //self.streamContinuations.removeValue(forKey: id)
-        
+          await self.onTerminationOf(id)
+
+        // self.streamContinuations.removeValue(forKey: id)
+
         if shouldCancel {
           await onCancel()
         }
@@ -151,59 +242,45 @@ private actor StreamManager {
     }
   }
 }
+
 public final actor NetworkExplorer {
-#warning("Add Logger")
-  private let browser : NetworkBrowser
-  let queue : DispatchQueue = .global()
-  nonisolated let logger : Logger?
+  private let browser: NetworkBrowser
+  let queue: DispatchQueue = .global()
+  nonisolated let logger: Logger?
   private let streams = StreamManager()
-  //private let browserState = BrowserState()
-  //private let urls : AsyncStream<URL>
-  //private var streamContinuations = [UUID: AsyncStream<URL>.Continuation]()
-  //public private (set) var currentState : NWBrowser.State? = nil
-  //var hasSetupBrowser : Bool = false
-  
-  public  init(bonjourWithType type: String = "_http._tcp", domain: String = "local.", using parameters: NWParameters = .tcp, logger: Logger?) {
+
+  public init(bonjourWithType type: String = "_http._tcp", domain: String = "local.", using parameters: NWParameters = .tcp, logger: Logger?) {
     self.init(for: .bonjourWithTXTRecord(type: type, domain: domain), using: parameters, logger: logger)
   }
-   init(for descriptor: NWBrowser.Descriptor, using parameters: NWParameters, logger : Logger?) {
+
+  init(for descriptor: NWBrowser.Descriptor, using parameters: NWParameters, logger: Logger?) {
     self.init(browser: .init(for: descriptor, using: parameters), logger: logger)
   }
+
   private init(browser: NetworkBrowser, logger: Logger?) {
     self.logger = logger
     self.browser = browser
-    
   }
-  
-  
-//  private func onUpdateState(_ state: NWBrowser.State) {
-//    Task {
-//    
-//      self.updateState(state)
-//      self.logger?.debug("State changed.")
-//    }
-//  }
-  
+
   private static func urls(from result: NWBrowser.Result, logger: Logger?) -> [URL]? {
-    guard case .service(_, _, _, _) = result.endpoint else {
+    guard case .service = result.endpoint else {
       logger?.debug("Not service.")
       return nil
     }
-    guard case let .bonjour(txtRecord) =  result.metadata else {
+    guard case let .bonjour(txtRecord) = result.metadata else {
       logger?.debug("No txt record.")
       return nil
     }
-    var offset  = 0
+    var offset = 0
     var port = 80
     var isTLS = false
-    #warning("Store Keys in Constants")
-    if case let .string(newPort) = txtRecord.getEntry(for: "Sublimation_Port") {
-      port = Int(newPort) ?? port
+    if let portValue: Int = txtRecord.getEntry(for: .port) {
+      port = portValue
       logger?.debug("Found port: \(port)")
       offset += 1
     }
-    if case let .string(boolValue) = txtRecord.getEntry(for: "Sublimation_TLS") {
-      isTLS = Bool(boolValue) ?? isTLS
+    if let boolValue: Bool = txtRecord.getEntry(for: .tls) {
+      isTLS = boolValue
       logger?.debug("Found TLS: \(isTLS)")
       offset += 1
     }
@@ -211,9 +288,8 @@ public final actor NetworkExplorer {
     logger?.debug("Scheme: \(scheme)")
     let addressCount = txtRecord.count - offset
     logger?.debug("Parsing \(addressCount) Addresses")
-    return (0..<addressCount).compactMap { index -> URL? in
-      let key = "Sublimation_Address_\(index)"
-      guard case let .string(host) = txtRecord.getEntry(for: key) else {
+    return (0 ..< addressCount).compactMap { index -> URL? in
+      guard let host: String = txtRecord.getEntry(for: .address(index)) else {
         logger?.debug("Invalid Address At Index: \(index)")
         return nil
       }
@@ -223,48 +299,40 @@ public final actor NetworkExplorer {
       components.port = port
       return components.url
     }
-    
   }
-  
-  
+
   private func parseResult(_ result: NWBrowser.Result) {
-    guard let urls = Self.urls(from: result, logger: self.logger) else {
+    guard let urls = Self.urls(from: result, logger: logger) else {
       return
     }
-    let logger = self.logger
-    let streams = self.streams
+    let logger = logger
+    let streams = streams
     Task {
       await streams.yield(urls, logger: logger)
     }
-
   }
-  
 
-
-  
   public var urls: AsyncStream<URL> {
-     get async{
-       let browser = self.browser
-       let streams = self.streams
-       let parseResult = self.parseResult
-       if await self.streams.isEmpty {
-      self.logger?.debug("Starting Browser.")
+    get async {
+      let browser = browser
+      let streams = streams
+      if await self.streams.isEmpty {
+        logger?.debug("Starting Browser.")
 
-         await browser.start(queue: self.queue, parser:  {
-           parseResult($0)
-         })
-    }
-       return AsyncStream { continuation in
-         Task {
-         await streams.append(continuation) {
-             await browser.stop()
-             self.logger?.debug("Shuting down browser.")
-           }
-         }
-       }
+        await browser.start(queue: queue, parser: { result in
+          Task {
+            await self.parseResult(result)
+          }
+        })
+      }
+      return AsyncStream { continuation in
+        Task {
+          await streams.append(continuation) {
+            await browser.stop()
+            self.logger?.debug("Shuting down browser.")
+          }
+        }
+      }
     }
   }
-  
-  
-  
 }
