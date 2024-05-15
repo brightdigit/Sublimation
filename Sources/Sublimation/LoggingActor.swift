@@ -34,11 +34,11 @@
 #endif
 
 internal actor LoggingActor {
+  private let logger: Logger
+
   internal init(logger: @escaping @Sendable () -> Logger) {
     self.logger = logger()
   }
-
-  let logger: Logger
 
   private func logWith(_ closure: @Sendable @escaping (Logger) -> Void) {
     Task {
@@ -46,7 +46,7 @@ internal actor LoggingActor {
     }
   }
 
-  nonisolated func log(_ closure: @Sendable @escaping (Logger) -> Void) {
+  internal nonisolated func log(_ closure: @Sendable @escaping (Logger) -> Void) {
     Task {
       await self.logWith(closure)
     }

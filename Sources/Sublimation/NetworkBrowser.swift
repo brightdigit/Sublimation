@@ -30,6 +30,10 @@
 import Network
 
 internal actor NetworkBrowser {
+  private var currentState: NWBrowser.State?
+  private let browser: NWBrowser
+  private var parseResult: ((NWBrowser.Result) -> Void)?
+
   internal init(for descriptor: NWBrowser.Descriptor, using parameters: NWParameters) {
     let browser = NWBrowser(for: descriptor, using: parameters)
     self.init(browser: browser)
@@ -49,7 +53,7 @@ internal actor NetworkBrowser {
     self.browser = browser
   }
 
-  func start(
+  internal func start(
     queue: DispatchQueue,
     parser: @Sendable @escaping (NWBrowser.Result) -> Void
   ) {
@@ -57,11 +61,11 @@ internal actor NetworkBrowser {
     parseResult = parser
   }
 
-  func onUpdateState(_ state: NWBrowser.State) {
+  private func onUpdateState(_ state: NWBrowser.State) {
     currentState = state
   }
 
-  func onResultsChanged(
+  private func onResultsChanged(
     to _: Set<NWBrowser.Result>,
     withChanges changes: Set<NWBrowser.Result.Change>
   ) {
@@ -86,12 +90,8 @@ internal actor NetworkBrowser {
     }
   }
 
-  func stop() {
+  internal func stop() {
     browser.stateUpdateHandler = nil
     browser.cancel()
   }
-
-  var currentState: NWBrowser.State?
-  let browser: NWBrowser
-  var parseResult: ((NWBrowser.Result) -> Void)?
 }

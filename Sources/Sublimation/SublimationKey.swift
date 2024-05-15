@@ -27,13 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-extension [String: String] {
-  public init(sublimationTxt: [SublimationKey: any CustomStringConvertible]) {
-    let pairs = sublimationTxt.map { (key: SublimationKey, value: any CustomStringConvertible) in
-      (key.stringValue, value.description)
-    }
-    self.init(uniqueKeysWithValues: pairs)
-  }
+private enum SublimationKeyValues: String {
+  case tls = "Sublimation_TLS"
+  case port = "Sublimation_Port"
+  case address = "Sublimation_Address"
 }
 
 public enum SublimationKey: Hashable {
@@ -43,7 +40,7 @@ public enum SublimationKey: Hashable {
 }
 
 extension SublimationKey {
-  var stringValue: String {
+  internal var stringValue: String {
     let value: (any CustomStringConvertible)?
     switch self {
     case let .address(index):
@@ -59,14 +56,8 @@ extension SublimationKey {
   }
 }
 
-enum SublimationKeyValues: String {
-  case tls = "Sublimation_TLS"
-  case port = "Sublimation_Port"
-  case address = "Sublimation_Address"
-}
-
 extension SublimationKeyValues {
-  init(key: SublimationKey) {
+  fileprivate init(key: SublimationKey) {
     switch key {
     case .address:
       self = .address
@@ -75,5 +66,15 @@ extension SublimationKeyValues {
     case .tls:
       self = .tls
     }
+  }
+}
+
+extension [String: String] {
+  public init(sublimationTxt: [SublimationKey: any CustomStringConvertible]) {
+    let pairs = sublimationTxt
+      .map { (key: SublimationKey, value: any CustomStringConvertible) in
+        (key.stringValue, value.description)
+      }
+    self.init(uniqueKeysWithValues: pairs)
   }
 }

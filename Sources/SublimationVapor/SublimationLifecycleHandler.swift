@@ -33,11 +33,11 @@ import Sublimation
 import Vapor
 
 public final class SublimationLifecycleHandler: LifecycleHandler {
+  private let listenerQ: BonjourListener
+
   public init() {
     listenerQ = BonjourListener()
   }
-
-  private let listenerQ: BonjourListener
 
   #if os(macOS)
     public func willBoot(_ application: Application) throws {

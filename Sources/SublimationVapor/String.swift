@@ -29,7 +29,7 @@
 
 extension String {
   @Sendable
-  static func isIPv4NotLocalhost(_ address: String) -> Bool {
+  internal static func isIPv4NotLocalhost(_ address: String) -> Bool {
     guard !(["127.0.0.1", "::1", "localhost"].contains(address)) else {
       return false
     }

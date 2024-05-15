@@ -38,20 +38,52 @@ import Network
 
 public final actor NetworkExplorer {
   private let browser: NetworkBrowser
-  let queue: DispatchQueue = .global()
+  private let queue: DispatchQueue = .global()
   private let logger: LoggingActor?
   private let streams = StreamManager()
+
+  public var urls: AsyncStream<URL> {
+    get async {
+      let browser = browser
+      let streams = streams
+      if await self.streams.isEmpty {
+        logger?.log { $0.debug("Starting Browser.") }
+
+        await browser.start(queue: queue, parser: { result in
+          Task {
+            await self.parseResult(result)
+          }
+        })
+      }
+      return AsyncStream { continuation in
+        Task {
+          await streams.append(continuation) {
+            await browser.stop()
+            self.logger?.log { $0.debug("Shuting down browser.") }
+          }
+        }
+      }
+    }
+  }
 
   public init(
     bonjourWithType type: String = "_http._tcp",
     domain: String = "local.",
     using parameters: NWParameters = .tcp,
-    logger: (@Sendable () -> Logger)?
+    logger: (@Sendable () -> Logger)? = nil
   ) {
-    self.init(for: .bonjourWithTXTRecord(type: type, domain: domain), using: parameters, logger: logger)
+    self.init(
+      for: .bonjourWithTXTRecord(type: type, domain: domain),
+      using: parameters,
+      logger: logger
+    )
   }
 
-  init(for descriptor: NWBrowser.Descriptor, using parameters: NWParameters, logger: (@Sendable () -> Logger)?) {
+  public init(
+    for descriptor: NWBrowser.Descriptor,
+    using parameters: NWParameters,
+    logger: (@Sendable () -> Logger)? = nil
+  ) {
     self.init(browser: .init(for: descriptor, using: parameters), logger: logger)
   }
 
@@ -60,7 +92,10 @@ public final actor NetworkExplorer {
     self.browser = browser
   }
 
-  private static func urls(from result: NWBrowser.Result, logger: LoggingActor?) -> [URL]? {
+  private static func urls(
+    from result: NWBrowser.Result,
+    logger: LoggingActor?
+  ) -> [URL]? {
     guard case .service = result.endpoint else {
       logger?.log { $0.debug("Not service.") }
       return nil
@@ -107,30 +142,6 @@ public final actor NetworkExplorer {
     let streams = streams
     Task {
       await streams.yield(urls, logger: logger)
-    }
-  }
-
-  public var urls: AsyncStream<URL> {
-    get async {
-      let browser = browser
-      let streams = streams
-      if await self.streams.isEmpty {
-        logger?.log { $0.debug("Starting Browser.") }
-
-        await browser.start(queue: queue, parser: { result in
-          Task {
-            await self.parseResult(result)
-          }
-        })
-      }
-      return AsyncStream { continuation in
-        Task {
-          await streams.append(continuation) {
-            await browser.stop()
-            self.logger?.log { $0.debug("Shuting down browser.") }
-          }
-        }
-      }
     }
   }
 }

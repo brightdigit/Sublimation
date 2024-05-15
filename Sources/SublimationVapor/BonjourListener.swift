@@ -36,6 +36,12 @@ import Network
 #endif
 
 internal actor BonjourListener {
+  private var logger: Logger?
+  private let maximumCount: Int?
+  private let address: @Sendable (String) -> Bool
+  private var listener: NWListener?
+  private var state: NWListener.State?
+
   internal init(
     logger: Logger? = nil,
     maximumCount: Int? = nil,
@@ -48,27 +54,26 @@ internal actor BonjourListener {
     self.listener = listener
   }
 
-  var logger: Logger?
-  let maximumCount: Int?
-  let address: @Sendable (String) -> Bool
-  var listener: NWListener?
-  var state: NWListener.State?
-
-  func stop() {
+  internal func stop() {
     assert(listener != nil)
     listener?.stateUpdateHandler = nil
     listener?.cancel()
     listener = nil
   }
 
-  func updateState(_ newState: NWListener.State) {
+  private func updateState(_ newState: NWListener.State) {
     state = newState
     logger?.debug("Listener changed state to \(newState).")
   }
 }
 
 extension BonjourListener {
-  func start(isTLS: Bool, port: Int, logger: Logger, addresses: @autoclosure @Sendable () -> [String]) {
+  internal func start(
+    isTLS: Bool,
+    port: Int,
+    logger: Logger,
+    addresses: @autoclosure @Sendable () -> [String]
+  ) {
     self.logger = logger
     let listener: NWListener
     do {

@@ -30,7 +30,7 @@
 import Network
 
 extension NWTXTRecord {
-  init(_ dictionary: [SublimationKey: any CustomStringConvertible]) {
+  private init(_ dictionary: [SublimationKey: any CustomStringConvertible]) {
     self.init(.init(sublimationTxt: dictionary))
   }
 

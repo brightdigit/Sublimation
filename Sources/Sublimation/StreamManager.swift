@@ -32,7 +32,11 @@ import Foundation
 internal actor StreamManager {
   private var streamContinuations = [UUID: AsyncStream<URL>.Continuation]()
 
-  func yield(_ urls: [URL], logger: LoggingActor?) {
+  internal var isEmpty: Bool {
+    streamContinuations.isEmpty
+  }
+
+  internal func yield(_ urls: [URL], logger: LoggingActor?) {
     if streamContinuations.isEmpty {
       logger?.log { $0.debug("Missing Continuations.") }
     }
@@ -49,21 +53,16 @@ internal actor StreamManager {
     return streamContinuations.isEmpty
   }
 
-  public var isEmpty: Bool {
-    streamContinuations.isEmpty
-  }
-
-  public func append(_ continuation: AsyncStream<URL>.Continuation, onCancel: @Sendable @escaping () async -> Void) {
+  internal func append(
+    _ continuation: AsyncStream<URL>.Continuation,
+    onCancel: @Sendable @escaping () async -> Void
+  ) {
     let id = UUID()
     streamContinuations[id] = continuation
     continuation.onTermination = { _ in
-      // self.logger?.debug("Removing Stream \(id)")
       Task {
         let shouldCancel =
           await self.onTerminationOf(id)
-
-        // self.streamContinuations.removeValue(forKey: id)
-
         if shouldCancel {
           await onCancel()
         }
