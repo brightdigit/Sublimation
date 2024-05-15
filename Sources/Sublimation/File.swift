@@ -203,15 +203,16 @@ private actor NetworkBrowser {
 private actor StreamManager {
   private var streamContinuations = [UUID: AsyncStream<URL>.Continuation]()
 
-  func yield(_ urls: [URL], logger: Logger?) {
+  func yield(_ urls: [URL], logger: LoggingActor?) {
     if streamContinuations.isEmpty {
-      logger?.debug("Missing Continuations.")
+      logger?.log{$0.debug("Missing Continuations.")}
+      
     }
     for streamContinuation in streamContinuations {
       for url in urls {
         streamContinuation.value.yield(url)
       }
-      logger?.debug("Yielded to Stream \(streamContinuation.key)")
+      logger?.log{$0.debug("Yielded to Stream \(streamContinuation.key)")}
     }
   }
 
@@ -243,32 +244,52 @@ private actor StreamManager {
   }
 }
 
+private actor LoggingActor {
+  internal init(logger: @escaping @Sendable () -> Logger) {
+    self.logger = logger()
+  }
+  
+  let logger : Logger
+  
+  private func logWith (_ closure: @Sendable @escaping (Logger) -> Void) {
+    Task {
+      closure(self.logger)
+    }
+  }
+  
+  nonisolated func log (_ closure: @Sendable @escaping (Logger) -> Void) {
+    Task {
+      await self.logWith(closure)
+    }
+  }
+}
+
 public final actor NetworkExplorer {
   private let browser: NetworkBrowser
   let queue: DispatchQueue = .global()
-  nonisolated let logger: Logger?
+  private let logger: LoggingActor?
   private let streams = StreamManager()
 
-  public init(bonjourWithType type: String = "_http._tcp", domain: String = "local.", using parameters: NWParameters = .tcp, logger: Logger?) {
+  public init(bonjourWithType type: String = "_http._tcp", domain: String = "local.", using parameters: NWParameters = .tcp, logger: (@Sendable () -> Logger)?) {
     self.init(for: .bonjourWithTXTRecord(type: type, domain: domain), using: parameters, logger: logger)
   }
 
-  init(for descriptor: NWBrowser.Descriptor, using parameters: NWParameters, logger: Logger?) {
+  init(for descriptor: NWBrowser.Descriptor, using parameters: NWParameters, logger: (@Sendable () -> Logger)?) {
     self.init(browser: .init(for: descriptor, using: parameters), logger: logger)
   }
 
-  private init(browser: NetworkBrowser, logger: Logger?) {
-    self.logger = logger
+  private init(browser: NetworkBrowser, logger: (@Sendable () -> Logger)?) {
+    self.logger = logger.map(LoggingActor.init(logger:))
     self.browser = browser
   }
 
-  private static func urls(from result: NWBrowser.Result, logger: Logger?) -> [URL]? {
+  private static func urls(from result: NWBrowser.Result, logger: LoggingActor?) -> [URL]? {
     guard case .service = result.endpoint else {
-      logger?.debug("Not service.")
+      logger?.log{$0.debug("Not service.")}
       return nil
     }
     guard case let .bonjour(txtRecord) = result.metadata else {
-      logger?.debug("No txt record.")
+      logger?.log{$0.debug("No txt record.")}
       return nil
     }
     var offset = 0
@@ -276,21 +297,21 @@ public final actor NetworkExplorer {
     var isTLS = false
     if let portValue: Int = txtRecord.getEntry(for: .port) {
       port = portValue
-      logger?.debug("Found port: \(port)")
+      logger?.log{$0.debug("Found port: \(portValue)")}
       offset += 1
     }
     if let boolValue: Bool = txtRecord.getEntry(for: .tls) {
       isTLS = boolValue
-      logger?.debug("Found TLS: \(isTLS)")
+      logger?.log{$0.debug("Found TLS: \(boolValue)")}
       offset += 1
     }
     let scheme = isTLS ? "https" : "http"
-    logger?.debug("Scheme: \(scheme)")
+    logger?.log{$0.debug("Scheme: \(scheme)")}
     let addressCount = txtRecord.count - offset
-    logger?.debug("Parsing \(addressCount) Addresses")
+    logger?.log{$0.debug("Parsing \(addressCount) Addresses")}
     return (0 ..< addressCount).compactMap { index -> URL? in
       guard let host: String = txtRecord.getEntry(for: .address(index)) else {
-        logger?.debug("Invalid Address At Index: \(index)")
+        logger?.log{$0.debug("Invalid Address At Index: \(index)")}
         return nil
       }
       var components = URLComponents()
@@ -317,7 +338,7 @@ public final actor NetworkExplorer {
       let browser = browser
       let streams = streams
       if await self.streams.isEmpty {
-        logger?.debug("Starting Browser.")
+        logger?.log{$0.debug("Starting Browser.")}
 
         await browser.start(queue: queue, parser: { result in
           Task {
@@ -329,7 +350,7 @@ public final actor NetworkExplorer {
         Task {
           await streams.append(continuation) {
             await browser.stop()
-            self.logger?.debug("Shuting down browser.")
+            self.logger?.log{$0.debug("Shuting down browser.")}
           }
         }
       }
