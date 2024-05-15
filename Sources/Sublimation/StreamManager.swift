@@ -29,14 +29,20 @@
 
 import Foundation
 
-internal actor StreamManager {
-  private var streamContinuations = [UUID: AsyncStream<URL>.Continuation]()
+internal actor StreamManager<Key : Hashable & Sendable, Value> {
+  internal init(newID: @escaping @Sendable () -> Key) {
+    self.newID = newID
+  }
+  
+  private var streamContinuations = [Key: AsyncStream<Value>.Continuation]()
+  
+  private var newID : @Sendable () -> Key
 
   internal var isEmpty: Bool {
     streamContinuations.isEmpty
   }
 
-  internal func yield(_ urls: [URL], logger: LoggingActor?) {
+  internal func yield(_ urls: [Value], logger: LoggingActor?) {
     if streamContinuations.isEmpty {
       logger?.log { $0.debug("Missing Continuations.") }
     }
@@ -44,20 +50,20 @@ internal actor StreamManager {
       for url in urls {
         streamContinuation.value.yield(url)
       }
-      logger?.log { $0.debug("Yielded to Stream \(streamContinuation.key)") }
+      //logger?.log { $0.debug("Yielded to Stream \(streamContinuation.key)") }
     }
   }
 
-  private func onTerminationOf(_ id: UUID) -> Bool {
+  private func onTerminationOf(_ id: Key) -> Bool {
     streamContinuations.removeValue(forKey: id)
     return streamContinuations.isEmpty
   }
 
   internal func append(
-    _ continuation: AsyncStream<URL>.Continuation,
+    _ continuation: AsyncStream<Value>.Continuation,
     onCancel: @Sendable @escaping () async -> Void
   ) {
-    let id = UUID()
+    let id = newID()
     streamContinuations[id] = continuation
     continuation.onTermination = { _ in
       Task {
@@ -67,6 +73,14 @@ internal actor StreamManager {
           await onCancel()
         }
       }
+    }
+  }
+}
+
+extension StreamManager {
+  internal init() where Key == UUID {
+    self.init {
+      UUID()
     }
   }
 }

@@ -36,14 +36,14 @@ import Network
   import Logging
 #endif
 
-public actor NetworkExplorer {
+public actor BonjourDepositor {
   public static let defaultPort = 80
   public static let defaultTLS = false
 
   private let browser: NetworkBrowser
   private let queue: DispatchQueue = .global()
   private let logger: LoggingActor?
-  private let streams = StreamManager()
+  private let streams = StreamManager<UUID, URL>()
 
   private let defaultPort: Int
   private let defaultTLS: Bool

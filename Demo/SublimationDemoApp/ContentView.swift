@@ -4,7 +4,7 @@ import SublimationDemoConfiguration
 import SwiftUI
 
 struct ContentView: View {
-  let networkExplorer = NetworkExplorer {
+  let networkExplorer = BonjourDepositor {
     .init(subsystem: Bundle.main.bundleIdentifier!, category: "bonjour")
   }
   //NetworkExplorer(logger: .init(subsystem: Bundle.main.bundleIdentifier!, category: "bonjour"))
