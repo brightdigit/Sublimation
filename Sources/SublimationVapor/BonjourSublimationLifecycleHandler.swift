@@ -99,36 +99,3 @@ extension Sublimation {
   }
   #endif
 }
-
-@available(*, deprecated, renamed: "SublimationLifecycleHandler")
-public final class BonjourSublimationLifecycleHandler: LifecycleHandler {
-  private let listenerQ: BonjourSublimatory
-
-  public var state: NWListener.State? {
-    get async {
-      await listenerQ.state
-    }
-  }
-
-  public init() {
-    listenerQ = BonjourSublimatory()
-  }
-
-  #if os(macOS)
-    public func willBoot(_ application: Application) throws {
-      Task {
-        await self.listenerQ.start(
-          isTLS: application.http.server.configuration.tlsConfiguration != nil,
-          port: application.http.server.configuration.port,
-          logger: application.logger
-        )
-      }
-    }
-  #endif
-
-  public func shutdown(_: Application) {
-    Task {
-      await listenerQ.stop()
-    }
-  }
-}

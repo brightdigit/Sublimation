@@ -37,8 +37,13 @@ import Network
 #endif
 
 public actor BonjourDepositor {
-  public static let defaultPort = 80
-  public static let defaultTLS = false
+  public enum Defaults {
+    public static let port = 80
+    public static let isTLS = false
+    public static let bonjourType = "_http._tcp"
+    public static let bonourDomain = "local."
+    
+  }
 
   private let browser: NetworkBrowser
   private let queue: DispatchQueue = .global()
@@ -79,11 +84,11 @@ public actor BonjourDepositor {
   }
 
   public init(
-    bonjourWithType type: String = "_http._tcp",
-    domain: String = "local.",
+    bonjourWithType type: String = Defaults.bonjourType,
+    domain: String = Defaults.bonourDomain,
     using parameters: NWParameters = .tcp,
-    defaultPort: Int = defaultPort,
-    defaultTLS: Bool = defaultTLS,
+    defaultPort: Int = Defaults.port,
+    defaultTLS: Bool = Defaults.isTLS,
     logger: (@Sendable () -> Logger)? = nil
   ) {
     self.init(
@@ -98,8 +103,8 @@ public actor BonjourDepositor {
   public init(
     for descriptor: NWBrowser.Descriptor,
     using parameters: NWParameters,
-    defaultPort: Int = defaultPort,
-    defaultTLS: Bool = defaultTLS,
+    defaultPort: Int = Defaults.port,
+    defaultTLS: Bool = Defaults.isTLS,
     logger: (@Sendable () -> Logger)? = nil
   ) {
     self.init(

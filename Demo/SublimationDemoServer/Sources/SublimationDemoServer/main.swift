@@ -15,8 +15,7 @@ app.get { _ in
 }
 
 app.lifecycle.use(
-  BonjourSublimationLifecycleHandler(
-  )
+  Sublimation()
 )
 
 //#if os(macOS)
