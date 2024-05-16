@@ -52,5 +52,5 @@ public protocol NgrokVaporConfiguration: NgrokServerConfiguration {
   ///
   ///   - Note: This initializer is required to conform to
   ///   the `NgrokVaporConfiguration` protocol.
-  init(application: Application)
+  init(application: any Application)
 }

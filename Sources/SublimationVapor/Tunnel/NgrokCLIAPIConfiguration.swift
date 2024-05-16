@@ -53,7 +53,7 @@ extension NgrokCLIAPIConfiguration: NgrokVaporConfiguration {
   ///   `NgrokCLIAPIConfiguration` using a `ServerApplication`.
   ///
   ///   - Parameter serverApplication: The server application to use for configuration.
-  internal init(serverApplication: any ServerApplication) {
+  internal init(serverApplication: any Application) {
     self.init(
       port: serverApplication.httpServerConfigurationPort,
       logger: serverApplication.logger
@@ -65,7 +65,7 @@ extension NgrokCLIAPIConfiguration: NgrokVaporConfiguration {
   ///
   ///   - Parameter application: The Vapor application to use for configuration.
 
-  public init(application: Vapor.Application) {
+  public init(application: any Application) {
     self.init(serverApplication: application)
   }
 }

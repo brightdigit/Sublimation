@@ -130,17 +130,24 @@ public actor TunnelSublimatory<
   ///   - Note: This method is private and asynchronous.
   ///
   ///   - SeeAlso: `Application`
-  private func beginFromApplication(_ application: Application) async {
+  private func beginFromApplication(_ application: @Sendable @escaping () -> any Application) async {
     let server = factory.server(
-      from: NgrokServerFactoryType.Configuration(application: application),
+      from: NgrokServerFactoryType.Configuration(application: application()),
       handler: self
     )
-    logger = application.logger
+    logger = application().logger
     tunnelRepo = repoFactory.setupClient(
       VaporTunnelClient(
-        client: application.client,
-        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self
-      )
+        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self,
+        get: {
+          try await application().get(from: $0)
+        }, post: {
+          try await application().post(to: $0, body: $1)
+        })
+//      VaporTunnelClient(
+//        client: application.client,
+//        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self
+//      )
     )
     self.server = server
     server.start()
@@ -156,9 +163,9 @@ public actor TunnelSublimatory<
   ///   - Note: This method is nonisolated.
   ///
   ///   - SeeAlso: `Application`
-  public func willBoot(from application: Application) async {
+  public func willBoot(from application: @escaping @Sendable () -> any Application) async {
     
-      await self.beginFromApplication(application)
+    await self.beginFromApplication(application)
     
   }
 }

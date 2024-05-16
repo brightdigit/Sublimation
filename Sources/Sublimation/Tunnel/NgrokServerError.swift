@@ -41,4 +41,5 @@ public enum NgrokServerError: Error {
   case noTunnelFound
   case invalidURL
   case cantSaveTunnel(Int?, Data?)
+  case cantSaveTunnelError(any Error)
 }

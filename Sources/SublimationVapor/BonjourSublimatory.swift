@@ -30,7 +30,6 @@
 import Foundation
 import Network
 import Logging
-import Vapor
 
 public actor BonjourSublimatory : Sublimatory {
   public static let httpTCPServiceType = "_http._tcp"
@@ -115,16 +114,17 @@ public actor BonjourSublimatory : Sublimatory {
     state = newState
     logger?.debug("Listener changed state to \(newState).")
   }
-  public func willBoot(from application: Vapor.Application) async {
+  public func willBoot(from application: @escaping @Sendable () -> any Application) async {
+    let application = application()
     await self.start(
-      isTLS: application.http.server.configuration.tlsConfiguration != nil,
-      port: application.http.server.configuration.port,
+      isTLS: application.httpServerTLS,
+      port: application.httpServerConfigurationPort,
       logger: application.logger
     )
   }
   
   
-  public func shutdown(from application: Vapor.Application) async {
+  public func shutdown(from application: @escaping @Sendable () -> any Application) async {
     self.stop()
   }
 }

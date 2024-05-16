@@ -47,7 +47,15 @@ import Vapor
 ///
 /// - SeeAlso: `KVdbTunnelClient`
 public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
-  private let client: any Vapor.Client
+  internal init(keyType _: Key.Type, get: @escaping @Sendable (URL) async throws -> Data?, post: @escaping @Sendable (URL, Data?) async throws -> Void) {
+    self.get = get
+    self.post = post
+  }
+  
+  
+  private let get: @Sendable (URL) async throws -> Data?
+  private let post: @Sendable (URL, Data?) async throws -> Void
+
 
   ///   Initializes a new instance of the `VaporTunnelClient`.
   ///
@@ -55,9 +63,9 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
   ///   - Parameter keyType: The type of the key used for accessing values in the tunnel.
   ///
   ///   - Returns: A new instance of `VaporTunnelClient`.
-  public init(client: any Vapor.Client, keyType _: Key.Type) {
-    self.client = client
-  }
+//  public init(client: any Vapor.Client, keyType _: Key.Type) {
+//    self.client = client
+//  }
 
   ///   Retrieves the value associated with a key from a specific bucket.
   ///
@@ -71,11 +79,10 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
     ofKey key: Key,
     fromBucket bucketName: String
   ) async throws -> URL {
-    let uri = KVdb.construct(URI.self, forKey: key, atBucket: bucketName)
+    let uri = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
     let url: URL?
-    url = try await client.get(uri)
-      .body
-      .map(String.init(buffer:))
+    url = try await get(uri)
+      .flatMap{String(data: $0, encoding: .utf8)}
       .flatMap(URL.init(string:))
 
     guard let url else {
@@ -96,17 +103,23 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
     withKey key: Key,
     inBucket bucketName: String
   ) async throws {
-    let uri = KVdb.construct(URI.self, forKey: key, atBucket: bucketName)
-
-    let response = try await client.post(uri) { request in
-      request.body = .init(string: value.absoluteString)
+    let uri = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
+    do {
+      try await self.post(uri, value.absoluteString.data(using: .utf8))
+    } catch {
+      throw NgrokServerError.cantSaveTunnelError(error)
     }
-    .get()
+//    let response = try await client.post(uri) { request in
+//      request.body = .init(string: value.absoluteString)
+//    }
+//    .get()
+//    
+//    
+//
+//    if response.status.code / 100 == 2 {
+//      return
+//    }
 
-    if response.status.code / 100 == 2 {
-      return
-    }
-
-    throw NgrokServerError.cantSaveTunnel(response)
+    
   }
 }

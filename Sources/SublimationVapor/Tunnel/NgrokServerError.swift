@@ -42,9 +42,9 @@ extension NgrokServerError {
   ///     - response: The client response that triggered the error.
   ///
   ///   - Returns: A `NgrokServerError` instance with the appropriate error details.
-  internal static func cantSaveTunnel(_ response: ClientResponse) -> NgrokServerError {
-    let code = Int(response.status.code)
-    let data = response.body.map { Data(buffer: $0, byteTransferStrategy: .automatic) }
-    return .cantSaveTunnel(code, data)
-  }
+//  internal static func cantSaveTunnel(_ response: ClientResponse) -> NgrokServerError {
+//    let code = Int(response.status.code)
+//    let data = response.body.map { Data(buffer: $0, byteTransferStrategy: .automatic) }
+//    return .cantSaveTunnel(code, data)
+//  }
 }
