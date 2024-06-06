@@ -27,21 +27,20 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 import Vapor
 
 ///// A protocol that defines the server application.
-//internal protocol ServerApplication {
+// internal protocol ServerApplication {
 //  /// The port number for the HTTP server configuration.
 //  var httpServerConfigurationPort: Int { get }
 //
 //  /// The logger for the server application.
 //  var logger: Logger { get }
-//}
+// }
 //
-//extension Vapor.Application: ServerApplication {
+// extension Vapor.Application: ServerApplication {
 //  /// The port number for the HTTP server configuration.
 //  internal var httpServerConfigurationPort: Int {
 //    http.server.configuration.port
 //  }
-//}
+// }

@@ -27,9 +27,9 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
-import Sublimation
 import Logging
+import Sublimation
+
 /// Configuration for the Ngrok CLI API server.
 ///
 /// - Note: This configuration conforms to `NgrokServerConfiguration` protocol.

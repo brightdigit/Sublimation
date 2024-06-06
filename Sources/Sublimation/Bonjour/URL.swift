@@ -43,71 +43,72 @@ extension URL {
 }
 
 #if canImport(Network)
-import Network
-extension URL {
-  internal static func urls(
-    from txtRecord: NWTXTRecord,
-    logger: LoggingActor?,
-    defaultPort: Int,
-    defaultTLS: Bool
-  ) -> [URL] {
-    let configuration = NWTXTRecord.URLConfiguration(
-      from: txtRecord,
-      logger: logger,
-      defaultPort: defaultPort,
-      defaultTLS: defaultTLS
-    )
-    logger?.log { $0.debug("Parsing \(configuration.count) Addresses") }
-    return (0 ..< configuration.count).compactMap { index -> URL? in
-      let host: String? = txtRecord.getEntry(for: .address(index)).value
-      assert(host != nil)
-      guard let host else {
-        logger?.log { $0.debug("Invalid Address At Index: \(index)") }
-        return nil
+  import Network
+
+  extension URL {
+    internal static func urls(
+      from txtRecord: NWTXTRecord,
+      logger: LoggingActor?,
+      defaultPort: Int,
+      defaultTLS: Bool
+    ) -> [URL] {
+      let configuration = NWTXTRecord.URLConfiguration(
+        from: txtRecord,
+        logger: logger,
+        defaultPort: defaultPort,
+        defaultTLS: defaultTLS
+      )
+      logger?.log { $0.debug("Parsing \(configuration.count) Addresses") }
+      return (0 ..< configuration.count).compactMap { index -> URL? in
+        let host: String? = txtRecord.getEntry(for: .address(index)).value
+        assert(host != nil)
+        guard let host else {
+          logger?.log { $0.debug("Invalid Address At Index: \(index)") }
+          return nil
+        }
+        return URL(scheme: configuration.scheme, host: host, port: configuration.port)
       }
-      return URL(scheme: configuration.scheme, host: host, port: configuration.port)
     }
   }
-}
 
-extension NWTXTRecord {
-  fileprivate struct URLConfiguration {
-    let scheme: String
-    let port: Int
-    let count: Int
-  }
-}
-
-extension NWTXTRecord.URLConfiguration {
-  private init(from txtRecord: NWTXTRecord, logger: LoggingActor?, port: Int, isTLS: Bool, offset: Int) {
-    let scheme = isTLS ? "https" : "http"
-    logger?.log { $0.debug("Scheme: \(scheme)") }
-    let addressCount = txtRecord.count - offset
-    self.init(scheme: scheme, port: port, count: addressCount)
+  extension NWTXTRecord {
+    fileprivate struct URLConfiguration {
+      let scheme: String
+      let port: Int
+      let count: Int
+    }
   }
 
-  fileprivate init(from txtRecord: NWTXTRecord, logger: LoggingActor?, defaultPort: Int, defaultTLS: Bool) {
-    var offset = 0
-
-    let portEntry = txtRecord.getEntry(for: .port, of: Int.self)
-    let port = portEntry.value ?? defaultPort
-    offset += portEntry.isEmpty ? 0 : 1
-
-    if let invalidPortEntryString = portEntry.invalidEntryString {
-      assert(portEntry.invalidEntryString == nil, "Port Entry is invalid: \(invalidPortEntryString)")
-      logger?.log { $0.warning("Port Entry is invalid: \(invalidPortEntryString)") }
+  extension NWTXTRecord.URLConfiguration {
+    private init(from txtRecord: NWTXTRecord, logger: LoggingActor?, port: Int, isTLS: Bool, offset: Int) {
+      let scheme = isTLS ? "https" : "http"
+      logger?.log { $0.debug("Scheme: \(scheme)") }
+      let addressCount = txtRecord.count - offset
+      self.init(scheme: scheme, port: port, count: addressCount)
     }
 
-    let tlsEntry = txtRecord.getEntry(for: .tls, of: Bool.self)
-    let isTLS = tlsEntry.value ?? defaultTLS
-    offset += tlsEntry.isEmpty ? 0 : 1
+    fileprivate init(from txtRecord: NWTXTRecord, logger: LoggingActor?, defaultPort: Int, defaultTLS: Bool) {
+      var offset = 0
 
-    if let invalidTLSEntryString = tlsEntry.invalidEntryString {
-      assert(tlsEntry.invalidEntryString == nil, "Port Entry is invalid: \(invalidTLSEntryString)")
-      logger?.log { $0.warning("Port Entry is invalid: \(invalidTLSEntryString)") }
+      let portEntry = txtRecord.getEntry(for: .port, of: Int.self)
+      let port = portEntry.value ?? defaultPort
+      offset += portEntry.isEmpty ? 0 : 1
+
+      if let invalidPortEntryString = portEntry.invalidEntryString {
+        assert(portEntry.invalidEntryString == nil, "Port Entry is invalid: \(invalidPortEntryString)")
+        logger?.log { $0.warning("Port Entry is invalid: \(invalidPortEntryString)") }
+      }
+
+      let tlsEntry = txtRecord.getEntry(for: .tls, of: Bool.self)
+      let isTLS = tlsEntry.value ?? defaultTLS
+      offset += tlsEntry.isEmpty ? 0 : 1
+
+      if let invalidTLSEntryString = tlsEntry.invalidEntryString {
+        assert(tlsEntry.invalidEntryString == nil, "Port Entry is invalid: \(invalidTLSEntryString)")
+        logger?.log { $0.warning("Port Entry is invalid: \(invalidTLSEntryString)") }
+      }
+
+      self.init(from: txtRecord, logger: logger, port: port, isTLS: isTLS, offset: offset)
     }
-
-    self.init(from: txtRecord, logger: logger, port: port, isTLS: isTLS, offset: offset)
   }
-}
 #endif

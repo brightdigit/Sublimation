@@ -29,14 +29,14 @@
 
 import Foundation
 
-internal actor StreamManager<Key : Hashable & Sendable, Value> {
+internal actor StreamManager<Key: Hashable & Sendable, Value> {
   internal init(newID: @escaping @Sendable () -> Key) {
     self.newID = newID
   }
-  
+
   private var streamContinuations = [Key: AsyncStream<Value>.Continuation]()
-  
-  private var newID : @Sendable () -> Key
+
+  private var newID: @Sendable () -> Key
 
   internal var isEmpty: Bool {
     streamContinuations.isEmpty
@@ -50,7 +50,7 @@ internal actor StreamManager<Key : Hashable & Sendable, Value> {
       for url in urls {
         streamContinuation.value.yield(url)
       }
-      //logger?.log { $0.debug("Yielded to Stream \(streamContinuation.key)") }
+      // logger?.log { $0.debug("Yielded to Stream \(streamContinuation.key)") }
     }
   }
 

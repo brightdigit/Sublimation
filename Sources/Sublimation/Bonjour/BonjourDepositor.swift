@@ -1,5 +1,5 @@
 //
-//  NetworkExplorer.swift
+//  BonjourDepositor.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,133 +28,131 @@
 //
 
 #if canImport(Network)
-import Foundation
-import Network
-import Logging
+  import Foundation
+  import Logging
+  import Network
 
-
-public actor BonjourDepositor {
-  public enum Defaults {
-    public static let port = 80
-    public static let isTLS = false
-    public static let bonjourType = "_http._tcp"
-    public static let bonourDomain = "local."
-    
-  }
-
-  private let browser: NetworkBrowser
-  private let queue: DispatchQueue = .global()
-  private let logger: LoggingActor?
-  private let streams = StreamManager<UUID, URL>()
-
-  private let defaultPort: Int
-  private let defaultTLS: Bool
-
-  public var state: NWBrowser.State? {
-    get async {
-      await self.browser.currentState
+  public actor BonjourDepositor {
+    public enum Defaults {
+      public static let port = 80
+      public static let isTLS = false
+      public static let bonjourType = "_http._tcp"
+      public static let bonourDomain = "local."
     }
-  }
 
-  public var urls: AsyncStream<URL> {
-    get async {
-      let browser = browser
-      let streams = streams
-      if await self.streams.isEmpty {
-        logger?.log { $0.debug("Starting Browser.") }
+    private let browser: NetworkBrowser
+    private let queue: DispatchQueue = .global()
+    private let logger: LoggingActor?
+    private let streams = StreamManager<UUID, URL>()
 
-        await browser.start(queue: queue, parser: { result in
-          Task {
-            await self.parseResult(result)
-          }
-        })
+    private let defaultPort: Int
+    private let defaultTLS: Bool
+
+    public var state: NWBrowser.State? {
+      get async {
+        await self.browser.currentState
       }
-      return AsyncStream { continuation in
-        Task {
-          await streams.append(continuation) {
-            await browser.stop()
-            self.logger?.log { $0.debug("Shuting down browser.") }
+    }
+
+    public var urls: AsyncStream<URL> {
+      get async {
+        let browser = browser
+        let streams = streams
+        if await self.streams.isEmpty {
+          logger?.log { $0.debug("Starting Browser.") }
+
+          await browser.start(queue: queue, parser: { result in
+            Task {
+              await self.parseResult(result)
+            }
+          })
+        }
+        return AsyncStream { continuation in
+          Task {
+            await streams.append(continuation) {
+              await browser.stop()
+              self.logger?.log { $0.debug("Shuting down browser.") }
+            }
           }
         }
       }
     }
-  }
 
-  public init(
-    bonjourWithType type: String = Defaults.bonjourType,
-    domain: String = Defaults.bonourDomain,
-    using parameters: NWParameters = .tcp,
-    defaultPort: Int = Defaults.port,
-    defaultTLS: Bool = Defaults.isTLS,
-    logger: (@Sendable () -> Logger)? = nil
-  ) {
-    self.init(
-      for: .bonjourWithTXTRecord(type: type, domain: domain),
-      using: parameters,
-      defaultPort: defaultPort,
-      defaultTLS: defaultTLS,
-      logger: logger
-    )
-  }
-
-  public init(
-    for descriptor: NWBrowser.Descriptor,
-    using parameters: NWParameters,
-    defaultPort: Int = Defaults.port,
-    defaultTLS: Bool = Defaults.isTLS,
-    logger: (@Sendable () -> Logger)? = nil
-  ) {
-    self.init(
-      browser: .init(for: descriptor, using: parameters),
-      logger: logger,
-      defaultPort: defaultPort,
-      defaultTLS: defaultTLS
-    )
-  }
-
-  private init(
-    browser: NetworkBrowser,
-    logger: (@Sendable () -> Logger)?,
-    defaultPort: Int,
-    defaultTLS: Bool
-  ) {
-    self.logger = logger.map(LoggingActor.init(logger:))
-    self.browser = browser
-    self.defaultTLS = defaultTLS
-    self.defaultPort = defaultPort
-  }
-
-  private static func urls(
-    from result: NWBrowser.Result,
-    logger: LoggingActor?,
-    defaultPort: Int,
-    defaultTLS: Bool
-  ) -> [URL]? {
-    guard case .service = result.endpoint else {
-      logger?.log { $0.debug("Not service.") }
-      return nil
+    public init(
+      bonjourWithType type: String = Defaults.bonjourType,
+      domain: String = Defaults.bonourDomain,
+      using parameters: NWParameters = .tcp,
+      defaultPort: Int = Defaults.port,
+      defaultTLS: Bool = Defaults.isTLS,
+      logger: (@Sendable () -> Logger)? = nil
+    ) {
+      self.init(
+        for: .bonjourWithTXTRecord(type: type, domain: domain),
+        using: parameters,
+        defaultPort: defaultPort,
+        defaultTLS: defaultTLS,
+        logger: logger
+      )
     }
-    guard case let .bonjour(txtRecord) = result.metadata else {
-      logger?.log { $0.debug("No txt record.") }
-      return nil
-    }
-    return URL.urls(from: txtRecord, logger: logger, defaultPort: defaultPort, defaultTLS: defaultTLS)
-  }
 
-  private func parseResult(_ result: NWBrowser.Result) {
-    guard let urls = Self.urls(
-      from: result,
-      logger: logger,
-      defaultPort: defaultPort,
-      defaultTLS: defaultTLS
-    ) else {
-      return
+    public init(
+      for descriptor: NWBrowser.Descriptor,
+      using parameters: NWParameters,
+      defaultPort: Int = Defaults.port,
+      defaultTLS: Bool = Defaults.isTLS,
+      logger: (@Sendable () -> Logger)? = nil
+    ) {
+      self.init(
+        browser: .init(for: descriptor, using: parameters),
+        logger: logger,
+        defaultPort: defaultPort,
+        defaultTLS: defaultTLS
+      )
     }
-    let logger = logger
-    let streams = streams
-    Task {
-      await streams.yield(urls, logger: logger)
+
+    private init(
+      browser: NetworkBrowser,
+      logger: (@Sendable () -> Logger)?,
+      defaultPort: Int,
+      defaultTLS: Bool
+    ) {
+      self.logger = logger.map(LoggingActor.init(logger:))
+      self.browser = browser
+      self.defaultTLS = defaultTLS
+      self.defaultPort = defaultPort
+    }
+
+    private static func urls(
+      from result: NWBrowser.Result,
+      logger: LoggingActor?,
+      defaultPort: Int,
+      defaultTLS: Bool
+    ) -> [URL]? {
+      guard case .service = result.endpoint else {
+        logger?.log { $0.debug("Not service.") }
+        return nil
+      }
+      guard case let .bonjour(txtRecord) = result.metadata else {
+        logger?.log { $0.debug("No txt record.") }
+        return nil
+      }
+      return URL.urls(from: txtRecord, logger: logger, defaultPort: defaultPort, defaultTLS: defaultTLS)
+    }
+
+    private func parseResult(_ result: NWBrowser.Result) {
+      guard let urls = Self.urls(
+        from: result,
+        logger: logger,
+        defaultPort: defaultPort,
+        defaultTLS: defaultTLS
+      ) else {
+        return
+      }
+      let logger = logger
+      let streams = streams
+      Task {
+        await streams.yield(urls, logger: logger)
+      }
     }
   }
-}
 #endif

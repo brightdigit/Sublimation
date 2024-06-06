@@ -51,11 +51,9 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
     self.get = get
     self.post = post
   }
-  
-  
+
   private let get: @Sendable (URL) async throws -> Data?
   private let post: @Sendable (URL, Data?) async throws -> Void
-
 
   ///   Initializes a new instance of the `VaporTunnelClient`.
   ///
@@ -82,7 +80,7 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
     let uri = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
     let url: URL?
     url = try await get(uri)
-      .flatMap{String(data: $0, encoding: .utf8)}
+      .flatMap { String(data: $0, encoding: .utf8) }
       .flatMap(URL.init(string:))
 
     guard let url else {
@@ -113,13 +111,11 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
 //      request.body = .init(string: value.absoluteString)
 //    }
 //    .get()
-//    
-//    
+//
+//
 //
 //    if response.status.code / 100 == 2 {
 //      return
 //    }
-
-    
   }
 }

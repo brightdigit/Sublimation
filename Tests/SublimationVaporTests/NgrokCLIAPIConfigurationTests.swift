@@ -27,7 +27,6 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 @testable import SublimationVapor
 import XCTest
 
@@ -36,6 +35,7 @@ internal class NgrokCLIAPIConfigurationTests: XCTestCase {
     let loggerLabel = UUID().uuidString
     let application = MockServerApplication(
       httpServerConfigurationPort: .random(in: 10 ... 10_000),
+      httpServerTLS: .random(),
       logger: .init(label: loggerLabel)
     )
     let configuration = NgrokCLIAPIConfiguration(serverApplication: application)

@@ -27,11 +27,34 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
+import Logging
+import Sublimation
 @testable import SublimationVapor
 import XCTest
 
-internal struct MockServerApplication: ServerApplication {
+internal class MockServerApplication: Application {
+  internal init(httpServerConfigurationPort: Int, httpServerTLS: Bool, logger: Logger) {
+    self.httpServerConfigurationPort = httpServerConfigurationPort
+    self.httpServerTLS = httpServerTLS
+    self.logger = logger
+  }
+
+  var postRequests = [(URL, Data?)]()
+  var getRequests = [URL]()
+  var queuedGetResponses = [Result<Data?, any Error>]()
+  var queuedPostResponses = [Result<Void, any Error>]()
+
+  func post(to url: URL, body: Data?) async throws {
+    postRequests.append((url, body))
+    try queuedPostResponses.remove(at: 0).get()
+  }
+
+  func get(from url: URL) async throws -> Data? {
+    getRequests.append(url)
+    return try queuedGetResponses.remove(at: 0).get()
+  }
+
   internal let httpServerConfigurationPort: Int
+  internal let httpServerTLS: Bool
   internal let logger: Logger
 }

@@ -28,17 +28,17 @@
 //
 
 #if canImport(Network)
-import Network
+  import Network
 
-extension NWBrowser.Result.Change {
-  internal var newMetadataChange: NWBrowser.Result? {
-    if case let .added(result) = self {
-      result
-    } else if case let .changed(_, new, .metadataChanged) = self {
-      new
-    } else {
-      nil
+  extension NWBrowser.Result.Change {
+    internal var newMetadataChange: NWBrowser.Result? {
+      if case let .added(result) = self {
+        result
+      } else if case let .changed(_, new, .metadataChanged) = self {
+        new
+      } else {
+        nil
+      }
     }
   }
-}
 #endif

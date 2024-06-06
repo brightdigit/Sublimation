@@ -38,6 +38,7 @@ internal class NgrokCLIAPIServerFactoryTests: XCTestCase {
     let loggerLabel = UUID().uuidString
     let application = MockServerApplication(
       httpServerConfigurationPort: .random(in: 10 ... 10_000),
+      httpServerTLS: .random(),
       logger: .init(label: loggerLabel)
     )
     let delegateID = UUID()

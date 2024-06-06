@@ -1,18 +1,41 @@
 //
-//  File.swift
-//  
+//  TunnelSublimatory.swift
+//  Sublimation
 //
-//  Created by Leo Dion on 5/15/24.
+//  Created by Leo Dion.
+//  Copyright © 2024 BrightDigit.
+//
+//  Permission is hereby granted, free of charge, to any person
+//  obtaining a copy of this software and associated documentation
+//  files (the “Software”), to deal in the Software without
+//  restriction, including without limitation the rights to use,
+//  copy, modify, merge, publish, distribute, sublicense, and/or
+//  sell copies of the Software, and to permit persons to whom the
+//  Software is furnished to do so, subject to the following
+//  conditions:
+//
+//  The above copyright notice and this permission notice shall be
+//  included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+//  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+//  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+//  OTHER DEALINGS IN THE SOFTWARE.
 //
 
 import Foundation
-import Sublimation
-import Ngrokit
 import Logging
+import Ngrokit
+import Sublimation
+
 public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   NgrokServerFactoryType: NgrokServerFactory
-> : Sublimatory, NgrokServerDelegate where NgrokServerFactoryType.Configuration: NgrokVaporConfiguration {
+>: Sublimatory, NgrokServerDelegate where NgrokServerFactoryType.Configuration: NgrokVaporConfiguration {
   private let factory: NgrokServerFactoryType
   private let repoFactory: WritableTunnelRepositoryFactoryType
   private let key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
@@ -142,7 +165,8 @@ public actor TunnelSublimatory<
           try await application().get(from: $0)
         }, post: {
           try await application().post(to: $0, body: $1)
-        })
+        }
+      )
 //      VaporTunnelClient(
 //        client: application.client,
 //        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self
@@ -151,7 +175,7 @@ public actor TunnelSublimatory<
     self.server = server
     server.start()
   }
-  
+
   ///   Called when the application is about to boot.
   ///
   ///   - Parameters:
@@ -163,11 +187,10 @@ public actor TunnelSublimatory<
   ///
   ///   - SeeAlso: `Application`
   public func willBoot(from application: @escaping @Sendable () -> any Application) async {
-    
     await self.beginFromApplication(application)
-    
   }
 }
+
 #if os(macOS)
   extension TunnelSublimatory {
     ///     Initializes the Sublimation lifecycle handler with default values for macOS.

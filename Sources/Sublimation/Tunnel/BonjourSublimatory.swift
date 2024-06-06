@@ -1,5 +1,5 @@
 //
-//  BonjourListener.swift
+//  BonjourSublimatory.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,169 +28,165 @@
 //
 
 #if canImport(Network)
-import Foundation
-import Network
-import Logging
+  import Foundation
+  import Logging
+  import Network
 
-
-extension NWListener.State : CustomDebugStringConvertible {
-  public var debugDescription: String {
-    switch self {
-    case .setup:
-      "setup"
-    case .waiting(let error):
-      "waiting: \(error.debugDescription)"
-    case .ready:
-      "ready"
-    case .failed(let error):
-      "failed: \(error.debugDescription)"
-    case .cancelled:
-      "cancelled"
-    @unknown default:
-      "unknown state"
+  extension NWListener.State: CustomDebugStringConvertible {
+    public var debugDescription: String {
+      switch self {
+      case .setup:
+        "setup"
+      case let .waiting(error):
+        "waiting: \(error.debugDescription)"
+      case .ready:
+        "ready"
+      case let .failed(error):
+        "failed: \(error.debugDescription)"
+      case .cancelled:
+        "cancelled"
+      @unknown default:
+        "unknown state"
+      }
     }
   }
-  
-  
-}
 
-public actor BonjourSublimatory : Sublimatory {
-  public static let httpTCPServiceType = "_http._tcp"
-  private let serviceType: String
-  private let maximumCount: Int?
-  private let addresses : @Sendable () async -> [String]
-  // TODO: Create a Filter Builder
-  private let addressFilter: @Sendable (String) -> Bool
-  private let listenerParameters: NWParameters
-  private nonisolated(unsafe) var logger: Logger?
-  private var listener: NWListener? {
-    didSet {
-      guard let listener else {
+  public actor BonjourSublimatory: Sublimatory {
+    public static let httpTCPServiceType = "_http._tcp"
+    private let serviceType: String
+    private let maximumCount: Int?
+    private let addresses: @Sendable () async -> [String]
+    // TODO: Create a Filter Builder
+    private let addressFilter: @Sendable (String) -> Bool
+    private let listenerParameters: NWParameters
+    private nonisolated(unsafe) var logger: Logger?
+    private var listener: NWListener? {
+      didSet {
+        guard let listener else {
+          return
+        }
+
+        listener.stateUpdateHandler = { newState in
+          Task {
+            await self.updateState(newState)
+          }
+        }
+        listener.newConnectionHandler = { connection in
+          self.logger?.debug("Cancelling connection: \(connection.debugDescription)")
+          connection.cancel()
+        }
+
+        listener.serviceRegistrationUpdateHandler = { _ in
+          // TODO: put this in an AsyncStream
+        }
+      }
+    }
+
+    internal private(set) var state: NWListener.State?
+
+    public init(
+      listenerParameters: NWParameters = .tcp,
+      serviceType: String = httpTCPServiceType,
+      maximumCount: Int? = nil,
+      addresses: @escaping @Sendable () async -> [String],
+      addressFilter: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:)
+    ) {
+      self.listenerParameters = listenerParameters
+      self.serviceType = serviceType
+      self.maximumCount = maximumCount
+      self.addressFilter = addressFilter
+      self.addresses = addresses
+    }
+
+    #if os(macOS)
+      public init(
+        listenerParameters: NWParameters = .tcp,
+        serviceType: String = httpTCPServiceType,
+        maximumCount: Int? = nil,
+        addressFilter: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:)
+      ) {
+        self.init(
+          listenerParameters: listenerParameters,
+          serviceType: serviceType,
+          maximumCount: maximumCount,
+          addresses: Self.addressesFromHost,
+          addressFilter: addressFilter
+        )
+      }
+
+      @Sendable
+      public static func addressesFromHost() -> [String] {
+        Host.current().addresses
+      }
+    #endif
+
+    internal func stop() {
+      assert(listener != nil)
+      listener?.stateUpdateHandler = nil
+      listener?.cancel()
+      listener = nil
+    }
+
+    private func updateState(_ newState: NWListener.State) {
+      state = newState
+      logger?.debug("Listener changed state to \(newState.debugDescription).")
+    }
+
+    public func willBoot(from application: @escaping @Sendable () -> any Application) async {
+      let application = application()
+      await self.start(
+        isTLS: application.httpServerTLS,
+        port: application.httpServerConfigurationPort,
+        logger: application.logger
+      )
+    }
+
+    public func shutdown(from _: @escaping @Sendable () -> any Application) async {
+      self.stop()
+    }
+  }
+
+  extension BonjourSublimatory {
+    internal func start(
+      isTLS: Bool,
+      port: Int,
+      logger: Logger
+    ) async {
+      self.logger = logger
+      let addresses = await self.addresses()
+      let txtRecord: NWTXTRecord = .init(
+        isTLS: isTLS,
+        port: port,
+        maximumCount: maximumCount,
+        filter: addressFilter,
+        addresses: addresses
+      )
+      let listener: NWListener
+      do {
+        listener = try NWListener(
+          using: listenerParameters,
+          serviceType: self.serviceType,
+          txtRecord: txtRecord
+        )
+      } catch {
+        assertionFailure("Unable to create listener: \(error.localizedDescription)")
+        logger.error("Unable to create listener: \(error.localizedDescription)")
         return
       }
 
-      listener.stateUpdateHandler = { newState in
-        Task {
-          await self.updateState(newState)
-        }
-      }
-      listener.newConnectionHandler = { connection in
-           self.logger?.debug("Cancelling connection: \(connection.debugDescription)")
-        connection.cancel()
-      }
-
-      listener.serviceRegistrationUpdateHandler = { _ in
-        // TODO: put this in an AsyncStream
-      }
+      self.listener = listener
+      listener.start(queue: .global(qos: .default))
     }
   }
 
-  internal private(set) var state: NWListener.State?
-
-  public init(
-    listenerParameters: NWParameters = .tcp,
-    serviceType: String = httpTCPServiceType,
-    maximumCount: Int? = nil,
-    addresses: @escaping @Sendable () async -> [String],
-    addressFilter: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:)
-  ) {
-    self.listenerParameters = listenerParameters
-    self.serviceType = serviceType
-    self.maximumCount = maximumCount
-    self.addressFilter = addressFilter
-    self.addresses = addresses
-  }
-  
-#if os(macOS)
-  public init(
-    listenerParameters: NWParameters = .tcp,
-    serviceType: String = httpTCPServiceType,
-    maximumCount: Int? = nil,
-    addressFilter: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:)
-  ) {
-    self.init(
-      listenerParameters: listenerParameters,
-      serviceType: serviceType,
-      maximumCount: maximumCount,
-      addresses: Self.addressesFromHost,
-      addressFilter: addressFilter
-      
-    )
-  }
-  
-  @Sendable
-  public static func addressesFromHost () -> [String] {
-    Host.current().addresses
-  }
-  #endif
-
-  internal func stop() {
-    assert(listener != nil)
-    listener?.stateUpdateHandler = nil
-    listener?.cancel()
-    listener = nil
-  }
-
-  private func updateState(_ newState: NWListener.State) {
-    state = newState
-    logger?.debug("Listener changed state to \(newState.debugDescription).")
-  }
-  public func willBoot(from application: @escaping @Sendable () -> any Application) async {
-    let application = application()
-    await self.start(
-      isTLS: application.httpServerTLS,
-      port: application.httpServerConfigurationPort,
-      logger: application.logger
-    )
-  }
-  
-  
-  public func shutdown(from application: @escaping @Sendable () -> any Application) async {
-    self.stop()
-  }
-}
-
-extension BonjourSublimatory {
-  internal func start(
-    isTLS: Bool,
-    port: Int,
-    logger: Logger
-  ) async {
-    self.logger = logger
-    let addresses = await self.addresses()
-    let txtRecord: NWTXTRecord = .init(
-      isTLS: isTLS,
-      port: port,
-      maximumCount: maximumCount,
-      filter: addressFilter,
-      addresses: addresses
-    )
-    let listener: NWListener
-    do {
-      listener = try NWListener(
-        using: listenerParameters,
-        serviceType: self.serviceType,
-        txtRecord: txtRecord
-      )
-    } catch {
-      assertionFailure("Unable to create listener: \(error.localizedDescription)")
-      logger.error("Unable to create listener: \(error.localizedDescription)")
-      return
+  extension NWListener {
+    fileprivate convenience init(
+      using parameters: NWParameters,
+      serviceType: String,
+      txtRecord: NWTXTRecord
+    ) throws {
+      try self.init(using: parameters)
+      self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
     }
-
-    self.listener = listener
-    listener.start(queue: .global(qos: .default))
   }
-}
-
-extension NWListener {
-  fileprivate convenience init(
-    using parameters: NWParameters,
-    serviceType: String,
-    txtRecord: NWTXTRecord
-  ) throws {
-    try self.init(using: parameters)
-    self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
-  }
-}
 #endif
