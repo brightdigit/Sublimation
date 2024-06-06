@@ -31,7 +31,7 @@ import Foundation
 import Ngrokit
 
 package struct MockDataHandle: DataHandle {
-  package static let code: Data? = """
+  package static let code: Data = .init("""
   ERROR:  authentication failed: Your account is limited to 1 simultaneous ngrok agent session.
   ERROR:  You can run multiple tunnels on a single agent session using a configuration file.
   ERROR:  To learn more, see https://ngrok.com/docs/secure-tunnels/ngrok-agent/reference/config/
@@ -41,7 +41,7 @@ package struct MockDataHandle: DataHandle {
   ERROR:
   ERROR:  ERR_NGROK_108
   ERROR:
-  """.data(using: .utf8)
+  """.utf8)
 
   private let actualResult: Result<Data?, any Error>
 

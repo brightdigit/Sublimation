@@ -27,10 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import protocol Sublimation.Application
+import protocol SublimationCore.Application
 import Vapor
 
-typealias SublimationApplication = Sublimation.Application
+typealias SublimationApplication = SublimationCore.Application
 
 extension Vapor.Application: SublimationApplication {
   public func post(to url: URL, body: Data?) async throws {

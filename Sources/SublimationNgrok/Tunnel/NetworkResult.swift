@@ -27,7 +27,6 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import AsyncHTTPClient
 import Foundation
 import OpenAPIRuntime
 
@@ -51,25 +50,28 @@ extension NetworkResult {
       return
     }
 
-    #if canImport(Network)
-      if let posixError = error.underlyingError as? HTTPClient.NWPOSIXError {
-        guard posixError.errorCode == .ECONNREFUSED else {
-          self = .failure(error)
-          return
-        }
-        self = .connectionRefused(error)
-        return
-      }
-    #endif
-
-    if let clientError = error.underlyingError as? HTTPClientError {
-      guard clientError == .connectTimeout else {
-        self = .failure(error)
-        return
-      }
-      self = .connectionRefused(error)
-      return
-    }
+    #warning("Fix This")
+    dump(error.underlyingError)
+//
+//    #if canImport(Network)
+//      if let posixError = error.underlyingError as? HTTPClient.NWPOSIXError {
+//        guard posixError.errorCode == .ECONNREFUSED else {
+//          self = .failure(error)
+//          return
+//        }
+//        self = .connectionRefused(error)
+//        return
+//      }
+//    #endif
+//
+//    if let clientError = error.underlyingError as? HTTPClientError {
+//      guard clientError == .connectTimeout else {
+//        self = .failure(error)
+//        return
+//      }
+//      self = .connectionRefused(error)
+//      return
+//    }
 
     self = .failure(error)
   }

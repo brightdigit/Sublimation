@@ -30,18 +30,8 @@
 import Foundation
 import Logging
 
-public protocol Application {
-  func post(to url: URL, body: Data?) async throws
-  func get(from url: URL) async throws -> Data?
-
-  /// The port number for the HTTP server configuration.
-  var httpServerConfigurationPort: Int { get }
-
-  var httpServerTLS: Bool { get }
-
-  /// The logger for the server application.
-  var logger: Logger { get }
-}
+@_exported import SublimationBonjour
+@_exported import SublimationNgrok
 
 public final class Sublimation: Sendable {
   public let sublimatory: any Sublimatory
@@ -71,6 +61,9 @@ public final class Sublimation: Sendable {
 
 #if canImport(Network)
   import Network
+  import SublimationBonjour
+  import SublimationCore
+  import SublimationNgrok
 
   extension Sublimation {
     public convenience init(
@@ -100,6 +93,35 @@ public final class Sublimation: Sendable {
           addressFilter: addressFilter
         )
       }
+
     #endif
+  }
+#endif
+
+#if os(macOS)
+  extension Sublimation {
+    ///     Initializes the Sublimation lifecycle handler with default values for macOS.
+    ///
+    ///     - Parameters:
+    ///       - ngrokPath: The path to the Ngrok executable.
+    ///       - bucketName: The name of the bucket for the tunnel repository.
+    ///       - key: The key for the tunnel repository.
+    ///
+    ///     - Note: This initializer is only available on macOS.
+    ///
+    ///     - SeeAlso: `KVdbTunnelRepositoryFactory`
+    ///     - SeeAlso: `NgrokCLIAPIServerFactory`
+    public convenience init(
+      ngrokPath: String,
+      bucketName: String,
+      key: some Any,
+      ngrokClient: @escaping () -> NgrokClient
+    ) {
+      self.init(
+        sublimatory: TunnelSublimatory(
+          ngrokPath: ngrokPath, bucketName: bucketName, key: key, ngrokClient: ngrokClient
+        )
+      )
+    }
   }
 #endif

@@ -71,7 +71,8 @@ public struct URLSessionClient<Key: Sendable>: KVdbTunnelClient {
 
     let data = try await session.dataAsync(from: url).0
 
-    guard let url = String(data: data, encoding: .utf8).flatMap(URL.init(string:)) else {
+    let urlString = String(decoding: data, as: UTF8.self)
+    guard let url = URL(string: urlString) else {
       throw NgrokServerError.invalidURL
     }
 

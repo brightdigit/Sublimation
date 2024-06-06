@@ -29,8 +29,6 @@
 
 import Foundation
 import Ngrokit
-import NIOCore
-import OpenAPIAsyncHTTPClient
 
 /// A factory for creating Ngrok CLI API servers.
 ///
@@ -47,19 +45,29 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: NgrokServerFac
   private let cliAPI: any NgrokCLIAPI
 
   /// The timeout duration for API requests.
-  private let timeout: TimeAmount
+  // private let timeout: TimeAmount
+
+  private let ngrokClient: () -> NgrokClient
 
   ///   Initializes a new instance of `NgrokCLIAPIServerFactory`.
   ///
   ///   - Parameters:
   ///     - cliAPI: The Ngrok CLI API instance.
   ///     - timeout: The timeout duration for API requests. Default is 1 second.
+//  public init(
+//    cliAPI: any NgrokCLIAPI//,
+//    //timeout: TimeAmount = .seconds(1)
+//  ) {
+//    self.cliAPI = cliAPI
+//    //self.timeout = timeout
+//  }
+
   public init(
     cliAPI: any NgrokCLIAPI,
-    timeout: TimeAmount = .seconds(1)
+    ngrokClient: @escaping () -> NgrokClient
   ) {
     self.cliAPI = cliAPI
-    self.timeout = timeout
+    self.ngrokClient = ngrokClient
   }
 
   ///   Initializes a new instance of `NgrokCLIAPIServerFactory`
@@ -69,10 +77,11 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: NgrokServerFac
   ///     - ngrokPath: The path to the Ngrok executable.
   ///     - timeout: The timeout duration for API requests. Default is 1 second.
 
-  public init(ngrokPath: String, timeout: TimeAmount = .seconds(1)) {
+  public init(ngrokPath: String,
+              ngrokClient: @escaping () -> NgrokClient) { // , timeout: TimeAmount = .seconds(1)) {
     self.init(
       cliAPI: NgrokProcessCLIAPI<ProcessType>(ngrokPath: ngrokPath),
-      timeout: timeout
+      ngrokClient: ngrokClient
     )
   }
 
@@ -88,14 +97,15 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: NgrokServerFac
     from configuration: Configuration,
     handler: any NgrokServerDelegate
   ) -> NgrokCLIAPIServer {
-    let client = NgrokClient(
-      transport: AsyncHTTPClientTransport(configuration: .init(timeout: timeout))
-    )
+    // let client =
+//    NgrokClient(
+//      transport: AsyncHTTPClientTransport(configuration: .init(timeout: timeout))
+//    )
 
     let process = cliAPI.process(forHTTPPort: configuration.port)
     return .init(
       delegate: handler,
-      client: client,
+      client: self.ngrokClient(),
       process: process,
       port: configuration.port,
       logger: configuration.logger

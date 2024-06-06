@@ -31,7 +31,7 @@ import Foundation
 import Logging
 import Ngrokit
 import OpenAPIRuntime
-import Sublimation
+import SublimationCore
 
 /// A server implementation for Ngrok CLI API.
 ///

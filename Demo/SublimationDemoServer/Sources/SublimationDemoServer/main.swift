@@ -1,4 +1,5 @@
 import Vapor
+import SublimationDemoConfiguration
 import Sublimation
 import SublimationVapor
 
@@ -15,7 +16,11 @@ app.get { _ in
 
 
 app.lifecycle.use(
-  Sublimation()
+  Sublimation(
+    ngrokPath: Configuration.ngrokPath,
+    bucketName: Configuration.bucketName,
+    key: Configuration.key
+  )
 )
 
 

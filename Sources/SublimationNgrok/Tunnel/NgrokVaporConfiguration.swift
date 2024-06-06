@@ -1,5 +1,5 @@
 //
-//  URI.swift
+//  NgrokVaporConfiguration.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,25 +27,30 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import Sublimation
-import Vapor
+import SublimationCore
 
-/// A type representing a Uniform Resource Identifier (URI).
+/// A protocol that defines the configuration for Ngrok in a Vapor application.
 ///
-/// - Note: This type conforms to `KVdbURLConstructable` protocol.
+/// This protocol inherits from `NgrokServerConfiguration`.
 ///
-/// - SeeAlso: `KVdbURLConstructable`
-extension URI: KVdbURLConstructable {
-  ///   Initializes a URI with the given KVDB base and key bucket path.
+/// To conform to this protocol, implement the `init(application:)` initializer.
+///
+/// Example usage:
+/// ```
+/// struct MyNgrokConfiguration: NgrokVaporConfiguration {
+///   init(application: Application) {
+///     // Configure Ngrok settings here
+///   }
+/// }
+/// ```
+///
+/// - Note: This protocol is public.
+public protocol NgrokVaporConfiguration: NgrokServerConfiguration {
+  ///   Initializes a new instance of the configuration.
   ///
-  ///   - Parameters:
-  ///     - kvDBBase: The base URL of the KVDB.
-  ///     - keyBucketPath: The path to the key bucket.
+  ///   - Parameter application: The Vapor application.
   ///
-  ///   - Returns: A new URI instance.
-  public init(kvDBBase: String, keyBucketPath: String) {
-    self.init(string: kvDBBase)
-    path = keyBucketPath
-  }
+  ///   - Note: This initializer is required to conform to
+  ///   the `NgrokVaporConfiguration` protocol.
+  init(application: any Application)
 }

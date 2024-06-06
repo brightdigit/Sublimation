@@ -1,5 +1,5 @@
 //
-//  NgrokVaporConfiguration.swift
+//  WritableTunnelRepositoryFactory.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,30 +27,26 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Sublimation
+#if os(macOS)
+  @_exported import class Ngrokit.ProcessableProcess
+#endif
+@_exported import struct Ngrokit.NgrokClient
 
-/// A protocol that defines the configuration for Ngrok in a Vapor application.
+import Foundation
+
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
+/// A factory protocol for creating writable tunnel repositories.
 ///
-/// This protocol inherits from `NgrokServerConfiguration`.
+/// This protocol extends the `TunnelRepositoryFactory` protocol
+/// and requires the associated `TunnelRepositoryType`
+/// to conform to the `WritableTunnelRepository` protocol.
 ///
-/// To conform to this protocol, implement the `init(application:)` initializer.
+/// - Note: This protocol is part of the `Sublimation` framework.
 ///
-/// Example usage:
-/// ```
-/// struct MyNgrokConfiguration: NgrokVaporConfiguration {
-///   init(application: Application) {
-///     // Configure Ngrok settings here
-///   }
-/// }
-/// ```
-///
-/// - Note: This protocol is public.
-public protocol NgrokVaporConfiguration: NgrokServerConfiguration {
-  ///   Initializes a new instance of the configuration.
-  ///
-  ///   - Parameter application: The Vapor application.
-  ///
-  ///   - Note: This initializer is required to conform to
-  ///   the `NgrokVaporConfiguration` protocol.
-  init(application: any Application)
-}
+/// - SeeAlso: `TunnelRepositoryFactory`
+/// - SeeAlso: `WritableTunnelRepository`
+public protocol WritableTunnelRepositoryFactory: TunnelRepositoryFactory
+  where TunnelRepositoryType: WritableTunnelRepository {}

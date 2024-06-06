@@ -1,5 +1,5 @@
 //
-//  NgrokServerError.swift
+//  ServerApplication.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,24 +27,20 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Sublimation
-import Vapor
+// import Vapor
 
-/// An error that can occur when interacting with the Ngrok server.
-///
-/// - Note: This error is specific to the Sublimation framework.
-///
-/// - SeeAlso: `NgrokServerError.cantSaveTunnel(_:)`
-extension NgrokServerError {
-  ///   Creates a `NgrokServerError` instance representing a failure to save a tunnel.
-  ///
-  ///   - Parameters:
-  ///     - response: The client response that triggered the error.
-  ///
-  ///   - Returns: A `NgrokServerError` instance with the appropriate error details.
-//  internal static func cantSaveTunnel(_ response: ClientResponse) -> NgrokServerError {
-//    let code = Int(response.status.code)
-//    let data = response.body.map { Data(buffer: $0, byteTransferStrategy: .automatic) }
-//    return .cantSaveTunnel(code, data)
+///// A protocol that defines the server application.
+// internal protocol ServerApplication {
+//  /// The port number for the HTTP server configuration.
+//  var httpServerConfigurationPort: Int { get }
+//
+//  /// The logger for the server application.
+//  var logger: Logger { get }
+// }
+//
+// extension Vapor.Application: ServerApplication {
+//  /// The port number for the HTTP server configuration.
+//  internal var httpServerConfigurationPort: Int {
+//    http.server.configuration.port
 //  }
-}
+// }

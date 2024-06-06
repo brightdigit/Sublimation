@@ -64,8 +64,27 @@ let package = Package(
     ),
     .target(
       name: "Sublimation",
-      dependencies: [.product(name: "Logging", package: "swift-log")],
+      dependencies: [
+        "SublimationCore",
+        "SublimationBonjour",
+        "SublimationNgrok",
+        .product(name: "Logging", package: "swift-log")
+      ],
       swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "SublimationCore",
+      dependencies: [
+        .product(name: "Logging", package: "swift-log")
+      ]
+    ),
+    .target(
+      name: "SublimationNgrok",
+      dependencies: ["SublimationCore", "Ngrokit"]
+    ),
+    .target(
+      name: "SublimationBonjour",
+      dependencies: ["SublimationCore"]
     ),
     .target(
       name: "SublimationVapor",

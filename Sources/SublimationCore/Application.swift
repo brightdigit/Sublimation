@@ -1,5 +1,5 @@
 //
-//  ServerApplication.swift
+//  Application.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,20 +27,18 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Vapor
+import Foundation
+import Logging
 
-///// A protocol that defines the server application.
-// internal protocol ServerApplication {
-//  /// The port number for the HTTP server configuration.
-//  var httpServerConfigurationPort: Int { get }
-//
-//  /// The logger for the server application.
-//  var logger: Logger { get }
-// }
-//
-// extension Vapor.Application: ServerApplication {
-//  /// The port number for the HTTP server configuration.
-//  internal var httpServerConfigurationPort: Int {
-//    http.server.configuration.port
-//  }
-// }
+public protocol Application {
+  func post(to url: URL, body: Data?) async throws
+  func get(from url: URL) async throws -> Data?
+
+  /// The port number for the HTTP server configuration.
+  var httpServerConfigurationPort: Int { get }
+
+  var httpServerTLS: Bool { get }
+
+  /// The logger for the server application.
+  var logger: Logger { get }
+}

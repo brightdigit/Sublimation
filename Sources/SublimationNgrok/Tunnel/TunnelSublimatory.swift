@@ -30,7 +30,7 @@
 import Foundation
 import Logging
 import Ngrokit
-import Sublimation
+import SublimationCore
 
 public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
@@ -207,12 +207,13 @@ public actor TunnelSublimatory<
     public init<Key>(
       ngrokPath: String,
       bucketName: String,
-      key: Key
+      key: Key,
+      ngrokClient: @escaping () -> NgrokClient
     ) where WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key>,
       NgrokServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
       WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key == Key {
       self.init(
-        factory: NgrokCLIAPIServerFactory(ngrokPath: ngrokPath),
+        factory: NgrokCLIAPIServerFactory(ngrokPath: ngrokPath, ngrokClient: ngrokClient),
         repoFactory: KVdbTunnelRepositoryFactory(bucketName: bucketName),
         key: key
       )

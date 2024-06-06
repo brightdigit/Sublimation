@@ -1,5 +1,5 @@
 //
-//  WritableTunnelRepositoryFactory.swift
+//  URI.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -29,19 +29,24 @@
 
 import Foundation
 
-#if canImport(FoundationNetworking)
-  import FoundationNetworking
-#endif
+// import Sublimation
+// import Vapor
 
-/// A factory protocol for creating writable tunnel repositories.
-///
-/// This protocol extends the `TunnelRepositoryFactory` protocol
-/// and requires the associated `TunnelRepositoryType`
-/// to conform to the `WritableTunnelRepository` protocol.
-///
-/// - Note: This protocol is part of the `Sublimation` framework.
-///
-/// - SeeAlso: `TunnelRepositoryFactory`
-/// - SeeAlso: `WritableTunnelRepository`
-public protocol WritableTunnelRepositoryFactory: TunnelRepositoryFactory
-  where TunnelRepositoryType: WritableTunnelRepository {}
+/// A type representing a Uniform Resource Identifier (URI).
+/////
+///// - Note: This type conforms to `KVdbURLConstructable` protocol.
+/////
+///// - SeeAlso: `KVdbURLConstructable`
+// extension URI: KVdbURLConstructable {
+//  ///   Initializes a URI with the given KVDB base and key bucket path.
+//  ///
+//  ///   - Parameters:
+//  ///     - kvDBBase: The base URL of the KVDB.
+//  ///     - keyBucketPath: The path to the key bucket.
+//  ///
+//  ///   - Returns: A new URI instance.
+//  public init(kvDBBase: String, keyBucketPath: String) {
+//    self.init(string: kvDBBase)
+//    path = keyBucketPath
+//  }
+// }
