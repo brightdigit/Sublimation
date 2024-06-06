@@ -27,9 +27,31 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#if canImport(Network)
 import Foundation
 import Network
-import Logging
+
+
+extension NWListener.State : CustomDebugStringConvertible {
+  public var debugDescription: String {
+    switch self {
+    case .setup:
+      "setup"
+    case .waiting(let error):
+      "waiting: \(error.debugDescription)"
+    case .ready:
+      "ready"
+    case .failed(let error):
+      "failed: \(error.debugDescription)"
+    case .cancelled:
+      "cancelled"
+    @unknown default:
+      "unknown state"
+    }
+  }
+  
+  
+}
 
 public actor BonjourSublimatory : Sublimatory {
   public static let httpTCPServiceType = "_http._tcp"
@@ -39,7 +61,7 @@ public actor BonjourSublimatory : Sublimatory {
   // TODO: Create a Filter Builder
   private let addressFilter: @Sendable (String) -> Bool
   private let listenerParameters: NWParameters
-  private var logger: Logger?
+  private nonisolated(unsafe) var logger: Logger?
   private var listener: NWListener? {
     didSet {
       guard let listener else {
@@ -52,9 +74,7 @@ public actor BonjourSublimatory : Sublimatory {
         }
       }
       listener.newConnectionHandler = { connection in
-        Task {
-          await self.logger?.debug("Cancelling connection: \(connection.debugDescription)")
-        }
+           self.logger?.debug("Cancelling connection: \(connection.debugDescription)")
         connection.cancel()
       }
 
@@ -112,7 +132,7 @@ public actor BonjourSublimatory : Sublimatory {
 
   private func updateState(_ newState: NWListener.State) {
     state = newState
-    logger?.debug("Listener changed state to \(newState).")
+    logger?.debug("Listener changed state to \(newState.debugDescription).")
   }
   public func willBoot(from application: @escaping @Sendable () -> any Application) async {
     let application = application()
@@ -172,3 +192,4 @@ extension NWListener {
     self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
   }
 }
+#endif

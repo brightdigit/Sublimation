@@ -28,7 +28,6 @@
 //
 
 import Foundation
-import Network
 
 extension URL {
   internal init?(scheme: String, host: String, port: Int) {
@@ -41,7 +40,11 @@ extension URL {
     }
     self = url
   }
+}
 
+#if canImport(Network)
+import Network
+extension URL {
   internal static func urls(
     from txtRecord: NWTXTRecord,
     logger: LoggingActor?,
@@ -107,3 +110,4 @@ extension NWTXTRecord.URLConfiguration {
     self.init(from: txtRecord, logger: logger, port: port, isTLS: isTLS, offset: offset)
   }
 }
+#endif

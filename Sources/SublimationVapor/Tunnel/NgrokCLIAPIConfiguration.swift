@@ -27,8 +27,8 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Logging
-import Vapor
+
+import Sublimation
 
 /// Configuration for the Ngrok CLI API server.
 ///

@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Logging
+
 import Vapor
 
 ///// A protocol that defines the server application.

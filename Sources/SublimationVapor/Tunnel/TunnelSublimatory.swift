@@ -7,7 +7,6 @@
 
 import Foundation
 import Sublimation
-import Vapor
 import Ngrokit
 
 public actor TunnelSublimatory<
@@ -76,9 +75,9 @@ public actor TunnelSublimatory<
       )
       return
     }
-    logger?.notice(
-      "Saved url \(tunnel.publicURL) to repository with key \(key)"
-    )
+//    logger?.notice(
+//      "Saved url \(tunnel.publicURL) to repository with key \(key)"
+//    )
   }
 
   ///   Handles an error that occurred during tunnel operation.

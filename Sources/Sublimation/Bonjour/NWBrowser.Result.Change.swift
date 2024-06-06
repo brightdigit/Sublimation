@@ -27,6 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#if canImport(Network)
 import Network
 
 extension NWBrowser.Result.Change {
@@ -40,3 +41,4 @@ extension NWBrowser.Result.Change {
     }
   }
 }
+#endif

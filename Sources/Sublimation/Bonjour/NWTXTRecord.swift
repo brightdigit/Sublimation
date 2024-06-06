@@ -27,6 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#if canImport(Network)
 import Network
 
 extension NWTXTRecord {
@@ -73,3 +74,4 @@ extension NWTXTRecord {
     self.getEntry(for: key, of: T.self)
   }
 }
+#endif

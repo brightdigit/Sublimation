@@ -27,6 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#if canImport(Network)
 import Network
 
 internal actor NetworkBrowser {
@@ -84,3 +85,4 @@ internal actor NetworkBrowser {
     browser.cancel()
   }
 }
+#endif

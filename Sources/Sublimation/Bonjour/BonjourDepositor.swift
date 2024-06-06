@@ -27,14 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#if canImport(Network)
 import Foundation
 import Network
 
-#if canImport(os)
-  import os
-#elseif canImport(Logging)
-  import Logging
-#endif
 
 public actor BonjourDepositor {
   public enum Defaults {
@@ -160,3 +156,4 @@ public actor BonjourDepositor {
     }
   }
 }
+#endif

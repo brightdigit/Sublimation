@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Logging
+
 @testable import SublimationVapor
 import XCTest
 

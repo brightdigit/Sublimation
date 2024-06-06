@@ -27,11 +27,6 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(os)
-  import os
-#elseif canImport(Logging)
-  import Logging
-#endif
 
 internal actor LoggingActor {
   private let logger: Logger

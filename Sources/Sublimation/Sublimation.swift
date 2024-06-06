@@ -1,6 +1,4 @@
-import Network
-import Sublimation
-import Logging
+
 import Foundation
 
 public protocol Application {
@@ -14,6 +12,7 @@ public protocol Application {
   
     /// The logger for the server application.
     var logger: Logger { get }
+  
 }
 
 public final class Sublimation : Sendable {
@@ -43,6 +42,8 @@ public final class Sublimation : Sendable {
   }
 }
 
+#if canImport(Network)
+import Network
 extension Sublimation {
   public convenience init (
     listenerParameters: NWParameters = .tcp,
@@ -73,3 +74,4 @@ extension Sublimation {
   }
   #endif
 }
+#endif

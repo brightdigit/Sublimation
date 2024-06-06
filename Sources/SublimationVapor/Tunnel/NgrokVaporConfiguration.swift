@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Vapor
+import Sublimation
 
 /// A protocol that defines the configuration for Ngrok in a Vapor application.
 ///
