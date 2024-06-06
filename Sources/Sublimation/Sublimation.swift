@@ -1,5 +1,7 @@
 
 import Foundation
+import Logging
+
 
 public protocol Application {
   func post (to url: URL, body : Data?) async throws

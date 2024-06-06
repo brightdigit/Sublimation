@@ -27,6 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import Logging
 
 internal actor LoggingActor {
   private let logger: Logger

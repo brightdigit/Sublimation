@@ -1,15 +1,12 @@
 
 import Vapor
 import protocol Sublimation.Application
-import typealias Sublimation.Logger
 
 
 typealias SublimationApplication = Sublimation.Application
 
 extension Vapor.Application : SublimationApplication {
-  public var logger: Sublimation.Logger {
-    self.logger
-  }
+ 
   
   public func post(to url: URL, body: Data?) async throws {
     

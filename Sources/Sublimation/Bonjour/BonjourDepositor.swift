@@ -30,6 +30,7 @@
 #if canImport(Network)
 import Foundation
 import Network
+import Logging
 
 
 public actor BonjourDepositor {
