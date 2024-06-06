@@ -29,7 +29,7 @@
 
 
 import Sublimation
-
+import Logging
 /// Configuration for the Ngrok CLI API server.
 ///
 /// - Note: This configuration conforms to `NgrokServerConfiguration` protocol.

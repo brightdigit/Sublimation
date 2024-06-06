@@ -44,7 +44,8 @@ let package = Package(
     .package(
       url: "https://github.com/swift-server/swift-openapi-async-http-client",
       from: "1.0.0"
-    )
+    ),
+    .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0")
   ],
   targets: [
     .target(
@@ -63,6 +64,7 @@ let package = Package(
     ),
     .target(
       name: "Sublimation",
+      dependencies: [.product(name: "Logging", package: "swift-log")],
       swiftSettings: swiftSettings
     ),
     .target(

@@ -8,7 +8,7 @@
 import Foundation
 import Sublimation
 import Ngrokit
-
+import Logging
 public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   NgrokServerFactoryType: NgrokServerFactory
