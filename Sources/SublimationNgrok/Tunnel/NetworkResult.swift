@@ -48,35 +48,12 @@ extension NetworkResult {
     guard let error = error as? ClientError else {
       self = .failure(error)
       return
-    }
-    
+    }    
     
     if isConnectionRefused(error) {
       self = .connectionRefused(error)
+      return
     }
-    #warning("Fix This")
-    //dump(error.underlyingError)
-    //dump(error.underlyingError as NSError)
-//
-//    #if canImport(Network)
-//      if let posixError = error.underlyingError as? HTTPClient.NWPOSIXError {
-//        guard posixError.errorCode == .ECONNREFUSED else {
-//          self = .failure(error)
-//          return
-//        }
-//        self = .connectionRefused(error)
-//        return
-//      }
-//    #endif
-//
-//    if let clientError = error.underlyingError as? HTTPClientError {
-//      guard clientError == .connectTimeout else {
-//        self = .failure(error)
-//        return
-//      }
-//      self = .connectionRefused(error)
-//      return
-//    }
 
     self = .failure(error)
   }
