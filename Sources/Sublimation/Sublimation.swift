@@ -30,6 +30,9 @@
 import Foundation
 import Logging
 import OpenAPIRuntime
+import SublimationBonjour
+import SublimationCore
+import SublimationNgrok
 
 @_exported import SublimationBonjour
 @_exported import SublimationNgrok
@@ -62,9 +65,6 @@ public final class Sublimation: Sendable {
 
 #if canImport(Network)
   import Network
-  import SublimationBonjour
-  import SublimationCore
-  import SublimationNgrok
 
   extension Sublimation {
     public convenience init(
