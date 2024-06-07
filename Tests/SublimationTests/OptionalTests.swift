@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-@testable import Sublimation
+@testable import SublimationNgrok
 import XCTest
 
 internal class OptionalTests: XCTestCase {

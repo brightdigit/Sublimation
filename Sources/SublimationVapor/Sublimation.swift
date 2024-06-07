@@ -72,7 +72,7 @@ extension Sublimation: LifecycleHandler {
       timeout: TimeAmount = .seconds(1)
     ) where NgrokServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
       WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key> {
-      self.init(ngrokPath: ngrokPath, bucketName: bucketName, key: key, ngrokClient: {
+        self.init(ngrokPath: ngrokPath, bucketName: bucketName, key: key, isConnectionRefused: {$0.isConnectionRefused}, ngrokClient: {
         NgrokClient(
           transport: AsyncHTTPClientTransport(configuration: .init(timeout: timeout))
         )
@@ -93,3 +93,4 @@ extension Sublimation: LifecycleHandler {
   }
 
 #endif
+

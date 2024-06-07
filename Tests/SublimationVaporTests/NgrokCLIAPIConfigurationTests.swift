@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-@testable import SublimationVapor
+@testable import SublimationNgrok
 import XCTest
 
 internal class NgrokCLIAPIConfigurationTests: XCTestCase {

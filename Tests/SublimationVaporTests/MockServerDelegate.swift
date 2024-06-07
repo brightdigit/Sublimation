@@ -29,7 +29,7 @@
 
 import Ngrokit
 import NgrokitMocks
-@testable import SublimationVapor
+@testable import SublimationNgrok
 import XCTest
 
 internal final class MockServerDelegate: NgrokServerDelegate {
@@ -40,8 +40,8 @@ internal final class MockServerDelegate: NgrokServerDelegate {
   }
 
   internal func server(
-    _: any SublimationVapor.NgrokServer, updatedTunnel _: Ngrokit.Tunnel
+    _: any NgrokServer, updatedTunnel _: Ngrokit.Tunnel
   ) {}
 
-  internal func server(_: any SublimationVapor.NgrokServer, errorDidOccur _: any Error) {}
+  internal func server(_: any NgrokServer, errorDidOccur _: any Error) {}
 }

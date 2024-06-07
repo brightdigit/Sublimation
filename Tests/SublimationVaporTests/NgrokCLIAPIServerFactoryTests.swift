@@ -29,8 +29,17 @@
 
 import Ngrokit
 import NgrokitMocks
-@testable import SublimationVapor
+@testable import SublimationNgrok
 import XCTest
+import OpenAPIRuntime
+import HTTPTypes
+final class MockTransport : ClientTransport {
+  func send(_ request: HTTPTypes.HTTPRequest, body: OpenAPIRuntime.HTTPBody?, baseURL: URL, operationID: String) async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?) {
+    fatalError()
+  }
+  
+  
+}
 
 internal class NgrokCLIAPIServerFactoryTests: XCTestCase {
   // swiftlint:disable:next function_body_length
@@ -45,7 +54,9 @@ internal class NgrokCLIAPIServerFactoryTests: XCTestCase {
     let processID = UUID()
     let configuration = NgrokCLIAPIConfiguration(serverApplication: application)
     let factory = NgrokCLIAPIServerFactory<MockProcess>(
-      cliAPI: MockNgrokCLIAPI(id: processID)
+      cliAPI: MockNgrokCLIAPI(id: processID), ngrokClient: {
+        NgrokClient(transport: MockTransport())
+      }
     )
     let server = factory.server(
       from: configuration,

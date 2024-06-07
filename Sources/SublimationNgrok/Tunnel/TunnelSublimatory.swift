@@ -31,6 +31,7 @@ import Foundation
 import Logging
 import Ngrokit
 import SublimationCore
+import OpenAPIRuntime
 
 public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
@@ -43,7 +44,8 @@ public actor TunnelSublimatory<
   private var tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?
   private var logger: Logger?
   private var server: (any NgrokServer)?
-
+  
+ private let isConnectionRefused:  (ClientError) -> Bool
   ///   Initializes the Sublimation lifecycle handler.
   ///
   ///   - Parameters:
@@ -53,7 +55,8 @@ public actor TunnelSublimatory<
   public init(
     factory: NgrokServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
-    key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
+    key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
+    isConnectionRefused: @escaping (ClientError) -> Bool
   ) {
     self.init(
       factory: factory,
@@ -61,7 +64,8 @@ public actor TunnelSublimatory<
       key: key,
       tunnelRepo: nil,
       logger: nil,
-      server: nil
+      server: nil,
+      isConnectionRefused: isConnectionRefused
     )
   }
 
@@ -71,7 +75,9 @@ public actor TunnelSublimatory<
     key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
     tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?,
     logger: Logger?,
-    server: (any NgrokServer)?
+    server: (any NgrokServer)?,
+  
+ isConnectionRefused: @escaping (ClientError) -> Bool
   ) {
     self.factory = factory
     self.repoFactory = repoFactory
@@ -79,6 +85,7 @@ public actor TunnelSublimatory<
     self.tunnelRepo = tunnelRepo
     self.logger = logger
     self.server = server
+    self.isConnectionRefused = isConnectionRefused
   }
 
   ///   Saves the tunnel URL to the tunnel repository.
@@ -173,7 +180,7 @@ public actor TunnelSublimatory<
 //      )
     )
     self.server = server
-    server.start()
+    server.start(isConnectionRefused: isConnectionRefused)
   }
 
   ///   Called when the application is about to boot.
@@ -208,6 +215,7 @@ public actor TunnelSublimatory<
       ngrokPath: String,
       bucketName: String,
       key: Key,
+      isConnectionRefused: @escaping (ClientError) -> Bool,
       ngrokClient: @escaping () -> NgrokClient
     ) where WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key>,
       NgrokServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
@@ -215,7 +223,8 @@ public actor TunnelSublimatory<
       self.init(
         factory: NgrokCLIAPIServerFactory(ngrokPath: ngrokPath, ngrokClient: ngrokClient),
         repoFactory: KVdbTunnelRepositoryFactory(bucketName: bucketName),
-        key: key
+        key: key,
+        isConnectionRefused: isConnectionRefused
       )
     }
   }

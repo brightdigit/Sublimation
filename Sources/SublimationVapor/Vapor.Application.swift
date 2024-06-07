@@ -52,3 +52,22 @@ extension Vapor.Application: SublimationApplication {
     return response.body.map { Data(buffer: $0) }
   }
 }
+
+
+import OpenAPIRuntime
+
+extension ClientError {
+  var isConnectionRefused : Bool {
+    #if canImport(Network)
+      if let posixError = self.underlyingError as? HTTPClient.NWPOSIXError {
+        return posixError.errorCode == .ECONNREFUSED
+      }
+    #endif
+
+    if let clientError = self.underlyingError as? HTTPClientError {
+      return clientError == .connectTimeout
+    }
+    
+    return false
+  }
+}

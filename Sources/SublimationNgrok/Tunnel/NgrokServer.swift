@@ -27,6 +27,8 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import OpenAPIRuntime
+
 /// A protocol for starting a Ngrok server.
 ///
 /// Implement this protocol to start a Ngrok server.
@@ -39,5 +41,6 @@ public protocol NgrokServer {
   ///
   ///   Call this method to start the Ngrok server and
   ///   expose your local server to the internet.
-  func start()
+  func start(
+             isConnectionRefused: @escaping (ClientError) -> Bool)
 }

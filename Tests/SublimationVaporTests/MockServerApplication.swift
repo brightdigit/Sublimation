@@ -28,7 +28,7 @@
 //
 
 import Logging
-import Sublimation
+import SublimationCore
 @testable import SublimationVapor
 import XCTest
 

@@ -29,6 +29,7 @@
 
 import Foundation
 import Logging
+import OpenAPIRuntime
 
 @_exported import SublimationBonjour
 @_exported import SublimationNgrok
@@ -115,11 +116,13 @@ public final class Sublimation: Sendable {
       ngrokPath: String,
       bucketName: String,
       key: some Any,
+      isConnectionRefused: @escaping (ClientError) -> Bool,
       ngrokClient: @escaping () -> NgrokClient
+      
     ) {
       self.init(
         sublimatory: TunnelSublimatory(
-          ngrokPath: ngrokPath, bucketName: bucketName, key: key, ngrokClient: ngrokClient
+          ngrokPath: ngrokPath, bucketName: bucketName, key: key,  isConnectionRefused: isConnectionRefused, ngrokClient: ngrokClient
         )
       )
     }

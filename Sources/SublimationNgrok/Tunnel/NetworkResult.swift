@@ -44,14 +44,19 @@ internal enum NetworkResult<T> {
 }
 
 extension NetworkResult {
-  internal init(error: any Error) {
+  internal init(error: any Error, isConnectionRefused: @escaping (ClientError) -> Bool) {
     guard let error = error as? ClientError else {
       self = .failure(error)
       return
     }
-
+    
+    
+    if isConnectionRefused(error) {
+      self = .connectionRefused(error)
+    }
     #warning("Fix This")
-    dump(error.underlyingError)
+    //dump(error.underlyingError)
+    //dump(error.underlyingError as NSError)
 //
 //    #if canImport(Network)
 //      if let posixError = error.underlyingError as? HTTPClient.NWPOSIXError {
@@ -76,11 +81,11 @@ extension NetworkResult {
     self = .failure(error)
   }
 
-  internal init(_ closure: @escaping () async throws -> T) async {
+  internal init(_ closure: @escaping () async throws -> T, isConnectionRefused: @escaping (ClientError) -> Bool) async {
     do {
       self = try await .success(closure())
     } catch {
-      self = .init(error: error)
+      self = .init(error: error, isConnectionRefused: isConnectionRefused)
     }
   }
 
