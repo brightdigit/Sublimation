@@ -1,5 +1,5 @@
 //
-//  NgrokVaporConfiguration.swift
+//  NgrokServerFactory.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,30 +27,20 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import SublimationCore
+/// A factory protocol for creating Ngrok servers.
+public protocol TunnelServerFactory: Sendable {
+  /// The associated type representing the configuration for the server.
+  associatedtype Configuration: TunnelServerConfiguration
 
-/// A protocol that defines the configuration for Ngrok in a Vapor application.
-///
-/// This protocol inherits from `NgrokServerConfiguration`.
-///
-/// To conform to this protocol, implement the `init(application:)` initializer.
-///
-/// Example usage:
-/// ```
-/// struct MyNgrokConfiguration: NgrokVaporConfiguration {
-///   init(application: Application) {
-///     // Configure Ngrok settings here
-///   }
-/// }
-/// ```
-///
-/// - Note: This protocol is public.
-public protocol NgrokVaporConfiguration: NgrokServerConfiguration {
-  ///   Initializes a new instance of the configuration.
+  ///   Creates a server instance based on the provided configuration.
   ///
-  ///   - Parameter application: The Vapor application.
+  ///   - Parameters:
+  ///     - configuration: The configuration for the server.
+  ///     - handler: The delegate object that handles server events.
   ///
-  ///   - Note: This initializer is required to conform to
-  ///   the `NgrokVaporConfiguration` protocol.
-  init(application: any Application)
+  ///   - Returns: A server instance based on the provided configuration.
+  func server(
+    from configuration: Configuration,
+    handler: any TunnelServerDelegate
+  ) -> Configuration.Server
 }

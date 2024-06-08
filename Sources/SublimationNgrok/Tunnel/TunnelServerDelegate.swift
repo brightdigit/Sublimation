@@ -1,5 +1,5 @@
 //
-//  NgrokServerFactory.swift
+//  NgrokServerDelegate.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,20 +27,35 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-/// A factory protocol for creating Ngrok servers.
-public protocol NgrokServerFactory: Sendable {
-  /// The associated type representing the configuration for the server.
-  associatedtype Configuration: NgrokServerConfiguration
+import Foundation
+import Ngrokit
 
-  ///   Creates a server instance based on the provided configuration.
+public protocol Tunnel {
+  var name : String { get }
+  var publicURL : URL { get }
+}
+
+extension NgrokTunnel : Tunnel {
+  
+}
+
+/// A delegate protocol for `NgrokServer` that handles server events and errors.
+public protocol TunnelServerDelegate: AnyObject, Sendable {
+  ///   Notifies the delegate that a tunnel has been updated.
   ///
   ///   - Parameters:
-  ///     - configuration: The configuration for the server.
-  ///     - handler: The delegate object that handles server events.
+  ///     - server: The `NgrokServer` instance that triggered the event.
+  ///     - tunnel: The updated `Tunnel` object.
   ///
-  ///   - Returns: A server instance based on the provided configuration.
-  func server(
-    from configuration: Configuration,
-    handler: any NgrokServerDelegate
-  ) -> Configuration.Server
+  ///   - Note: This method is called whenever a tunnel's status or configuration changes.
+  func server(_ server: any TunnelServer, updatedTunnel tunnel: any Tunnel)
+
+  ///   Notifies the delegate that an error has occurred.
+  ///
+  ///   - Parameters:
+  ///     - server: The `NgrokServer` instance that triggered the event.
+  ///     - error: The error that occurred.
+  ///
+  ///   - Note: This method is called whenever an error occurs during server operations.
+  func server(_ server: any TunnelServer, errorDidOccur error: any Error)
 }

@@ -49,7 +49,7 @@ import NgrokOpenAPIClient
 /// that takes a `TunnelResponse` object.
 ///
 /// - SeeAlso: `Components.Schemas.TunnelResponse`
-public struct Tunnel: Sendable {
+public struct NgrokTunnel: Sendable {
   /// The name of the tunnel.
   public let name: String
 
@@ -72,7 +72,7 @@ public struct Tunnel: Sendable {
   }
 }
 
-extension Tunnel {
+extension NgrokTunnel {
   ///   Initializes a new `Tunnel` instance from a `TunnelResponse` object.
   ///
   ///   - Parameters:

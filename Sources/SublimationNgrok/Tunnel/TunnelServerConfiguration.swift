@@ -27,10 +27,19 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import SublimationCore
+
 /// A protocol that defines the configuration for an Ngrok server.
 ///
 /// - Note: The associated type `Server` must conform to the `NgrokServer` protocol.
-public protocol NgrokServerConfiguration {
+public protocol TunnelServerConfiguration {
   /// Server for starting an `ngrok` process.
-  associatedtype Server: NgrokServer
+  associatedtype Server: TunnelServer
+  ///   Initializes a new instance of the configuration.
+  ///
+  ///   - Parameter application: The Vapor application.
+  ///
+  ///   - Note: This initializer is required to conform to
+  ///   the `NgrokVaporConfiguration` protocol.
+  init(application: any Application)
 }

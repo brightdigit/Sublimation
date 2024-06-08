@@ -1,5 +1,5 @@
 //
-//  ServerApplication.swift
+//  NgrokServer.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,20 +27,19 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-// import Vapor
+import OpenAPIRuntime
 
-///// A protocol that defines the server application.
-// internal protocol ServerApplication {
-//  /// The port number for the HTTP server configuration.
-//  var httpServerConfigurationPort: Int { get }
-//
-//  /// The logger for the server application.
-//  var logger: Logger { get }
-// }
-//
-// extension Vapor.Application: ServerApplication {
-//  /// The port number for the HTTP server configuration.
-//  internal var httpServerConfigurationPort: Int {
-//    http.server.configuration.port
-//  }
-// }
+/// A protocol for starting a Ngrok server.
+///
+/// Implement this protocol to start a Ngrok server.
+///
+/// - Note: The Ngrok server allows you to expose a local server to the internet.
+///
+/// - Important: Make sure to call the `start()` method to start the Ngrok server.
+public protocol TunnelServer {
+  ///   Starts the Ngrok server.
+  ///
+  ///   Call this method to start the Ngrok server and
+  ///   expose your local server to the internet.
+  func start(isConnectionRefused: @escaping (ClientError) -> Bool)
+}

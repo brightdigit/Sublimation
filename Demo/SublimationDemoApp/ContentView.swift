@@ -4,9 +4,11 @@ import SublimationDemoConfiguration
 import SwiftUI
 
 struct ContentView: View {
-  let networkExplorer = BonjourDepositor {
+  let networkExplorer =
+  BonjourDepositor(logger: {
+    
     .init(subsystem: Bundle.main.bundleIdentifier!, category: "bonjour")
-  }
+  })
   //NetworkExplorer(logger: .init(subsystem: Bundle.main.bundleIdentifier!, category: "bonjour"))
   @State var baseURL: String = ""
   @State var serverResponse: String = ""

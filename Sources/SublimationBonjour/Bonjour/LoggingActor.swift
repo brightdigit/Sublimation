@@ -26,8 +26,11 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
-
-import Logging
+#if canImport(os)
+import os
+#else
+  import Logging
+#endif
 
 internal actor LoggingActor {
   private let logger: Logger

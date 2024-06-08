@@ -43,6 +43,8 @@ internal enum NetworkResult<T> {
   case failure(any Error)
 }
 
+typealias AnyTunnelNetworkResult = NetworkResult<(any Tunnel)?>
+
 extension NetworkResult {
   internal init(error: any Error, isConnectionRefused: @escaping (ClientError) -> Bool) {
     guard let error = error as? ClientError else {

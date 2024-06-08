@@ -70,7 +70,7 @@ extension Sublimation: LifecycleHandler {
       bucketName: String,
       key: Key,
       timeout: TimeAmount = .seconds(1)
-    ) where NgrokServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
+    ) where   TunnelServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
       WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key> {
         self.init(ngrokPath: ngrokPath, bucketName: bucketName, key: key, isConnectionRefused: {$0.isConnectionRefused}, ngrokClient: {
         NgrokClient(

@@ -37,7 +37,7 @@ import Ngrokit
 /// - Note: This factory requires the `NgrokCLIAPI` type to be `Processable`.
 ///
 /// - SeeAlso: `NgrokServerFactory`
-public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: NgrokServerFactory {
+public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: TunnelServerFactory {
   /// The configuration type for the Ngrok CLI API server.
   public typealias Configuration = NgrokCLIAPIConfiguration
 
@@ -47,7 +47,7 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: NgrokServerFac
   /// The timeout duration for API requests.
   // private let timeout: TimeAmount
 
-  private let ngrokClient: () -> NgrokClient
+  private let ngrokClient: @Sendable () -> NgrokClient
 
   ///   Initializes a new instance of `NgrokCLIAPIServerFactory`.
   ///
@@ -64,7 +64,7 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: NgrokServerFac
 
   public init(
     cliAPI: any NgrokCLIAPI,
-    ngrokClient: @escaping () -> NgrokClient
+    ngrokClient: @escaping @Sendable () -> NgrokClient
   ) {
     self.cliAPI = cliAPI
     self.ngrokClient = ngrokClient
@@ -95,7 +95,7 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: NgrokServerFac
 
   public func server(
     from configuration: Configuration,
-    handler: any NgrokServerDelegate
+    handler: any TunnelServerDelegate
   ) -> NgrokCLIAPIServer {
     // let client =
 //    NgrokClient(

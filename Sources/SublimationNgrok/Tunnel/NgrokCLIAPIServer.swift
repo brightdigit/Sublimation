@@ -39,19 +39,19 @@ import SublimationCore
 ///
 /// - SeeAlso: `NgrokServer`
 /// - SeeAlso: `Sendable`
-public struct NgrokCLIAPIServer: NgrokServer, Sendable {
+public struct NgrokCLIAPIServer: TunnelServer, Sendable {
   private enum TunnelAttemptResult {
-    case network(NetworkResult<Tunnel?>)
+    case network(AnyTunnelNetworkResult)
     case error(ClientError)
   }
 
   private struct TunnelResult {
     let isOld: Bool
-    let tunnel: Tunnel
+    let tunnel: any Tunnel
   }
 
   /// The delegate for the server.
-  internal let delegate: any NgrokServerDelegate
+  internal let delegate: any TunnelServerDelegate
 
   /// The client for interacting with Ngrok.
   private let client: NgrokClient
@@ -74,7 +74,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
   ///     - port: The port number to use.
   ///     - logger: The logger for logging server events.
   public init(
-    delegate: any NgrokServerDelegate,
+    delegate: any TunnelServerDelegate,
     client: NgrokClient,
     process: any NgrokProcess,
     port: Int,
@@ -91,7 +91,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     withClient client: NgrokClient,
    isConnectionRefused: @escaping (ClientError) -> Bool
   ) async -> TunnelAttemptResult {
-    let networkResult = await NetworkResult ({
+    let networkResult = await AnyTunnelNetworkResult ({
       try await client.listTunnels().first
     }, isConnectionRefused: isConnectionRefused)
     switch networkResult {
@@ -108,9 +108,9 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
     within timeout: TimeInterval,
     logger: Logger,
     isConnectionRefused: @escaping (ClientError) -> Bool
-  ) async throws -> Tunnel? {
+  ) async throws -> (any Tunnel)? {
     let start = Date()
-    var networkResult: NetworkResult<Tunnel?>?
+    var networkResult: NetworkResult<(any Tunnel)?>?
     var lastError: ClientError?
     var attempts = 0
     while networkResult == nil, (-start.timeIntervalSinceNow) < timeout {
@@ -163,7 +163,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
 
     case let .success(tunnel):
       logger.debug("Process Already Running.")
-      return tunnel.map { .init(isOld: true, tunnel: $0) }
+      return tunnel.map { .init(isOld: true, tunnel: $0 as! (any Tunnel)) }
 
     case let .failure(error):
       throw error
@@ -181,7 +181,7 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
   }
 
   private func newTunnel(
-                         isConnectionRefused: @escaping (ClientError) -> Bool) async throws -> Tunnel {
+    isConnectionRefused: @escaping (ClientError) -> Bool) async throws -> any Tunnel {
     if let tunnel = try await searchForExistingTunnel(within: 60.0,
                                                       isConnectionRefused: isConnectionRefused) {
       if tunnel.isOld {
@@ -197,14 +197,14 @@ public struct NgrokCLIAPIServer: NgrokServer, Sendable {
         port: port,
         name: "vapor-development"
       )
-    )
+    ) as! (any Tunnel)
   }
 
   ///   Runs the server.
   public func run(
                   isConnectionRefused: @escaping (ClientError) -> Bool) async {
     let start = Date()
-    let newTunnel: Tunnel
+                    let newTunnel: any Tunnel
     do {
       newTunnel = try await self.newTunnel(isConnectionRefused: isConnectionRefused)
     } catch {

@@ -29,7 +29,11 @@
 
 #if canImport(Network)
   import Foundation
+#if canImport(os)
+import os
+#else
   import Logging
+#endif
   import Network
 
   public actor BonjourDepositor {
