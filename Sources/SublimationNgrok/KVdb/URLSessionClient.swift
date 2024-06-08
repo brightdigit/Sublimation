@@ -28,6 +28,7 @@
 //
 
 import Foundation
+import SublimationTunnel
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -104,3 +105,36 @@ public struct URLSessionClient<Key: Sendable>: KVdbTunnelClient {
     }
   }
 }
+
+
+#if os(macOS)
+  extension TunnelSublimatory {
+    ///     Initializes the Sublimation lifecycle handler with default values for macOS.
+    ///
+    ///     - Parameters:
+    ///       - ngrokPath: The path to the Ngrok executable.
+    ///       - bucketName: The name of the bucket for the tunnel repository.
+    ///       - key: The key for the tunnel repository.
+    ///
+    ///     - Note: This initializer is only available on macOS.
+    ///
+    ///     - SeeAlso: `KVdbTunnelRepositoryFactory`
+    ///     - SeeAlso: `NgrokCLIAPIServerFactory`
+    public init<Key>(
+      ngrokPath: String,
+      bucketName: String,
+      key: Key,
+      isConnectionRefused: @escaping (ClientError) -> Bool,
+      ngrokClient: @escaping () -> NgrokClient
+    ) where WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key>,
+        TunnelServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
+      WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key == Key {
+      self.init(
+        factory: NgrokCLIAPIServerFactory(ngrokPath: ngrokPath, ngrokClient: ngrokClient),
+        repoFactory: KVdbTunnelRepositoryFactory(bucketName: bucketName),
+        key: key,
+        isConnectionRefused: isConnectionRefused
+      )
+    }
+  }
+#endif

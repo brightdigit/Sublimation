@@ -80,8 +80,13 @@ let package = Package(
       swiftSettings: swiftSettings
     ),
     .target(
+      name: "SublimationTunnel",
+      dependencies: ["SublimationCore"],
+      swiftSettings: swiftSettings
+    ),
+    .target(
       name: "SublimationNgrok",
-      dependencies: ["SublimationCore", "Ngrokit"],
+      dependencies: ["SublimationTunnel", "Ngrokit"],
       swiftSettings: swiftSettings
     ),
     .target(
