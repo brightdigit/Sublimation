@@ -108,6 +108,7 @@ let package = Package(
         ),
         "Ngrokit",
         "Sublimation",
+        "SublimationKVdb",
         .product(
           name: "Vapor",
           package: "vapor"

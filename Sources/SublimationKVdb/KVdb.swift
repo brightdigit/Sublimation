@@ -80,26 +80,26 @@ public enum KVdb {
     )
   }
 
-  ///   Retrieves the URL for a given key in a bucket.
-  ///
-  ///   - Parameters:
-  ///     - key: The key for the value.
-  ///     - bucketName: The name of the bucket.
-  ///     - session: The URLSession to use for the request. Defaults to `.ephemeral`.
-  ///
-  ///   - Returns: The URL for the key, or `nil` if it doesn't exist.
-  ///
-  ///   - Throws: An error if the request fails.
-  @available(*, deprecated)
-  public static func url<Key: Sendable>(
-    withKey key: Key,
-    atBucket bucketName: String,
-    using session: URLSession = .ephemeral()
-  ) async throws -> URL? {
-    let repository = KVdbTunnelRepository<Key>(
-      client: URLSessionClient<Key>(session: session),
-      bucketName: bucketName
-    )
-    return try await repository.tunnel(forKey: key)
-  }
+//  ///   Retrieves the URL for a given key in a bucket.
+//  ///
+//  ///   - Parameters:
+//  ///     - key: The key for the value.
+//  ///     - bucketName: The name of the bucket.
+//  ///     - session: The URLSession to use for the request. Defaults to `.ephemeral`.
+//  ///
+//  ///   - Returns: The URL for the key, or `nil` if it doesn't exist.
+//  ///
+//  ///   - Throws: An error if the request fails.
+//  @available(*, deprecated)
+//  public static func url<Key: Sendable>(
+//    withKey key: Key,
+//    atBucket bucketName: String,
+//    using session: URLSession = .ephemeral()
+//  ) async throws -> URL? {
+//    let repository = KVdbTunnelRepository<Key>(
+//      client: URLSessionClient<Key>(session: session),
+//      bucketName: bucketName
+//    )
+//    return try await repository.tunnel(forKey: key)
+//  }
 }

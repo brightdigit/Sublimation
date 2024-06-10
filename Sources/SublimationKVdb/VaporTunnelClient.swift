@@ -34,6 +34,7 @@ import SublimationCore
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
+import SublimationTunnel
 #endif
 
 /// A client for interacting with the VaporTunnel service.
@@ -47,8 +48,8 @@ import SublimationCore
 /// - Important: Make sure to import the necessary dependencies before using this client.
 ///
 /// - SeeAlso: `KVdbTunnelClient`
-public struct VaporKVdbTunnelClient<Key: Sendable>: KVdbTunnelClient {
-  internal init(keyType _: Key.Type, get: @escaping @Sendable (URL) async throws -> Data?, post: @escaping @Sendable (URL, Data?) async throws -> Void) {
+public struct VaporKVdbTunnelClient<Key: Sendable> {
+  public init(keyType _: Key.Type, get: @escaping @Sendable (URL) async throws -> Data?, post: @escaping @Sendable (URL, Data?) async throws -> Void) {
     self.get = get
     self.post = post
   }

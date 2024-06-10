@@ -30,7 +30,15 @@
 import NIOCore
 import OpenAPIAsyncHTTPClient
 import Sublimation
+import SublimationTunnel
+import Ngrokit
+
 import Vapor
+import SublimationKVdb
+
+extension VaporKVdbTunnelClient : KVdbTunnelClient {
+  
+}
 
 extension Sublimation: LifecycleHandler {
   public func willBoot(_ application: Vapor.Application) throws {
@@ -52,6 +60,59 @@ extension Sublimation: LifecycleHandler {
   }
 }
 
+
+#if os(macOS)
+  extension TunnelSublimatory {
+    ///     Initializes the Sublimation lifecycle handler with default values for macOS.
+    ///
+    ///     - Parameters:
+    ///       - ngrokPath: The path to the Ngrok executable.
+    ///       - bucketName: The name of the bucket for the tunnel repository.
+    ///       - key: The key for the tunnel repository.
+    ///
+    ///     - Note: This initializer is only available on macOS.
+    ///
+    ///     - SeeAlso: `KVdbTunnelRepositoryFactory`
+    ///     - SeeAlso: `NgrokCLIAPIServerFactory`
+    public init<Key>(
+      ngrokPath: String,
+      bucketName: String,
+      key: Key,
+      isConnectionRefused: @escaping (ClientError) -> Bool,
+      ngrokClient: @escaping () -> NgrokClient
+    ) where WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key>,
+        TunnelServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
+      WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key == Key {
+        
+        
+        
+        
+        
+        
+        
+        
+        
+      self.init(
+        factory: NgrokCLIAPIServerFactory(ngrokPath: ngrokPath, ngrokClient: ngrokClient),
+        repoFactory: KVdbTunnelRepositoryFactory(bucketName: bucketName),
+        key: key, 
+        repoClientFactory: { application in
+          VaporKVdbTunnelClient(
+    keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self,
+    get: {
+      try await application().get(from: $0)
+    }, post: {
+      try await application().post(to: $0, body: $1)
+    }
+  )
+        },
+        isConnectionRefused: isConnectionRefused
+      )
+    }
+  }
+#endif
+
+
 #if os(macOS)
   extension TunnelSublimatory {
     ///     Initializes the Sublimation lifecycle handler with default values for macOS.
@@ -72,7 +133,13 @@ extension Sublimation: LifecycleHandler {
       timeout: TimeAmount = .seconds(1)
     ) where   TunnelServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
       WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key> {
-        self.init(ngrokPath: ngrokPath, bucketName: bucketName, key: key, isConnectionRefused: {$0.isConnectionRefused}, ngrokClient: {
+        
+        self.init(
+          ngrokPath: ngrokPath,
+          bucketName: bucketName,
+          key: key,
+          isConnectionRefused: {$0.isConnectionRefused},
+          ngrokClient: {
         NgrokClient(
           transport: AsyncHTTPClientTransport(configuration: .init(timeout: timeout))
         )
@@ -87,10 +154,51 @@ extension Sublimation: LifecycleHandler {
       key: some Any,
       timeout: TimeAmount = .seconds(1)
     ) {
-      let tunnelSublimatory = TunnelSublimatory(ngrokPath: ngrokPath, bucketName: bucketName, key: key, timeout: timeout)
+      let tunnelSublimatory = TunnelSublimatory(
+        ngrokPath: ngrokPath,
+        bucketName: bucketName,
+        key: key,
+        timeout: timeout
+      )
       self.init(sublimatory: tunnelSublimatory)
     }
   }
 
 #endif
 
+
+#if os(macOS)
+  extension Sublimation {
+    ///     Initializes the Sublimation lifecycle handler with default values for macOS.
+    ///
+    ///     - Parameters:
+    ///       - ngrokPath: The path to the Ngrok executable.
+    ///       - bucketName: The name of the bucket for the tunnel repository.
+    ///       - key: The key for the tunnel repository.
+    ///
+    ///     - Note: This initializer is only available on macOS.
+    ///
+    ///     - SeeAlso: `KVdbTunnelRepositoryFactory`
+    ///     - SeeAlso: `NgrokCLIAPIServerFactory`
+    public convenience init(
+      ngrokPath: String,
+      bucketName: String,
+      key: some Any,
+      isConnectionRefused: @escaping (ClientError) -> Bool,
+      ngrokClient: @escaping () -> NgrokClient
+      
+    ) {
+      
+      self.init(
+        sublimatory: TunnelSublimatory(
+          ngrokPath: ngrokPath,
+          bucketName: bucketName,
+          key: key,
+          isConnectionRefused: isConnectionRefused,
+          ngrokClient: ngrokClient
+          
+        )
+      )
+    }
+  }
+#endif

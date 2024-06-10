@@ -38,7 +38,7 @@ public actor TunnelSublimatory<
   private let factory:   TunnelServerFactoryType
   private let repoFactory: WritableTunnelRepositoryFactoryType
   private let key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
-  private let repoClientFactory : () -> any KVdbTunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>
+  private let repoClientFactory : (@Sendable @escaping () -> any Application) -> any KVdbTunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>
 
   private var tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?
   private var logger: Logger?
@@ -55,7 +55,7 @@ public actor TunnelSublimatory<
     factory:   TunnelServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
     key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
-    repoClientFactory : @escaping () -> any KVdbTunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>,
+    repoClientFactory : @escaping (@Sendable @escaping () -> any Application) -> any KVdbTunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>,
     isConnectionRefused: @escaping (TunnelServerFactoryType.Configuration.Server.ConnectionErrorType) -> Bool
   ) {
     self.init(
@@ -77,7 +77,7 @@ public actor TunnelSublimatory<
     tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?,
     logger: Logger?,
     server: (any TunnelServer)?,
-    repoClientFactory : @escaping () -> any KVdbTunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>,
+    repoClientFactory : @escaping (@Sendable @escaping () -> any Application) -> any KVdbTunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>,
  isConnectionRefused: @escaping (TunnelServerFactoryType.Configuration.Server.ConnectionErrorType) -> Bool
   ) {
     self.factory = factory
@@ -168,7 +168,7 @@ public actor TunnelSublimatory<
     )
     logger = application().logger
     tunnelRepo = repoFactory.setupClient(
-      repoClientFactory()
+      repoClientFactory(application)
 //      VaporKVdbTunnelClient(
 //        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self,
 //        get: {
