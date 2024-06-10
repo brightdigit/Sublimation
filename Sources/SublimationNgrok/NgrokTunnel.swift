@@ -1,5 +1,5 @@
 //
-//  Optional.swift
+//  NgrokTunnel.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -30,7 +30,7 @@
 import Ngrokit
 import SublimationTunnel
 
-//extension Optional {
+// extension Optional {
 //  ///   Returns a tuple containing the wrapped value
 //  ///    of the optional and another optional value.
 //  ///
@@ -43,8 +43,6 @@ import SublimationTunnel
 //      other.map { (wrapped, $0) }
 //    }
 //  }
-//}
+// }
 
-extension NgrokTunnel : Tunnel {
-
-}
+extension NgrokTunnel: Tunnel {}

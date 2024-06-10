@@ -1,5 +1,5 @@
 //
-//  KVdbTunnelRepositoryFactory.swift
+//  TunnelBucketRepositoryFactory.swift
 //  Sublimation
 //
 //  Created by Leo Dion.

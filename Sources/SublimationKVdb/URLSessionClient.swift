@@ -28,8 +28,8 @@
 //
 
 import Foundation
-import SublimationTunnel
 import OpenAPIRuntime
+import SublimationTunnel
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -106,4 +106,3 @@ public struct URLSessionClient<Key: Sendable>: TunnelClient {
     }
   }
 }
-

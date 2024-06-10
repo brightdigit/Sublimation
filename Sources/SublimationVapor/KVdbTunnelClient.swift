@@ -1,5 +1,5 @@
 //
-//  KVdbTests.swift
+//  KVdbTunnelClient.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,27 +27,8 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import Foundation
 import SublimationKVdb
-import SublimationMocks
-import XCTest
+import SublimationTunnel
 
-internal class KVdbTests: XCTestCase {
-  internal func testPath() {
-    let key = UUID()
-    let bucket = UUID().uuidString
-    let actual = KVdb.path(forKey: key, atBucket: bucket)
-    XCTAssertEqual(actual, "/\(bucket)/\(key)")
-  }
-
-  internal func testConstruct() {
-    let key = UUID()
-    let bucket = UUID().uuidString
-    let url = KVdb.construct(MockURL.self, forKey: key, atBucket: bucket)
-    let expectedPath = KVdb.path(forKey: key, atBucket: bucket)
-
-    XCTAssertEqual(url.kvDBBase, KVdb.baseString)
-    XCTAssertEqual(url.keyBucketPath, expectedPath)
-  }
-}
-
-extension MockURL: KVdbURLConstructable {}
+extension KVdbTunnelClient: TunnelClient {}

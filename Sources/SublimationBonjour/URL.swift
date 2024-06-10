@@ -87,7 +87,12 @@ extension URL {
       self.init(scheme: scheme, port: port, count: addressCount)
     }
 
-    fileprivate init(from txtRecord: NWTXTRecord, logger: LoggingActor?, defaultPort: Int, defaultTLS: Bool) {
+    fileprivate init(
+      from txtRecord: NWTXTRecord,
+      logger: LoggingActor?,
+      defaultPort: Int,
+      defaultTLS: Bool
+    ) {
       var offset = 0
 
       let portEntry = txtRecord.getEntry(for: .port, of: Int.self)

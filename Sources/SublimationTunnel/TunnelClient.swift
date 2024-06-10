@@ -1,5 +1,5 @@
 //
-//  KVdbTunnelClient.swift
+//  TunnelClient.swift
 //  Sublimation
 //
 //  Created by Leo Dion.

@@ -1,5 +1,5 @@
 //
-//  NgrokServerError.swift
+//  KVdbServerError.swift
 //  Sublimation
 //
 //  Created by Leo Dion.

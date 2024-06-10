@@ -45,23 +45,7 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: TunnelServerFa
   /// The Ngrok CLI API instance.
   private let cliAPI: any NgrokCLIAPI
 
-  /// The timeout duration for API requests.
-  // private let timeout: TimeAmount
-
   private let ngrokClient: @Sendable () -> NgrokClient
-
-  ///   Initializes a new instance of `NgrokCLIAPIServerFactory`.
-  ///
-  ///   - Parameters:
-  ///     - cliAPI: The Ngrok CLI API instance.
-  ///     - timeout: The timeout duration for API requests. Default is 1 second.
-//  public init(
-//    cliAPI: any NgrokCLIAPI//,
-//    //timeout: TimeAmount = .seconds(1)
-//  ) {
-//    self.cliAPI = cliAPI
-//    //self.timeout = timeout
-//  }
 
   public init(
     cliAPI: any NgrokCLIAPI,
@@ -71,15 +55,10 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: TunnelServerFa
     self.ngrokClient = ngrokClient
   }
 
-  ///   Initializes a new instance of `NgrokCLIAPIServerFactory`
-  ///   with the specified Ngrok path.
-  ///
-  ///   - Parameters:
-  ///     - ngrokPath: The path to the Ngrok executable.
-  ///     - timeout: The timeout duration for API requests. Default is 1 second.
-
-  public init(ngrokPath: String,
-              ngrokClient: @escaping () -> NgrokClient) { // , timeout: TimeAmount = .seconds(1)) {
+  public init(
+    ngrokPath: String,
+    ngrokClient: @escaping @Sendable () -> NgrokClient
+  ) {
     self.init(
       cliAPI: NgrokProcessCLIAPI<ProcessType>(ngrokPath: ngrokPath),
       ngrokClient: ngrokClient
@@ -98,11 +77,6 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: TunnelServerFa
     from configuration: Configuration,
     handler: any TunnelServerDelegate
   ) -> NgrokCLIAPIServer {
-    // let client =
-//    NgrokClient(
-//      transport: AsyncHTTPClientTransport(configuration: .init(timeout: timeout))
-//    )
-
     let process = cliAPI.process(forHTTPPort: configuration.port)
     return .init(
       delegate: handler,

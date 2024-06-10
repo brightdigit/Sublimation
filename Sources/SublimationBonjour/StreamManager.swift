@@ -30,16 +30,16 @@
 import Foundation
 
 internal actor StreamManager<Key: Hashable & Sendable, Value> {
-  internal init(newID: @escaping @Sendable () -> Key) {
-    self.newID = newID
-  }
-
   private var streamContinuations = [Key: AsyncStream<Value>.Continuation]()
 
   private var newID: @Sendable () -> Key
 
   internal var isEmpty: Bool {
     streamContinuations.isEmpty
+  }
+
+  internal init(newID: @escaping @Sendable () -> Key) {
+    self.newID = newID
   }
 
   internal func yield(_ urls: [Value], logger: LoggingActor?) {

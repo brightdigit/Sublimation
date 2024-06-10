@@ -1,5 +1,5 @@
 //
-//  Vapor.Application.swift
+//  NWListener.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,46 +27,37 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import protocol SublimationCore.Application
-import Vapor
+#if canImport(Network)
+  import Foundation
+  import Network
 
-private typealias SublimationApplication = SublimationCore.Application
-
-extension Vapor.Application: SublimationApplication {
-  public var httpServerConfigurationPort: Int {
-    self.http.server.configuration.port
-  }
-
-  public var httpServerTLS: Bool {
-    self.http.server.configuration.tlsConfiguration != nil
-  }
-
-  public func post(to url: URL, body: Data?) async throws {
-    _ = try await client.post(.init(string: url.absoluteString)) { request in
-      request.body = body.map(ByteBuffer.init(data:))
+  extension NWListener {
+    internal convenience init(
+      using parameters: NWParameters,
+      serviceType: String,
+      txtRecord: NWTXTRecord
+    ) throws {
+      try self.init(using: parameters)
+      self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
     }
   }
 
-  public func get(from url: URL) async throws -> Data? {
-    let response = try await client.get(.init(string: url.absoluteString))
-    return response.body.map { Data(buffer: $0) }
-  }
-}
-
-import OpenAPIRuntime
-
-extension ClientError {
-  internal var isConnectionRefused: Bool {
-    #if canImport(Network)
-      if let posixError = self.underlyingError as? HTTPClient.NWPOSIXError {
-        return posixError.errorCode == .ECONNREFUSED
+  extension NWListener.State: CustomDebugStringConvertible {
+    public var debugDescription: String {
+      switch self {
+      case .setup:
+        "setup"
+      case let .waiting(error):
+        "waiting: \(error.debugDescription)"
+      case .ready:
+        "ready"
+      case let .failed(error):
+        "failed: \(error.debugDescription)"
+      case .cancelled:
+        "cancelled"
+      @unknown default:
+        "unknown state"
       }
-    #endif
-
-    if let clientError = self.underlyingError as? HTTPClientError {
-      return clientError == .connectTimeout
     }
-
-    return false
   }
-}
+#endif

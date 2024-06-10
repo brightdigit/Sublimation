@@ -33,25 +33,6 @@
   import Network
   import SublimationCore
 
-  extension NWListener.State: CustomDebugStringConvertible {
-    public var debugDescription: String {
-      switch self {
-      case .setup:
-        "setup"
-      case let .waiting(error):
-        "waiting: \(error.debugDescription)"
-      case .ready:
-        "ready"
-      case let .failed(error):
-        "failed: \(error.debugDescription)"
-      case .cancelled:
-        "cancelled"
-      @unknown default:
-        "unknown state"
-      }
-    }
-  }
-
   public actor BonjourSublimatory: Sublimatory {
     public static let httpTCPServiceType = "_http._tcp"
     private let serviceType: String
@@ -180,14 +161,4 @@
     }
   }
 
-  extension NWListener {
-    fileprivate convenience init(
-      using parameters: NWParameters,
-      serviceType: String,
-      txtRecord: NWTXTRecord
-    ) throws {
-      try self.init(using: parameters)
-      self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
-    }
-  }
 #endif

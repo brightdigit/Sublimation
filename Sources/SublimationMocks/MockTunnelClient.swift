@@ -28,7 +28,6 @@
 //
 
 import Foundation
-import Sublimation
 import SublimationTunnel
 
 package actor MockTunnelClient<Key: Sendable>: TunnelClient {

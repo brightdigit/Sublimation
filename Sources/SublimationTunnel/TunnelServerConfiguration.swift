@@ -1,5 +1,5 @@
 //
-//  NgrokServerConfiguration.swift
+//  TunnelServerConfiguration.swift
 //  Sublimation
 //
 //  Created by Leo Dion.

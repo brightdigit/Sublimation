@@ -31,9 +31,6 @@ import Foundation
 import Logging
 
 public protocol Application {
-  func post(to url: URL, body: Data?) async throws
-  func get(from url: URL) async throws -> Data?
-
   /// The port number for the HTTP server configuration.
   var httpServerConfigurationPort: Int { get }
 
@@ -41,4 +38,6 @@ public protocol Application {
 
   /// The logger for the server application.
   var logger: Logger { get }
+  func post(to url: URL, body: Data?) async throws
+  func get(from url: URL) async throws -> Data?
 }

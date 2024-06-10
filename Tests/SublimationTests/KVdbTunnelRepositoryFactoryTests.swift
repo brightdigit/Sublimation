@@ -27,7 +27,6 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Sublimation
 import SublimationMocks
 import SublimationTunnel
 import XCTest

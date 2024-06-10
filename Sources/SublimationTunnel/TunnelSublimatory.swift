@@ -31,20 +31,24 @@ import Foundation
 import Logging
 import SublimationCore
 
+public typealias RepositoryClientFactory<Key> =
+  (@Sendable @escaping () -> any Application) -> any TunnelClient<Key>
 public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
-    TunnelServerFactoryType: TunnelServerFactory
+  TunnelServerFactoryType: TunnelServerFactory
 >: Sublimatory, TunnelServerDelegate {
-  private let factory:   TunnelServerFactoryType
+  public typealias Key = WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
+  public typealias ConnectionErrorType = TunnelServerFactoryType.Configuration.Server.ConnectionErrorType
+  private let factory: TunnelServerFactoryType
   private let repoFactory: WritableTunnelRepositoryFactoryType
-  private let key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
-  private let repoClientFactory : (@Sendable @escaping () -> any Application) -> any TunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>
+  private let key: Key
+  private let repoClientFactory: RepositoryClientFactory<Key>
 
   private var tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?
   private var logger: Logger?
   private var server: (any TunnelServer)?
-  
- private let isConnectionRefused:  (TunnelServerFactoryType.Configuration.Server.ConnectionErrorType) -> Bool
+
+  private let isConnectionRefused: (ConnectionErrorType) -> Bool
   ///   Initializes the Sublimation lifecycle handler.
   ///
   ///   - Parameters:
@@ -52,11 +56,11 @@ public actor TunnelSublimatory<
   ///     - repoFactory: The factory for creating a writable tunnel repository.
   ///     - key: The key for the tunnel repository.
   public init(
-    factory:   TunnelServerFactoryType,
+    factory: TunnelServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
     key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
-    repoClientFactory : @escaping (@Sendable @escaping () -> any Application) -> any TunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>,
-    isConnectionRefused: @escaping (TunnelServerFactoryType.Configuration.Server.ConnectionErrorType) -> Bool
+    repoClientFactory: @escaping RepositoryClientFactory<Key>,
+    isConnectionRefused: @escaping (ConnectionErrorType) -> Bool
   ) {
     self.init(
       factory: factory,
@@ -71,14 +75,14 @@ public actor TunnelSublimatory<
   }
 
   private init(
-    factory:   TunnelServerFactoryType,
+    factory: TunnelServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
-    key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
+    key: Key,
     tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?,
     logger: Logger?,
     server: (any TunnelServer)?,
-    repoClientFactory : @escaping (@Sendable @escaping () -> any Application) -> any TunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>,
- isConnectionRefused: @escaping (TunnelServerFactoryType.Configuration.Server.ConnectionErrorType) -> Bool
+    repoClientFactory: @escaping RepositoryClientFactory<Key>,
+    isConnectionRefused: @escaping (ConnectionErrorType) -> Bool
   ) {
     self.factory = factory
     self.repoFactory = repoFactory
@@ -163,7 +167,7 @@ public actor TunnelSublimatory<
   ///   - SeeAlso: `Application`
   private func beginFromApplication(_ application: @Sendable @escaping () -> any Application) async {
     let server = factory.server(
-      from:   TunnelServerFactoryType.Configuration(application: application()),
+      from: TunnelServerFactoryType.Configuration(application: application()),
       handler: self
     )
     logger = application().logger

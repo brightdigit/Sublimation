@@ -32,13 +32,6 @@ import Logging
 import OpenAPIRuntime
 import SublimationBonjour
 import SublimationCore
-import SublimationNgrok
-
-import SublimationTunnel
-import Ngrokit
-
-@_exported import SublimationBonjour
-@_exported import SublimationNgrok
 
 public final class Sublimation: Sendable {
   public let sublimatory: any Sublimatory
@@ -77,8 +70,15 @@ public final class Sublimation: Sendable {
       addresses: @escaping @Sendable () async -> [String],
       addressFilter: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:)
     ) {
+      let sublimatory = BonjourSublimatory(
+        listenerParameters: listenerParameters,
+        serviceType: serviceType,
+        maximumCount: maximumCount,
+        addresses: addresses,
+        addressFilter: addressFilter
+      )
       self.init(
-        sublimatory: BonjourSublimatory(listenerParameters: listenerParameters, serviceType: serviceType, maximumCount: maximumCount, addresses: addresses, addressFilter: addressFilter)
+        sublimatory: sublimatory
       )
     }
 

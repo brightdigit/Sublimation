@@ -27,8 +27,6 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Ngrokit
-import NgrokitMocks
 @testable import SublimationTunnel
 import XCTest
 

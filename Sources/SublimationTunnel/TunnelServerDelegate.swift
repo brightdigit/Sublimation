@@ -1,5 +1,5 @@
 //
-//  NgrokServerDelegate.swift
+//  TunnelServerDelegate.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,14 +28,6 @@
 //
 
 import Foundation
-import SublimationCore
-
-public protocol Tunnel {
-  var name : String { get }
-  var publicURL : URL { get }
-}
-
-
 
 /// A delegate protocol for `NgrokServer` that handles server events and errors.
 public protocol TunnelServerDelegate: AnyObject, Sendable {
