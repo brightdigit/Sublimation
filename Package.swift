@@ -133,7 +133,7 @@ let package = Package(
     ),
     .testTarget(
       name: "SublimationTests",
-      dependencies: ["Sublimation", "SublimationMocks"],
+      dependencies: ["Sublimation", "SublimationMocks", "SublimationKVdb"],
       swiftSettings: swiftSettings
     ),
     .testTarget(

@@ -28,6 +28,7 @@
 //
 
 import Sublimation
+import SublimationKVdb
 import SublimationMocks
 import XCTest
 
@@ -40,6 +41,10 @@ import XCTest
 //  let kvDBBase: String
 //  let keyBucketPath: String
 // }
+
+extension MockURL : KVdbURLConstructable {
+  
+}
 
 internal class KVdbTests: XCTestCase {
   internal func testPath() {

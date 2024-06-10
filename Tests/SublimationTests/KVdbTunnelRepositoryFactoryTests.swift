@@ -29,6 +29,7 @@
 
 import Sublimation
 import SublimationMocks
+import SublimationTunnel
 import XCTest
 
 #if canImport(FoundationNetworking)

@@ -29,7 +29,7 @@
 
 import Ngrokit
 import NgrokitMocks
-@testable import SublimationNgrok
+@testable import SublimationTunnel
 import XCTest
 
 internal final class MockServerDelegate: TunnelServerDelegate {
@@ -40,7 +40,7 @@ internal final class MockServerDelegate: TunnelServerDelegate {
   }
 
   internal func server(
-    _: any TunnelServer, updatedTunnel _: Ngrokit.Tunnel
+    _: any TunnelServer, updatedTunnel _: any Tunnel
   ) {}
 
   internal func server(_: any TunnelServer, errorDidOccur _: any Error) {}

@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-@testable import SublimationNgrok
+@testable import SublimationKVdb
 import SublimationMocks
 import XCTest
 
