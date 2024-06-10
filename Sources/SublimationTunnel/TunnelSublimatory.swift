@@ -48,7 +48,7 @@ public actor TunnelSublimatory<
   private var logger: Logger?
   private var server: (any TunnelServer)?
 
-  private let isConnectionRefused: (ConnectionErrorType) -> Bool
+  private let isConnectionRefused: @Sendable (ConnectionErrorType) -> Bool
   ///   Initializes the Sublimation lifecycle handler.
   ///
   ///   - Parameters:

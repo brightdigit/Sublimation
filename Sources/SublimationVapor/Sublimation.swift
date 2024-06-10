@@ -72,8 +72,8 @@ extension Sublimation: LifecycleHandler {
       ngrokPath: String,
       bucketName: String,
       key: some Any,
-      isConnectionRefused: @escaping (ClientError) -> Bool,
-      ngrokClient: @escaping () -> NgrokClient
+      isConnectionRefused: @escaping @Sendable (ClientError) -> Bool,
+      ngrokClient: @escaping @Sendable () -> NgrokClient
     ) {
       self.init(
         sublimatory: TunnelSublimatory(
