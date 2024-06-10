@@ -99,32 +99,32 @@ public final class Sublimation: Sendable {
   }
 #endif
 
-#if os(macOS)
-  extension Sublimation {
-    ///     Initializes the Sublimation lifecycle handler with default values for macOS.
-    ///
-    ///     - Parameters:
-    ///       - ngrokPath: The path to the Ngrok executable.
-    ///       - bucketName: The name of the bucket for the tunnel repository.
-    ///       - key: The key for the tunnel repository.
-    ///
-    ///     - Note: This initializer is only available on macOS.
-    ///
-    ///     - SeeAlso: `KVdbTunnelRepositoryFactory`
-    ///     - SeeAlso: `NgrokCLIAPIServerFactory`
-    public convenience init(
-      ngrokPath: String,
-      bucketName: String,
-      key: some Any,
-      isConnectionRefused: @escaping (ClientError) -> Bool,
-      ngrokClient: @escaping () -> NgrokClient
-      
-    ) {
-      self.init(
-        sublimatory: TunnelSublimatory(
-          ngrokPath: ngrokPath, bucketName: bucketName, key: key,  isConnectionRefused: isConnectionRefused, ngrokClient: ngrokClient
-        )
-      )
-    }
-  }
-#endif
+//#if os(macOS)
+//  extension Sublimation {
+//    ///     Initializes the Sublimation lifecycle handler with default values for macOS.
+//    ///
+//    ///     - Parameters:
+//    ///       - ngrokPath: The path to the Ngrok executable.
+//    ///       - bucketName: The name of the bucket for the tunnel repository.
+//    ///       - key: The key for the tunnel repository.
+//    ///
+//    ///     - Note: This initializer is only available on macOS.
+//    ///
+//    ///     - SeeAlso: `KVdbTunnelRepositoryFactory`
+//    ///     - SeeAlso: `NgrokCLIAPIServerFactory`
+//    public convenience init(
+//      ngrokPath: String,
+//      bucketName: String,
+//      key: some Any,
+//      isConnectionRefused: @escaping (ClientError) -> Bool,
+//      ngrokClient: @escaping () -> NgrokClient
+//      
+//    ) {
+//      self.init(
+//        sublimatory: TunnelSublimatory(
+//          ngrokPath: ngrokPath, bucketName: bucketName, key: key,  isConnectionRefused: isConnectionRefused, ngrokClient: ngrokClient
+//        )
+//      )
+//    }
+//  }
+//#endif

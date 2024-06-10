@@ -27,7 +27,6 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import OpenAPIRuntime
 
 /// A protocol for starting a Ngrok server.
 ///
@@ -37,9 +36,10 @@ import OpenAPIRuntime
 ///
 /// - Important: Make sure to call the `start()` method to start the Ngrok server.
 public protocol TunnelServer {
+  associatedtype ConnectionErrorType : Error
   ///   Starts the Ngrok server.
   ///
   ///   Call this method to start the Ngrok server and
   ///   expose your local server to the internet.
-  func start(isConnectionRefused: @escaping (ClientError) -> Bool)
+  func start(isConnectionRefused: @escaping (ConnectionErrorType) -> Bool)
 }

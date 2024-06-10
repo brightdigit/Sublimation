@@ -28,7 +28,7 @@
 //
 
 import Foundation
-import OpenAPIRuntime
+
 
 /// Represents the result of a network operation.
 ///
@@ -37,17 +37,17 @@ import OpenAPIRuntime
 /// - failure: The operation failed with an error.
 ///
 /// - Note: This type is internal and should not be used outside of the framework.
-internal enum NetworkResult<T> {
+public  enum NetworkResult<T, ConnectionErrorType : Error> {
   case success(T)
-  case connectionRefused(ClientError)
+  case connectionRefused(ConnectionErrorType)
   case failure(any Error)
 }
 
-typealias AnyTunnelNetworkResult = NetworkResult<(any Tunnel)?>
+public typealias AnyTunnelNetworkResult<ConnectionErrorType: Error> = NetworkResult<(any Tunnel)?, ConnectionErrorType>
 
 extension NetworkResult {
-  internal init(error: any Error, isConnectionRefused: @escaping (ClientError) -> Bool) {
-    guard let error = error as? ClientError else {
+  public  init(error: any Error, isConnectionRefused: @escaping (ConnectionErrorType) -> Bool) {
+    guard let error = error as? ConnectionErrorType else {
       self = .failure(error)
       return
     }    
@@ -60,7 +60,7 @@ extension NetworkResult {
     self = .failure(error)
   }
 
-  internal init(_ closure: @escaping () async throws -> T, isConnectionRefused: @escaping (ClientError) -> Bool) async {
+  public  init(_ closure: @escaping () async throws -> T, isConnectionRefused: @escaping (ConnectionErrorType) -> Bool) async {
     do {
       self = try await .success(closure())
     } catch {
@@ -68,7 +68,7 @@ extension NetworkResult {
     }
   }
 
-  internal func get() throws -> T? {
+  public  func get() throws -> T? {
     switch self {
     case .connectionRefused:
       return nil

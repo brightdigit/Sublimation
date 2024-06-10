@@ -28,16 +28,14 @@
 //
 
 import Foundation
-import Ngrokit
+import SublimationCore
 
 public protocol Tunnel {
   var name : String { get }
   var publicURL : URL { get }
 }
 
-extension NgrokTunnel : Tunnel {
-  
-}
+
 
 /// A delegate protocol for `NgrokServer` that handles server events and errors.
 public protocol TunnelServerDelegate: AnyObject, Sendable {

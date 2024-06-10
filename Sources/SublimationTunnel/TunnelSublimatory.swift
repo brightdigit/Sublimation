@@ -29,9 +29,7 @@
 
 import Foundation
 import Logging
-import Ngrokit
 import SublimationCore
-import OpenAPIRuntime
 
 public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
@@ -40,12 +38,13 @@ public actor TunnelSublimatory<
   private let factory:   TunnelServerFactoryType
   private let repoFactory: WritableTunnelRepositoryFactoryType
   private let key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
+  private let repoClientFactory : () -> any KVdbTunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>
 
   private var tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?
   private var logger: Logger?
   private var server: (any TunnelServer)?
   
- private let isConnectionRefused:  (ClientError) -> Bool
+ private let isConnectionRefused:  (TunnelServerFactoryType.Configuration.Server.ConnectionErrorType) -> Bool
   ///   Initializes the Sublimation lifecycle handler.
   ///
   ///   - Parameters:
@@ -56,7 +55,8 @@ public actor TunnelSublimatory<
     factory:   TunnelServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
     key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
-    isConnectionRefused: @escaping (ClientError) -> Bool
+    repoClientFactory : @escaping () -> any KVdbTunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>,
+    isConnectionRefused: @escaping (TunnelServerFactoryType.Configuration.Server.ConnectionErrorType) -> Bool
   ) {
     self.init(
       factory: factory,
@@ -65,6 +65,7 @@ public actor TunnelSublimatory<
       tunnelRepo: nil,
       logger: nil,
       server: nil,
+      repoClientFactory: repoClientFactory,
       isConnectionRefused: isConnectionRefused
     )
   }
@@ -76,8 +77,8 @@ public actor TunnelSublimatory<
     tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?,
     logger: Logger?,
     server: (any TunnelServer)?,
-  
- isConnectionRefused: @escaping (ClientError) -> Bool
+    repoClientFactory : @escaping () -> any KVdbTunnelClient<WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key>,
+ isConnectionRefused: @escaping (TunnelServerFactoryType.Configuration.Server.ConnectionErrorType) -> Bool
   ) {
     self.factory = factory
     self.repoFactory = repoFactory
@@ -85,6 +86,7 @@ public actor TunnelSublimatory<
     self.tunnelRepo = tunnelRepo
     self.logger = logger
     self.server = server
+    self.repoClientFactory = repoClientFactory
     self.isConnectionRefused = isConnectionRefused
   }
 
@@ -166,14 +168,15 @@ public actor TunnelSublimatory<
     )
     logger = application().logger
     tunnelRepo = repoFactory.setupClient(
-      VaporTunnelClient(
-        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self,
-        get: {
-          try await application().get(from: $0)
-        }, post: {
-          try await application().post(to: $0, body: $1)
-        }
-      )
+      repoClientFactory()
+//      VaporKVdbTunnelClient(
+//        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self,
+//        get: {
+//          try await application().get(from: $0)
+//        }, post: {
+//          try await application().post(to: $0, body: $1)
+//        }
+//      )
 //      VaporTunnelClient(
 //        client: application.client,
 //        keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self

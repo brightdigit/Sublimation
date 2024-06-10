@@ -90,6 +90,11 @@ let package = Package(
       swiftSettings: swiftSettings
     ),
     .target(
+      name: "SublimationKVdb",
+      dependencies: ["SublimationTunnel"],
+      swiftSettings: swiftSettings
+    ),
+    .target(
       name: "SublimationBonjour",
       dependencies: ["SublimationCore"],
       swiftSettings: swiftSettings

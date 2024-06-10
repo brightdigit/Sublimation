@@ -27,10 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if os(macOS)
-  @_exported import class Ngrokit.ProcessableProcess
-#endif
-@_exported import struct Ngrokit.NgrokClient
+//#if os(macOS)
+//  @_exported import class Ngrokit.ProcessableProcess
+//#endif
+//@_exported import struct Ngrokit.NgrokClient
 
 import Foundation
 

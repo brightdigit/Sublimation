@@ -29,6 +29,7 @@
 
 import Foundation
 import Ngrokit
+import SublimationTunnel
 
 /// A factory for creating Ngrok CLI API servers.
 ///

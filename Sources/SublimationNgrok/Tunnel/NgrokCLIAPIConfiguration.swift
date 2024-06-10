@@ -29,6 +29,7 @@
 
 import Logging
 import SublimationCore
+import SublimationTunnel
 
 /// Configuration for the Ngrok CLI API server.
 ///

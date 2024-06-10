@@ -31,6 +31,8 @@ import Foundation
 import NgrokOpenAPIClient
 import OpenAPIRuntime
 
+@_exported import struct OpenAPIRuntime.ClientError
+
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif

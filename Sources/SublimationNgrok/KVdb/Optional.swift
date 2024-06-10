@@ -27,6 +27,9 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import Ngrokit
+import SublimationTunnel
+
 extension Optional {
   ///   Returns a tuple containing the wrapped value
   ///    of the optional and another optional value.
@@ -40,4 +43,8 @@ extension Optional {
       other.map { (wrapped, $0) }
     }
   }
+}
+
+extension NgrokTunnel : Tunnel {
+
 }

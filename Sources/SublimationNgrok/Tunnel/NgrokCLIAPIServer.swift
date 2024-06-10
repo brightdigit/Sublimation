@@ -32,6 +32,7 @@ import Logging
 import Ngrokit
 import OpenAPIRuntime
 import SublimationCore
+import SublimationTunnel
 
 /// A server implementation for Ngrok CLI API.
 ///
@@ -41,7 +42,7 @@ import SublimationCore
 /// - SeeAlso: `Sendable`
 public struct NgrokCLIAPIServer: TunnelServer, Sendable {
   private enum TunnelAttemptResult {
-    case network(AnyTunnelNetworkResult)
+    case network(AnyTunnelNetworkResult<ClientError>)
     case error(ClientError)
   }
 
@@ -91,6 +92,7 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
     withClient client: NgrokClient,
    isConnectionRefused: @escaping (ClientError) -> Bool
   ) async -> TunnelAttemptResult {
+
     let networkResult = await AnyTunnelNetworkResult ({
       try await client.listTunnels().first
     }, isConnectionRefused: isConnectionRefused)
@@ -110,7 +112,7 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
     isConnectionRefused: @escaping (ClientError) -> Bool
   ) async throws -> (any Tunnel)? {
     let start = Date()
-    var networkResult: NetworkResult<(any Tunnel)?>?
+    var networkResult: NetworkResult<(any Tunnel)?, ClientError>?
     var lastError: ClientError?
     var attempts = 0
     while networkResult == nil, (-start.timeIntervalSinceNow) < timeout {
