@@ -36,7 +36,7 @@ import Ngrokit
 import Vapor
 import SublimationKVdb
 
-extension VaporKVdbTunnelClient : KVdbTunnelClient {
+extension KVdbTunnelClient : TunnelClient {
   
 }
 
@@ -80,7 +80,7 @@ extension Sublimation: LifecycleHandler {
       key: Key,
       isConnectionRefused: @escaping (ClientError) -> Bool,
       ngrokClient: @escaping () -> NgrokClient
-    ) where WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key>,
+    ) where WritableTunnelRepositoryFactoryType == TunnelBucketRepositoryFactory<Key>,
         TunnelServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
       WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key == Key {
         
@@ -94,10 +94,10 @@ extension Sublimation: LifecycleHandler {
         
       self.init(
         factory: NgrokCLIAPIServerFactory(ngrokPath: ngrokPath, ngrokClient: ngrokClient),
-        repoFactory: KVdbTunnelRepositoryFactory(bucketName: bucketName),
+        repoFactory: TunnelBucketRepositoryFactory(bucketName: bucketName),
         key: key, 
         repoClientFactory: { application in
-          VaporKVdbTunnelClient(
+          KVdbTunnelClient(
     keyType: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key.self,
     get: {
       try await application().get(from: $0)
@@ -132,7 +132,7 @@ extension Sublimation: LifecycleHandler {
       key: Key,
       timeout: TimeAmount = .seconds(1)
     ) where   TunnelServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
-      WritableTunnelRepositoryFactoryType == KVdbTunnelRepositoryFactory<Key> {
+      WritableTunnelRepositoryFactoryType == TunnelBucketRepositoryFactory<Key> {
         
         self.init(
           ngrokPath: ngrokPath,

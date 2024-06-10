@@ -63,7 +63,7 @@ public protocol TunnelRepositoryFactory: Sendable {
   ///
   ///   - Note: The `TunnelClientType` must have a `Key` type
   ///   that matches the `Key` type of the `TunnelRepositoryType`.
-  func setupClient<TunnelClientType: KVdbTunnelClient>(
+  func setupClient<TunnelClientType: TunnelClient>(
     _ client: TunnelClientType
   ) -> TunnelRepositoryType where TunnelClientType.Key == TunnelRepositoryType.Key
 }

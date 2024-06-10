@@ -45,7 +45,7 @@ import OpenAPIRuntime
 /// a `NgrokServerError` if the save operation fails.
 ///
 /// - SeeAlso: `KVdbTunnelClient`
-public struct URLSessionClient<Key: Sendable>: KVdbTunnelClient {
+public struct URLSessionClient<Key: Sendable>: TunnelClient {
   private let session: URLSession
 
   ///   Initializes a new `URLSessionClient` with the specified session.
@@ -75,7 +75,7 @@ public struct URLSessionClient<Key: Sendable>: KVdbTunnelClient {
 
     let urlString = String(decoding: data, as: UTF8.self)
     guard let url = URL(string: urlString) else {
-      throw NgrokServerError.invalidURL
+      throw KVdbServerError.invalidURL
     }
 
     return url
@@ -99,10 +99,10 @@ public struct URLSessionClient<Key: Sendable>: KVdbTunnelClient {
     request.httpBody = value.absoluteString.data(using: .utf8)
     let (data, response) = try await session.dataAsync(for: request)
     guard let httpResponse = response as? HTTPURLResponse else {
-      throw NgrokServerError.cantSaveTunnel(nil, nil)
+      throw KVdbServerError.cantSaveTunnel(nil, nil)
     }
     guard httpResponse.statusCode / 100 == 2 else {
-      throw NgrokServerError.cantSaveTunnel(httpResponse.statusCode, data)
+      throw KVdbServerError.cantSaveTunnel(httpResponse.statusCode, data)
     }
   }
 }

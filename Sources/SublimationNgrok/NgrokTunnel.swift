@@ -1,5 +1,5 @@
 //
-//  NgrokServerError.swift
+//  Optional.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,19 +27,24 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
+import Ngrokit
+import SublimationTunnel
 
-/// An error type representing various errors that can occur
-/// when working with Ngrok server.
-///
-/// - clientNotSetup: The Ngrok client is not properly set up.
-/// - noTunnelFound: No tunnel was found.
-/// - invalidURL: The URL is invalid.
-/// - cantSaveTunnel: Unable to save the tunnel with the given ID and data.
-public enum NgrokServerError: Error {
-  case clientNotSetup
-  case noTunnelFound
-  case invalidURL
-  case cantSaveTunnel(Int?, Data?)
-  case cantSaveTunnelError(any Error)
+//extension Optional {
+//  ///   Returns a tuple containing the wrapped value
+//  ///    of the optional and another optional value.
+//  ///
+//  ///   - Parameter other: Another optional value.
+//  ///
+//  ///   - Returns: A tuple containing the wrapped value of the optional and `other`,
+//  ///   or `nil` if either the optional or `other` is `nil`.
+//  internal func flatTuple<OtherType>(_ other: OtherType?) -> (Wrapped, OtherType)? {
+//    flatMap { wrapped in
+//      other.map { (wrapped, $0) }
+//    }
+//  }
+//}
+
+extension NgrokTunnel : Tunnel {
+
 }

@@ -1,5 +1,5 @@
 //
-//  Optional.swift
+//  KVdbTunnelRepositoryFactory.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,24 +27,38 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Ngrokit
+import Foundation
 import SublimationTunnel
 
-extension Optional {
-  ///   Returns a tuple containing the wrapped value
-  ///    of the optional and another optional value.
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
+/// This factory is used to set up and configure a
+/// `KVdbTunnelRepository` with a specific bucket name.
+public struct TunnelBucketRepositoryFactory<Key: Sendable>:
+  WritableTunnelRepositoryFactory {
+  /// The type of tunnel repository created by this factory.
+  public typealias TunnelRepositoryType = TunnelClientRepository<Key>
+
+  /// The name of the bucket to use.
+  public let bucketName: String
+
+  ///   Initializes a new instance of the factory with the specified bucket name.
   ///
-  ///   - Parameter other: Another optional value.
-  ///
-  ///   - Returns: A tuple containing the wrapped value of the optional and `other`,
-  ///   or `nil` if either the optional or `other` is `nil`.
-  internal func flatTuple<OtherType>(_ other: OtherType?) -> (Wrapped, OtherType)? {
-    flatMap { wrapped in
-      other.map { (wrapped, $0) }
-    }
+  ///   - Parameter bucketName: The name of the bucket to use.
+  public init(bucketName: String) {
+    self.bucketName = bucketName
   }
-}
 
-extension NgrokTunnel : Tunnel {
-
+  ///   Sets up a client and returns a new `KVdbTunnelRepository` instance.
+  ///
+  ///   - Parameter client: The tunnel client to use.
+  ///   - Returns: A new `KVdbTunnelRepository` instance.
+  public func setupClient<TunnelClientType>(
+    _ client: TunnelClientType
+  ) -> TunnelClientRepository<Key>
+    where TunnelClientType: TunnelClient, TunnelClientType.Key == Key {
+    .init(client: client, bucketName: bucketName)
+  }
 }

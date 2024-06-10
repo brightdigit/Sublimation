@@ -34,10 +34,10 @@ import SublimationTunnel
   import FoundationNetworking
 #endif
 
-public final class KVdbTunnelRepository<Key: Sendable>: WritableTunnelRepository {
-  private let client: any KVdbTunnelClient<Key>
+public final class TunnelClientRepository<Key: Sendable>: WritableTunnelRepository {
+  private let client: any TunnelClient<Key>
   private let bucketName: String
-  public init(client: any KVdbTunnelClient<Key>, bucketName: String) {
+  public init(client: any TunnelClient<Key>, bucketName: String) {
     self.client = client
     self.bucketName = bucketName
   }

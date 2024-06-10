@@ -48,7 +48,7 @@ import SublimationTunnel
 /// - Important: Make sure to import the necessary dependencies before using this client.
 ///
 /// - SeeAlso: `KVdbTunnelClient`
-public struct VaporKVdbTunnelClient<Key: Sendable> {
+public struct KVdbTunnelClient<Key: Sendable> {
   public init(keyType _: Key.Type, get: @escaping @Sendable (URL) async throws -> Data?, post: @escaping @Sendable (URL, Data?) async throws -> Void) {
     self.get = get
     self.post = post
@@ -86,7 +86,7 @@ public struct VaporKVdbTunnelClient<Key: Sendable> {
       .flatMap(URL.init(string:))
 
     guard let url else {
-      throw NgrokServerError.invalidURL
+      throw KVdbServerError.invalidURL
     }
     return url
   }
@@ -107,7 +107,7 @@ public struct VaporKVdbTunnelClient<Key: Sendable> {
     do {
       try await self.post(uri, value.absoluteString.data(using: .utf8))
     } catch {
-      throw NgrokServerError.cantSaveTunnelError(error)
+      throw KVdbServerError.cantSaveTunnelError(error)
     }
 //    let response = try await client.post(uri) { request in
 //      request.body = .init(string: value.absoluteString)

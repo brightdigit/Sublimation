@@ -48,7 +48,7 @@ internal class KVdbTunnelRepositoryFactoryTests: XCTestCase {
     let getKey = UUID()
 
     let bucketName = UUID().uuidString
-    let factory = KVdbTunnelRepositoryFactory<UUID>(bucketName: bucketName)
+    let factory = TunnelBucketRepositoryFactory<UUID>(bucketName: bucketName)
 
     let repository = factory.setupClient(client)
 

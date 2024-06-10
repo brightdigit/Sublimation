@@ -1,5 +1,5 @@
 //
-//  KVdbTunnelRepositoryFactory.swift
+//  NgrokServerError.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,37 +28,18 @@
 //
 
 import Foundation
-import SublimationTunnel
 
-#if canImport(FoundationNetworking)
-  import FoundationNetworking
-#endif
-
-/// This factory is used to set up and configure a
-/// `KVdbTunnelRepository` with a specific bucket name.
-public struct KVdbTunnelRepositoryFactory<Key: Sendable>:
-  WritableTunnelRepositoryFactory {
-  /// The type of tunnel repository created by this factory.
-  public typealias TunnelRepositoryType = KVdbTunnelRepository<Key>
-
-  /// The name of the bucket to use.
-  public let bucketName: String
-
-  ///   Initializes a new instance of the factory with the specified bucket name.
-  ///
-  ///   - Parameter bucketName: The name of the bucket to use.
-  public init(bucketName: String) {
-    self.bucketName = bucketName
-  }
-
-  ///   Sets up a client and returns a new `KVdbTunnelRepository` instance.
-  ///
-  ///   - Parameter client: The tunnel client to use.
-  ///   - Returns: A new `KVdbTunnelRepository` instance.
-  public func setupClient<TunnelClientType>(
-    _ client: TunnelClientType
-  ) -> KVdbTunnelRepository<Key>
-    where TunnelClientType: KVdbTunnelClient, TunnelClientType.Key == Key {
-    .init(client: client, bucketName: bucketName)
-  }
+/// An error type representing various errors that can occur
+/// when working with Ngrok server.
+///
+/// - clientNotSetup: The Ngrok client is not properly set up.
+/// - noTunnelFound: No tunnel was found.
+/// - invalidURL: The URL is invalid.
+/// - cantSaveTunnel: Unable to save the tunnel with the given ID and data.
+public enum KVdbServerError: Error {
+//  case clientNotSetup
+//  case noTunnelFound
+  case invalidURL
+  case cantSaveTunnel(Int?, Data?)
+  case cantSaveTunnelError(any Error)
 }
