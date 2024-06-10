@@ -1,5 +1,5 @@
 //
-//  NgrokServerConfiguration.swift
+//  TunnelClientRepository.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,10 +27,25 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-/// A protocol that defines the configuration for an Ngrok server.
-///
-/// - Note: The associated type `Server` must conform to the `NgrokServer` protocol.
-public protocol NgrokServerConfiguration {
-  /// Server for starting an `ngrok` process.
-  associatedtype Server: NgrokServer
+import Foundation
+
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
+public final class TunnelClientRepository<Key: Sendable>: WritableTunnelRepository {
+  private let client: any TunnelClient<Key>
+  private let bucketName: String
+  public init(client: any TunnelClient<Key>, bucketName: String) {
+    self.client = client
+    self.bucketName = bucketName
+  }
+
+  public func tunnel(forKey key: Key) async throws -> URL? {
+    try await client.getValue(ofKey: key, fromBucket: bucketName)
+  }
+
+  public func saveURL(_ url: URL, withKey key: Key) async throws {
+    try await client.saveValue(url, withKey: key, inBucket: bucketName)
+  }
 }

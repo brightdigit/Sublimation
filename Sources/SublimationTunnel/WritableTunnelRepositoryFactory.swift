@@ -1,5 +1,5 @@
 //
-//  LoggingActor.swift
+//  WritableTunnelRepositoryFactory.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,24 +27,26 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Logging
+// #if os(macOS)
+//  @_exported import class Ngrokit.ProcessableProcess
+// #endif
+// @_exported import struct Ngrokit.NgrokClient
 
-internal actor LoggingActor {
-  private let logger: Logger
+import Foundation
 
-  internal init(logger: @escaping @Sendable () -> Logger) {
-    self.logger = logger()
-  }
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
 
-  private func logWith(_ closure: @Sendable @escaping (Logger) -> Void) {
-    Task {
-      closure(self.logger)
-    }
-  }
-
-  internal nonisolated func log(_ closure: @Sendable @escaping (Logger) -> Void) {
-    Task {
-      await self.logWith(closure)
-    }
-  }
-}
+/// A factory protocol for creating writable tunnel repositories.
+///
+/// This protocol extends the `TunnelRepositoryFactory` protocol
+/// and requires the associated `TunnelRepositoryType`
+/// to conform to the `WritableTunnelRepository` protocol.
+///
+/// - Note: This protocol is part of the `Sublimation` framework.
+///
+/// - SeeAlso: `TunnelRepositoryFactory`
+/// - SeeAlso: `WritableTunnelRepository`
+public protocol WritableTunnelRepositoryFactory: TunnelRepositoryFactory
+  where TunnelRepositoryType: WritableTunnelRepository {}

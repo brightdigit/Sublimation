@@ -1,5 +1,5 @@
 //
-//  KVdbTunnelRepositoryFactory.swift
+//  TunnelRepositoryFactory.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -33,31 +33,37 @@ import Foundation
   import FoundationNetworking
 #endif
 
-/// This factory is used to set up and configure a
-/// `KVdbTunnelRepository` with a specific bucket name.
-public struct KVdbTunnelRepositoryFactory<Key: Sendable>:
-  WritableTunnelRepositoryFactory {
-  /// The type of tunnel repository created by this factory.
-  public typealias TunnelRepositoryType = KVdbTunnelRepository<Key>
+/// A factory for creating tunnel repositories.
+///
+/// The factory is responsible for
+/// setting up the client and returning a tunnel repository.
+///
+/// - Note: The factory must be `Sendable`.
+///
+/// - Note: The associated type `TunnelRepositoryType` must conform to `TunnelRepository`.
+///
+/// - Note: The factory must implement the `setupClient` method,
+/// which takes a `TunnelClientType` and returns a `TunnelRepositoryType`.
+///
+/// - Warning: The factory may require the `FoundationNetworking` module to be imported.
+///
+/// - SeeAlso: `TunnelRepository`
+/// - SeeAlso: `KVdbTunnelClient`
+public protocol TunnelRepositoryFactory: Sendable {
+  /// The type of tunnel repository created by the factory.
+  associatedtype TunnelRepositoryType: TunnelRepository
 
-  /// The name of the bucket to use.
-  public let bucketName: String
-
-  ///   Initializes a new instance of the factory with the specified bucket name.
-  ///
-  ///   - Parameter bucketName: The name of the bucket to use.
-  public init(bucketName: String) {
-    self.bucketName = bucketName
-  }
-
-  ///   Sets up a client and returns a new `KVdbTunnelRepository` instance.
+  ///   Sets up the client and returns a tunnel repository.
   ///
   ///   - Parameter client: The tunnel client to use.
-  ///   - Returns: A new `KVdbTunnelRepository` instance.
-  public func setupClient<TunnelClientType>(
+  ///
+  ///   - Returns: A tunnel repository.
+  ///
+  ///   - Throws: An error if the setup fails.
+  ///
+  ///   - Note: The `TunnelClientType` must have a `Key` type
+  ///   that matches the `Key` type of the `TunnelRepositoryType`.
+  func setupClient<TunnelClientType: TunnelClient>(
     _ client: TunnelClientType
-  ) -> KVdbTunnelRepository<Key>
-    where TunnelClientType: KVdbTunnelClient, TunnelClientType.Key == Key {
-    .init(client: client, bucketName: bucketName)
-  }
+  ) -> TunnelRepositoryType where TunnelClientType.Key == TunnelRepositoryType.Key
 }

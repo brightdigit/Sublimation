@@ -1,5 +1,5 @@
 //
-//  VaporTunnelClient.swift
+//  KVdbTunnelClient.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,9 +28,6 @@
 //
 
 import Foundation
-import SublimationCore
-
-// import Vapor
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -47,24 +44,18 @@ import SublimationCore
 /// - Important: Make sure to import the necessary dependencies before using this client.
 ///
 /// - SeeAlso: `KVdbTunnelClient`
-public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
-  internal init(keyType _: Key.Type, get: @escaping @Sendable (URL) async throws -> Data?, post: @escaping @Sendable (URL, Data?) async throws -> Void) {
-    self.get = get
-    self.post = post
-  }
-
+public struct KVdbTunnelClient<Key: Sendable>: Sendable {
   private let get: @Sendable (URL) async throws -> Data?
   private let post: @Sendable (URL, Data?) async throws -> Void
 
-  ///   Initializes a new instance of the `VaporTunnelClient`.
-  ///
-  ///   - Parameter client: The Vapor client to use for making requests.
-  ///   - Parameter keyType: The type of the key used for accessing values in the tunnel.
-  ///
-  ///   - Returns: A new instance of `VaporTunnelClient`.
-//  public init(client: any Vapor.Client, keyType _: Key.Type) {
-//    self.client = client
-//  }
+  public init(
+    keyType _: Key.Type,
+    get: @escaping @Sendable (URL) async throws -> Data?,
+    post: @escaping @Sendable (URL, Data?) async throws -> Void
+  ) {
+    self.get = get
+    self.post = post
+  }
 
   ///   Retrieves the value associated with a key from a specific bucket.
   ///
@@ -81,11 +72,11 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
     let uri = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
     let url: URL?
     url = try await get(uri)
-      .flatMap { String(data: $0, encoding: .utf8) }
+      .map { String(decoding: $0, as: UTF8.self) }
       .flatMap(URL.init(string:))
 
     guard let url else {
-      throw NgrokServerError.invalidURL
+      throw KVdbServerError.invalidURL
     }
     return url
   }
@@ -106,17 +97,7 @@ public struct VaporTunnelClient<Key: Sendable>: KVdbTunnelClient {
     do {
       try await self.post(uri, value.absoluteString.data(using: .utf8))
     } catch {
-      throw NgrokServerError.cantSaveTunnelError(error)
+      throw KVdbServerError.cantSaveTunnelError(error)
     }
-//    let response = try await client.post(uri) { request in
-//      request.body = .init(string: value.absoluteString)
-//    }
-//    .get()
-//
-//
-//
-//    if response.status.code / 100 == 2 {
-//      return
-//    }
   }
 }

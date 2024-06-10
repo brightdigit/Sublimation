@@ -1,5 +1,5 @@
 //
-//  WritableTunnelRepositoryFactory.swift
+//  NWListener.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,26 +27,37 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if os(macOS)
-  @_exported import class Ngrokit.ProcessableProcess
+#if canImport(Network)
+  import Foundation
+  import Network
+
+  extension NWListener {
+    internal convenience init(
+      using parameters: NWParameters,
+      serviceType: String,
+      txtRecord: NWTXTRecord
+    ) throws {
+      try self.init(using: parameters)
+      self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
+    }
+  }
+
+  extension NWListener.State: CustomDebugStringConvertible {
+    public var debugDescription: String {
+      switch self {
+      case .setup:
+        "setup"
+      case let .waiting(error):
+        "waiting: \(error.debugDescription)"
+      case .ready:
+        "ready"
+      case let .failed(error):
+        "failed: \(error.debugDescription)"
+      case .cancelled:
+        "cancelled"
+      @unknown default:
+        "unknown state"
+      }
+    }
+  }
 #endif
-@_exported import struct Ngrokit.NgrokClient
-
-import Foundation
-
-#if canImport(FoundationNetworking)
-  import FoundationNetworking
-#endif
-
-/// A factory protocol for creating writable tunnel repositories.
-///
-/// This protocol extends the `TunnelRepositoryFactory` protocol
-/// and requires the associated `TunnelRepositoryType`
-/// to conform to the `WritableTunnelRepository` protocol.
-///
-/// - Note: This protocol is part of the `Sublimation` framework.
-///
-/// - SeeAlso: `TunnelRepositoryFactory`
-/// - SeeAlso: `WritableTunnelRepository`
-public protocol WritableTunnelRepositoryFactory: TunnelRepositoryFactory
-  where TunnelRepositoryType: WritableTunnelRepository {}

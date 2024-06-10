@@ -29,6 +29,7 @@
 
 import Logging
 import SublimationCore
+import SublimationTunnel
 
 /// Configuration for the Ngrok CLI API server.
 ///
@@ -37,7 +38,7 @@ import SublimationCore
 /// - Note: This configuration conforms to `NgrokVaporConfiguration` protocol.
 ///
 /// - SeeAlso: `NgrokCLIAPIServer`
-public struct NgrokCLIAPIConfiguration: NgrokServerConfiguration {
+public struct NgrokCLIAPIConfiguration: TunnelServerConfiguration {
   /// The type of server to use.
   public typealias Server = NgrokCLIAPIServer
 
@@ -48,7 +49,7 @@ public struct NgrokCLIAPIConfiguration: NgrokServerConfiguration {
   public let logger: Logger
 }
 
-extension NgrokCLIAPIConfiguration: NgrokVaporConfiguration {
+extension NgrokCLIAPIConfiguration {
   ///   Initializes a new instance of
   ///   `NgrokCLIAPIConfiguration` using a `ServerApplication`.
   ///

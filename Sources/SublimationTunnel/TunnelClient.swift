@@ -1,5 +1,5 @@
 //
-//  KVdbTunnelClient.swift
+//  TunnelClient.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -44,7 +44,7 @@ import Foundation
 /// - Important: This client requires the `FoundationNetworking` module to be imported.
 ///
 /// - SeeAlso: `KVdbTunnelClientProtocol`
-public protocol KVdbTunnelClient<Key>: Sendable {
+public protocol TunnelClient<Key>: Sendable {
   /// The type of key used to access values in the KVdb Tunnel.
   associatedtype Key: Sendable
 

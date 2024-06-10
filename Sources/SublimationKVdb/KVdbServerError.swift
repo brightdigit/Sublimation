@@ -1,5 +1,5 @@
 //
-//  NgrokServer.swift
+//  KVdbServerError.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,20 +27,19 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import OpenAPIRuntime
+import Foundation
 
-/// A protocol for starting a Ngrok server.
+/// An error type representing various errors that can occur
+/// when working with Ngrok server.
 ///
-/// Implement this protocol to start a Ngrok server.
-///
-/// - Note: The Ngrok server allows you to expose a local server to the internet.
-///
-/// - Important: Make sure to call the `start()` method to start the Ngrok server.
-public protocol NgrokServer {
-  ///   Starts the Ngrok server.
-  ///
-  ///   Call this method to start the Ngrok server and
-  ///   expose your local server to the internet.
-  func start(
-             isConnectionRefused: @escaping (ClientError) -> Bool)
+/// - clientNotSetup: The Ngrok client is not properly set up.
+/// - noTunnelFound: No tunnel was found.
+/// - invalidURL: The URL is invalid.
+/// - cantSaveTunnel: Unable to save the tunnel with the given ID and data.
+public enum KVdbServerError: Error {
+//  case clientNotSetup
+//  case noTunnelFound
+  case invalidURL
+  case cantSaveTunnel(Int?, Data?)
+  case cantSaveTunnelError(any Error)
 }

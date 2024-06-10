@@ -1,5 +1,5 @@
 //
-//  NgrokServerDelegate.swift
+//  TunnelServerConfiguration.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,25 +27,19 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Ngrokit
+import SublimationCore
 
-/// A delegate protocol for `NgrokServer` that handles server events and errors.
-public protocol NgrokServerDelegate: AnyObject, Sendable {
-  ///   Notifies the delegate that a tunnel has been updated.
+/// A protocol that defines the configuration for an Ngrok server.
+///
+/// - Note: The associated type `Server` must conform to the `NgrokServer` protocol.
+public protocol TunnelServerConfiguration {
+  /// Server for starting an `ngrok` process.
+  associatedtype Server: TunnelServer
+  ///   Initializes a new instance of the configuration.
   ///
-  ///   - Parameters:
-  ///     - server: The `NgrokServer` instance that triggered the event.
-  ///     - tunnel: The updated `Tunnel` object.
+  ///   - Parameter application: The Vapor application.
   ///
-  ///   - Note: This method is called whenever a tunnel's status or configuration changes.
-  func server(_ server: any NgrokServer, updatedTunnel tunnel: Tunnel)
-
-  ///   Notifies the delegate that an error has occurred.
-  ///
-  ///   - Parameters:
-  ///     - server: The `NgrokServer` instance that triggered the event.
-  ///     - error: The error that occurred.
-  ///
-  ///   - Note: This method is called whenever an error occurs during server operations.
-  func server(_ server: any NgrokServer, errorDidOccur error: any Error)
+  ///   - Note: This initializer is required to conform to
+  ///   the `NgrokVaporConfiguration` protocol.
+  init(application: any Application)
 }

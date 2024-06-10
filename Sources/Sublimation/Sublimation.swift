@@ -32,10 +32,6 @@ import Logging
 import OpenAPIRuntime
 import SublimationBonjour
 import SublimationCore
-import SublimationNgrok
-
-@_exported import SublimationBonjour
-@_exported import SublimationNgrok
 
 public final class Sublimation: Sendable {
   public let sublimatory: any Sublimatory
@@ -74,8 +70,15 @@ public final class Sublimation: Sendable {
       addresses: @escaping @Sendable () async -> [String],
       addressFilter: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:)
     ) {
+      let sublimatory = BonjourSublimatory(
+        listenerParameters: listenerParameters,
+        serviceType: serviceType,
+        maximumCount: maximumCount,
+        addresses: addresses,
+        addressFilter: addressFilter
+      )
       self.init(
-        sublimatory: BonjourSublimatory(listenerParameters: listenerParameters, serviceType: serviceType, maximumCount: maximumCount, addresses: addresses, addressFilter: addressFilter)
+        sublimatory: sublimatory
       )
     }
 
@@ -96,35 +99,5 @@ public final class Sublimation: Sendable {
       }
 
     #endif
-  }
-#endif
-
-#if os(macOS)
-  extension Sublimation {
-    ///     Initializes the Sublimation lifecycle handler with default values for macOS.
-    ///
-    ///     - Parameters:
-    ///       - ngrokPath: The path to the Ngrok executable.
-    ///       - bucketName: The name of the bucket for the tunnel repository.
-    ///       - key: The key for the tunnel repository.
-    ///
-    ///     - Note: This initializer is only available on macOS.
-    ///
-    ///     - SeeAlso: `KVdbTunnelRepositoryFactory`
-    ///     - SeeAlso: `NgrokCLIAPIServerFactory`
-    public convenience init(
-      ngrokPath: String,
-      bucketName: String,
-      key: some Any,
-      isConnectionRefused: @escaping (ClientError) -> Bool,
-      ngrokClient: @escaping () -> NgrokClient
-      
-    ) {
-      self.init(
-        sublimatory: TunnelSublimatory(
-          ngrokPath: ngrokPath, bucketName: bucketName, key: key,  isConnectionRefused: isConnectionRefused, ngrokClient: ngrokClient
-        )
-      )
-    }
   }
 #endif

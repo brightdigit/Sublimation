@@ -1,5 +1,5 @@
 //
-//  NgrokServerFactory.swift
+//  NgrokTunnel.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,20 +27,22 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-/// A factory protocol for creating Ngrok servers.
-public protocol NgrokServerFactory: Sendable {
-  /// The associated type representing the configuration for the server.
-  associatedtype Configuration: NgrokServerConfiguration
+import Ngrokit
+import SublimationTunnel
 
-  ///   Creates a server instance based on the provided configuration.
-  ///
-  ///   - Parameters:
-  ///     - configuration: The configuration for the server.
-  ///     - handler: The delegate object that handles server events.
-  ///
-  ///   - Returns: A server instance based on the provided configuration.
-  func server(
-    from configuration: Configuration,
-    handler: any NgrokServerDelegate
-  ) -> Configuration.Server
-}
+// extension Optional {
+//  ///   Returns a tuple containing the wrapped value
+//  ///    of the optional and another optional value.
+//  ///
+//  ///   - Parameter other: Another optional value.
+//  ///
+//  ///   - Returns: A tuple containing the wrapped value of the optional and `other`,
+//  ///   or `nil` if either the optional or `other` is `nil`.
+//  internal func flatTuple<OtherType>(_ other: OtherType?) -> (Wrapped, OtherType)? {
+//    flatMap { wrapped in
+//      other.map { (wrapped, $0) }
+//    }
+//  }
+// }
+
+extension NgrokTunnel: Tunnel {}

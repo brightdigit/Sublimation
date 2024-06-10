@@ -1,5 +1,5 @@
 //
-//  ServerApplication.swift
+//  TunnelBucketRepositoryFactory.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,20 +27,37 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-// import Vapor
+import Foundation
 
-///// A protocol that defines the server application.
-// internal protocol ServerApplication {
-//  /// The port number for the HTTP server configuration.
-//  var httpServerConfigurationPort: Int { get }
-//
-//  /// The logger for the server application.
-//  var logger: Logger { get }
-// }
-//
-// extension Vapor.Application: ServerApplication {
-//  /// The port number for the HTTP server configuration.
-//  internal var httpServerConfigurationPort: Int {
-//    http.server.configuration.port
-//  }
-// }
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
+/// This factory is used to set up and configure a
+/// `KVdbTunnelRepository` with a specific bucket name.
+public struct TunnelBucketRepositoryFactory<Key: Sendable>:
+  WritableTunnelRepositoryFactory {
+  /// The type of tunnel repository created by this factory.
+  public typealias TunnelRepositoryType = TunnelClientRepository<Key>
+
+  /// The name of the bucket to use.
+  public let bucketName: String
+
+  ///   Initializes a new instance of the factory with the specified bucket name.
+  ///
+  ///   - Parameter bucketName: The name of the bucket to use.
+  public init(bucketName: String) {
+    self.bucketName = bucketName
+  }
+
+  ///   Sets up a client and returns a new `KVdbTunnelRepository` instance.
+  ///
+  ///   - Parameter client: The tunnel client to use.
+  ///   - Returns: A new `KVdbTunnelRepository` instance.
+  public func setupClient<TunnelClientType>(
+    _ client: TunnelClientType
+  ) -> TunnelClientRepository<Key>
+    where TunnelClientType: TunnelClient, TunnelClientType.Key == Key {
+    .init(client: client, bucketName: bucketName)
+  }
+}

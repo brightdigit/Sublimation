@@ -29,32 +29,30 @@
 
 import Logging
 import SublimationCore
-@testable import SublimationVapor
 import XCTest
 
 internal class MockServerApplication: Application {
+  internal let httpServerConfigurationPort: Int
+  internal let httpServerTLS: Bool
+  internal let logger: Logger
+
+  internal private(set) var postRequests = [(URL, Data?)]()
+  internal private(set) var getRequests = [URL]()
+  internal private(set) var queuedGetResponses = [Result<Data?, any Error>]()
+  internal private(set) var queuedPostResponses = [Result<Void, any Error>]()
   internal init(httpServerConfigurationPort: Int, httpServerTLS: Bool, logger: Logger) {
     self.httpServerConfigurationPort = httpServerConfigurationPort
     self.httpServerTLS = httpServerTLS
     self.logger = logger
   }
 
-  var postRequests = [(URL, Data?)]()
-  var getRequests = [URL]()
-  var queuedGetResponses = [Result<Data?, any Error>]()
-  var queuedPostResponses = [Result<Void, any Error>]()
-
-  func post(to url: URL, body: Data?) async throws {
+  internal func post(to url: URL, body: Data?) async throws {
     postRequests.append((url, body))
     try queuedPostResponses.remove(at: 0).get()
   }
 
-  func get(from url: URL) async throws -> Data? {
+  internal func get(from url: URL) async throws -> Data? {
     getRequests.append(url)
     return try queuedGetResponses.remove(at: 0).get()
   }
-
-  internal let httpServerConfigurationPort: Int
-  internal let httpServerTLS: Bool
-  internal let logger: Logger
 }

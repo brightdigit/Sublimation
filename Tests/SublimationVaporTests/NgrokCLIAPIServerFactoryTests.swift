@@ -27,18 +27,23 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import HTTPTypes
 import Ngrokit
 import NgrokitMocks
+import OpenAPIRuntime
 @testable import SublimationNgrok
 import XCTest
-import OpenAPIRuntime
-import HTTPTypes
-final class MockTransport : ClientTransport {
-  func send(_ request: HTTPTypes.HTTPRequest, body: OpenAPIRuntime.HTTPBody?, baseURL: URL, operationID: String) async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?) {
-    fatalError()
+
+internal final class MockTransport: ClientTransport {
+  // swiftlint:disable:next unavailable_function
+  internal func send(
+    _: HTTPTypes.HTTPRequest,
+    body _: OpenAPIRuntime.HTTPBody?,
+    baseURL _: URL,
+    operationID _: String
+  ) async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?) {
+    fatalError("Not implemented")
   }
-  
-  
 }
 
 internal class NgrokCLIAPIServerFactoryTests: XCTestCase {

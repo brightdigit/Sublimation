@@ -30,15 +30,9 @@
 import protocol SublimationCore.Application
 import Vapor
 
-typealias SublimationApplication = SublimationCore.Application
+private typealias SublimationApplication = SublimationCore.Application
 
 extension Vapor.Application: SublimationApplication {
-  public func post(to url: URL, body: Data?) async throws {
-    _ = try await client.post(.init(string: url.absoluteString)) { request in
-      request.body = body.map(ByteBuffer.init(data:))
-    }
-  }
-
   public var httpServerConfigurationPort: Int {
     self.http.server.configuration.port
   }
@@ -47,17 +41,22 @@ extension Vapor.Application: SublimationApplication {
     self.http.server.configuration.tlsConfiguration != nil
   }
 
+  public func post(to url: URL, body: Data?) async throws {
+    _ = try await client.post(.init(string: url.absoluteString)) { request in
+      request.body = body.map(ByteBuffer.init(data:))
+    }
+  }
+
   public func get(from url: URL) async throws -> Data? {
     let response = try await client.get(.init(string: url.absoluteString))
     return response.body.map { Data(buffer: $0) }
   }
 }
 
-
 import OpenAPIRuntime
 
 extension ClientError {
-  var isConnectionRefused : Bool {
+  internal var isConnectionRefused: Bool {
     #if canImport(Network)
       if let posixError = self.underlyingError as? HTTPClient.NWPOSIXError {
         return posixError.errorCode == .ECONNREFUSED
@@ -67,7 +66,7 @@ extension ClientError {
     if let clientError = self.underlyingError as? HTTPClientError {
       return clientError == .connectTimeout
     }
-    
+
     return false
   }
 }

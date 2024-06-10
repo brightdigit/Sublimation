@@ -29,6 +29,7 @@
 
 import Foundation
 import Ngrokit
+import SublimationTunnel
 
 /// A factory for creating Ngrok CLI API servers.
 ///
@@ -37,48 +38,27 @@ import Ngrokit
 /// - Note: This factory requires the `NgrokCLIAPI` type to be `Processable`.
 ///
 /// - SeeAlso: `NgrokServerFactory`
-public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: NgrokServerFactory {
+public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: TunnelServerFactory {
   /// The configuration type for the Ngrok CLI API server.
   public typealias Configuration = NgrokCLIAPIConfiguration
 
   /// The Ngrok CLI API instance.
   private let cliAPI: any NgrokCLIAPI
 
-  /// The timeout duration for API requests.
-  // private let timeout: TimeAmount
-
-  private let ngrokClient: () -> NgrokClient
-
-  ///   Initializes a new instance of `NgrokCLIAPIServerFactory`.
-  ///
-  ///   - Parameters:
-  ///     - cliAPI: The Ngrok CLI API instance.
-  ///     - timeout: The timeout duration for API requests. Default is 1 second.
-//  public init(
-//    cliAPI: any NgrokCLIAPI//,
-//    //timeout: TimeAmount = .seconds(1)
-//  ) {
-//    self.cliAPI = cliAPI
-//    //self.timeout = timeout
-//  }
+  private let ngrokClient: @Sendable () -> NgrokClient
 
   public init(
     cliAPI: any NgrokCLIAPI,
-    ngrokClient: @escaping () -> NgrokClient
+    ngrokClient: @escaping @Sendable () -> NgrokClient
   ) {
     self.cliAPI = cliAPI
     self.ngrokClient = ngrokClient
   }
 
-  ///   Initializes a new instance of `NgrokCLIAPIServerFactory`
-  ///   with the specified Ngrok path.
-  ///
-  ///   - Parameters:
-  ///     - ngrokPath: The path to the Ngrok executable.
-  ///     - timeout: The timeout duration for API requests. Default is 1 second.
-
-  public init(ngrokPath: String,
-              ngrokClient: @escaping () -> NgrokClient) { // , timeout: TimeAmount = .seconds(1)) {
+  public init(
+    ngrokPath: String,
+    ngrokClient: @escaping @Sendable () -> NgrokClient
+  ) {
     self.init(
       cliAPI: NgrokProcessCLIAPI<ProcessType>(ngrokPath: ngrokPath),
       ngrokClient: ngrokClient
@@ -95,13 +75,8 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: NgrokServerFac
 
   public func server(
     from configuration: Configuration,
-    handler: any NgrokServerDelegate
+    handler: any TunnelServerDelegate
   ) -> NgrokCLIAPIServer {
-    // let client =
-//    NgrokClient(
-//      transport: AsyncHTTPClientTransport(configuration: .init(timeout: timeout))
-//    )
-
     let process = cliAPI.process(forHTTPPort: configuration.port)
     return .init(
       delegate: handler,

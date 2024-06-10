@@ -76,15 +76,28 @@ let package = Package(
       name: "SublimationCore",
       dependencies: [
         .product(name: "Logging", package: "swift-log")
-      ]
+      ],
+      swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "SublimationTunnel",
+      dependencies: ["SublimationCore"],
+      swiftSettings: swiftSettings
     ),
     .target(
       name: "SublimationNgrok",
-      dependencies: ["SublimationCore", "Ngrokit"]
+      dependencies: ["SublimationTunnel", "Ngrokit"],
+      swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "SublimationKVdb",
+      dependencies: ["SublimationTunnel"],
+      swiftSettings: swiftSettings
     ),
     .target(
       name: "SublimationBonjour",
-      dependencies: ["SublimationCore"]
+      dependencies: ["SublimationCore"],
+      swiftSettings: swiftSettings
     ),
     .target(
       name: "SublimationVapor",
@@ -95,6 +108,7 @@ let package = Package(
         ),
         "Ngrokit",
         "Sublimation",
+        "SublimationKVdb",
         .product(
           name: "Vapor",
           package: "vapor"
@@ -104,7 +118,8 @@ let package = Package(
     ),
     .target(
       name: "NgrokitMocks",
-      dependencies: ["Ngrokit"]
+      dependencies: ["Ngrokit"],
+      swiftSettings: swiftSettings
     ),
     .testTarget(
       name: "NgrokitTests",
@@ -113,11 +128,12 @@ let package = Package(
     ),
     .target(
       name: "SublimationMocks",
-      dependencies: ["Sublimation"]
+      dependencies: ["Sublimation"],
+      swiftSettings: swiftSettings
     ),
     .testTarget(
       name: "SublimationTests",
-      dependencies: ["Sublimation", "SublimationMocks"],
+      dependencies: ["Sublimation", "SublimationMocks", "SublimationKVdb"],
       swiftSettings: swiftSettings
     ),
     .testTarget(

@@ -1,5 +1,5 @@
 //
-//  KVdbTunnelRepository.swift
+//  KVdbTunnelClient.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,24 +28,7 @@
 //
 
 import Foundation
+import SublimationKVdb
+import SublimationTunnel
 
-#if canImport(FoundationNetworking)
-  import FoundationNetworking
-#endif
-
-public final class KVdbTunnelRepository<Key: Sendable>: WritableTunnelRepository {
-  private let client: any KVdbTunnelClient<Key>
-  private let bucketName: String
-  public init(client: any KVdbTunnelClient<Key>, bucketName: String) {
-    self.client = client
-    self.bucketName = bucketName
-  }
-
-  public func tunnel(forKey key: Key) async throws -> URL? {
-    try await client.getValue(ofKey: key, fromBucket: bucketName)
-  }
-
-  public func saveURL(_ url: URL, withKey key: Key) async throws {
-    try await client.saveValue(url, withKey: key, inBucket: bucketName)
-  }
-}
+extension KVdbTunnelClient: TunnelClient {}

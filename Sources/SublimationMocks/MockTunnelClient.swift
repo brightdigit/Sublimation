@@ -28,9 +28,9 @@
 //
 
 import Foundation
-import Sublimation
+import SublimationTunnel
 
-package actor MockTunnelClient<Key: Sendable>: KVdbTunnelClient {
+package actor MockTunnelClient<Key: Sendable>: TunnelClient {
   package struct GetParameters {
     package let key: Key
     package let bucketName: String
