@@ -159,4 +159,14 @@
       }
     }
   }
+
+
+extension BonjourDepositor {
+  public func first() async -> URL? {
+    for await baseURL in await self.urls {
+      return baseURL
+    }
+    return nil
+  }
+}
 #endif
