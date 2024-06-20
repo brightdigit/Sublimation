@@ -35,7 +35,7 @@ import Sublimation
 import SublimationTunnel
 import Vapor
 
-extension Sublimation: @retroactive LifecycleHandler {
+extension Sublimation: LifecycleHandler {
   public func willBoot(_ application: Vapor.Application) throws {
     Task {
       self.willBoot { application }

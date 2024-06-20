@@ -60,7 +60,7 @@ public actor TunnelSublimatory<
     factory: TunnelServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
     key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
-    repoClientFactory: @escaping @Sendable RepositoryClientFactory<Key>,
+    repoClientFactory: @escaping RepositoryClientFactory<Key>,
     isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool
   ) {
     self.init(

@@ -42,7 +42,7 @@
     }
   }
 
-  extension NWListener.State: @retroactive CustomDebugStringConvertible {
+  extension NWListener.State: CustomDebugStringConvertible {
     public var debugDescription: String {
       switch self {
       case .setup:

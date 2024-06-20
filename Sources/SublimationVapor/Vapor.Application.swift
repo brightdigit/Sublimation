@@ -30,7 +30,7 @@
 import protocol SublimationCore.Application
 import Vapor
 
-extension Vapor.Application: @retroactive Application {
+extension Vapor.Application: Application {
   public var httpServerConfigurationPort: Int {
     self.http.server.configuration.port
   }
