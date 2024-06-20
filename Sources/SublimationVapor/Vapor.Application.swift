@@ -30,9 +30,7 @@
 import protocol SublimationCore.Application
 import Vapor
 
-private typealias SublimationApplication = SublimationCore.Application
-
-extension Vapor.Application: SublimationApplication {
+extension Vapor.Application: @retroactive Application {
   public var httpServerConfigurationPort: Int {
     self.http.server.configuration.port
   }
@@ -50,23 +48,5 @@ extension Vapor.Application: SublimationApplication {
   public func get(from url: URL) async throws -> Data? {
     let response = try await client.get(.init(string: url.absoluteString))
     return response.body.map { Data(buffer: $0) }
-  }
-}
-
-import OpenAPIRuntime
-
-extension ClientError {
-  internal var isConnectionRefused: Bool {
-    #if canImport(Network)
-      if let posixError = self.underlyingError as? HTTPClient.NWPOSIXError {
-        return posixError.errorCode == .ECONNREFUSED
-      }
-    #endif
-
-    if let clientError = self.underlyingError as? HTTPClientError {
-      return clientError == .connectTimeout
-    }
-
-    return false
   }
 }

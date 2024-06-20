@@ -35,7 +35,7 @@ import Sublimation
 import SublimationTunnel
 import Vapor
 
-extension Sublimation: LifecycleHandler {
+extension Sublimation: @retroactive LifecycleHandler {
   public func willBoot(_ application: Vapor.Application) throws {
     Task {
       self.willBoot { application }
@@ -71,7 +71,7 @@ extension Sublimation: LifecycleHandler {
     public convenience init(
       ngrokPath: String,
       bucketName: String,
-      key: some Any,
+      key: some Sendable,
       isConnectionRefused: @escaping @Sendable (ClientError) -> Bool,
       ngrokClient: @escaping @Sendable () -> NgrokClient
     ) {
@@ -89,7 +89,7 @@ extension Sublimation: LifecycleHandler {
     public convenience init(
       ngrokPath: String,
       bucketName: String,
-      key: some Any,
+      key: some Sendable,
       timeout: TimeAmount = .seconds(1)
     ) {
       let tunnelSublimatory = TunnelSublimatory(

@@ -30,19 +30,4 @@
 import Ngrokit
 import SublimationTunnel
 
-// extension Optional {
-//  ///   Returns a tuple containing the wrapped value
-//  ///    of the optional and another optional value.
-//  ///
-//  ///   - Parameter other: Another optional value.
-//  ///
-//  ///   - Returns: A tuple containing the wrapped value of the optional and `other`,
-//  ///   or `nil` if either the optional or `other` is `nil`.
-//  internal func flatTuple<OtherType>(_ other: OtherType?) -> (Wrapped, OtherType)? {
-//    flatMap { wrapped in
-//      other.map { (wrapped, $0) }
-//    }
-//  }
-// }
-
-extension NgrokTunnel: Tunnel {}
+extension NgrokTunnel: @retroactive Tunnel {}

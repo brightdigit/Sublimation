@@ -61,9 +61,9 @@ public final class Sublimation: Sendable {
 #if canImport(Network)
   import Network
 
-@_exported import class SublimationBonjour.BonjourDepositor
+  @_exported import class SublimationBonjour.BonjourDepositor
 
-import class SublimationBonjour.BonjourSublimatory
+  import class SublimationBonjour.BonjourSublimatory
 
   extension Sublimation {
     public convenience init(

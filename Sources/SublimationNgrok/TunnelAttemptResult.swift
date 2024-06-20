@@ -1,5 +1,5 @@
 //
-//  NWListener.swift
+//  TunnelAttemptResult.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,37 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
-  import Foundation
-  import Network
+import OpenAPIRuntime
+import SublimationTunnel
 
-  extension NWListener {
-    internal convenience init(
-      using parameters: NWParameters,
-      serviceType: String,
-      txtRecord: NWTXTRecord
-    ) throws {
-      try self.init(using: parameters)
-      self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
-    }
-  }
-
-  extension NWListener.State: @retroactive CustomDebugStringConvertible {
-    public var debugDescription: String {
-      switch self {
-      case .setup:
-        "setup"
-      case let .waiting(error):
-        "waiting: \(error.debugDescription)"
-      case .ready:
-        "ready"
-      case let .failed(error):
-        "failed: \(error.debugDescription)"
-      case .cancelled:
-        "cancelled"
-      @unknown default:
-        "unknown state"
-      }
-    }
-  }
-#endif
+internal enum TunnelAttemptResult {
+  case network(AnyTunnelNetworkResult<ClientError>)
+  case error(ClientError)
+}

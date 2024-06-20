@@ -1,5 +1,5 @@
 //
-//  NWListener.swift
+//  ClientError.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,37 +27,21 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
-  import Foundation
-  import Network
+import AsyncHTTPClient
+import OpenAPIRuntime
 
-  extension NWListener {
-    internal convenience init(
-      using parameters: NWParameters,
-      serviceType: String,
-      txtRecord: NWTXTRecord
-    ) throws {
-      try self.init(using: parameters)
-      self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
-    }
-  }
-
-  extension NWListener.State: @retroactive CustomDebugStringConvertible {
-    public var debugDescription: String {
-      switch self {
-      case .setup:
-        "setup"
-      case let .waiting(error):
-        "waiting: \(error.debugDescription)"
-      case .ready:
-        "ready"
-      case let .failed(error):
-        "failed: \(error.debugDescription)"
-      case .cancelled:
-        "cancelled"
-      @unknown default:
-        "unknown state"
+extension ClientError {
+  internal var isConnectionRefused: Bool {
+    #if canImport(Network)
+      if let posixError = self.underlyingError as? HTTPClient.NWPOSIXError {
+        return posixError.errorCode == .ECONNREFUSED
       }
+    #endif
+
+    if let clientError = self.underlyingError as? HTTPClientError {
+      return clientError == .connectTimeout
     }
+
+    return false
   }
-#endif
+}

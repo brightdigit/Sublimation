@@ -33,6 +33,7 @@ import SublimationCore
 
 public typealias RepositoryClientFactory<Key> =
   (@Sendable @escaping () -> any Application) -> any TunnelClient<Key>
+
 public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   TunnelServerFactoryType: TunnelServerFactory
@@ -59,8 +60,8 @@ public actor TunnelSublimatory<
     factory: TunnelServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
     key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
-    repoClientFactory: @escaping RepositoryClientFactory<Key>,
-    isConnectionRefused: @escaping (ConnectionErrorType) -> Bool
+    repoClientFactory: @escaping @Sendable RepositoryClientFactory<Key>,
+    isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool
   ) {
     self.init(
       factory: factory,
@@ -82,7 +83,7 @@ public actor TunnelSublimatory<
     logger: Logger?,
     server: (any TunnelServer)?,
     repoClientFactory: @escaping RepositoryClientFactory<Key>,
-    isConnectionRefused: @escaping (ConnectionErrorType) -> Bool
+    isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool
   ) {
     self.factory = factory
     self.repoFactory = repoFactory

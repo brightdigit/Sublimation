@@ -53,8 +53,8 @@ import SublimationTunnel
       ngrokPath: String,
       bucketName: String,
       key: Key,
-      isConnectionRefused: @escaping (ClientError) -> Bool,
-      ngrokClient: @escaping () -> NgrokClient
+      isConnectionRefused: @escaping @Sendable (ClientError) -> Bool,
+      ngrokClient: @escaping @Sendable () -> NgrokClient
     ) where WritableTunnelRepositoryFactoryType == TunnelBucketRepositoryFactory<Key>,
       TunnelServerFactoryType == NgrokCLIAPIServerFactory<ProcessableProcess>,
       WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key == Key {

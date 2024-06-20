@@ -1,5 +1,5 @@
 //
-//  NWListener.swift
+//  NgrokCLIAPIServer+TunnelServer.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,37 +27,33 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
-  import Foundation
-  import Network
+import Foundation
+import OpenAPIRuntime
+import SublimationTunnel
 
-  extension NWListener {
-    internal convenience init(
-      using parameters: NWParameters,
-      serviceType: String,
-      txtRecord: NWTXTRecord
-    ) throws {
-      try self.init(using: parameters)
-      self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
+extension NgrokCLIAPIServer {
+  ///   Runs the server.
+  public func run(
+    isConnectionRefused: @escaping (ClientError) -> Bool) async {
+    let start = Date()
+    let newTunnel: any Tunnel
+    do {
+      newTunnel = try await self.newTunnel(isConnectionRefused: isConnectionRefused)
+    } catch {
+      delegate.server(self, errorDidOccur: error)
+      return
     }
+    let seconds = Int(-start.timeIntervalSinceNow)
+    logger.notice("New Tunnel Created in \(seconds) secs: \(newTunnel.publicURL)")
+
+    delegate.server(self, updatedTunnel: newTunnel)
   }
 
-  extension NWListener.State: @retroactive CustomDebugStringConvertible {
-    public var debugDescription: String {
-      switch self {
-      case .setup:
-        "setup"
-      case let .waiting(error):
-        "waiting: \(error.debugDescription)"
-      case .ready:
-        "ready"
-      case let .failed(error):
-        "failed: \(error.debugDescription)"
-      case .cancelled:
-        "cancelled"
-      @unknown default:
-        "unknown state"
-      }
+  ///   Starts the server.
+  public func start(
+    isConnectionRefused: @escaping @Sendable (ClientError) -> Bool) {
+    Task {
+      await run(isConnectionRefused: isConnectionRefused)
     }
   }
-#endif
+}
