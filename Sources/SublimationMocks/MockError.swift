@@ -32,14 +32,14 @@ package enum MockError<T: Equatable & Sendable>: Error {
 }
 
 extension Result {
-  public var error: (any Error)? {
+  package var error: (any Error)? {
     guard case let .failure(failure) = self else {
       return nil
     }
     return failure
   }
 
-  public func mockErrorValue<T: Equatable & Sendable>() -> T? {
+  package func mockErrorValue<T: Equatable & Sendable>() -> T? {
     guard let mockError = error as? MockError<T> else {
       return nil
     }

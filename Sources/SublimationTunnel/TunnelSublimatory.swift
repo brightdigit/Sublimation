@@ -31,6 +31,7 @@ import Foundation
 import Logging
 import SublimationCore
 
+/// Closure which returns a ``TunnelClient`` from the ``Application``.
 public typealias RepositoryClientFactory<Key> =
   (@Sendable @escaping () -> any Application) -> any TunnelClient<Key>
 
