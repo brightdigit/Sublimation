@@ -28,6 +28,9 @@
 //
 
 extension String {
+  /// Filters strings which are only v4 and not refering the localhost.
+  /// - Parameter address: The host address string.
+  /// - Returns: True, if the address passes the filter.
   @Sendable
   public static func isIPv4NotLocalhost(_ address: String) -> Bool {
     guard !(["127.0.0.1", "::1", "localhost"].contains(address)) else {

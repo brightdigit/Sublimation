@@ -34,6 +34,14 @@
   import class SublimationBonjour.BonjourSublimatory
 
   extension Sublimation {
+    /// Initializes a `Sublimation` instance with the provided parameters.
+    ///
+    /// - Parameters:
+    ///   - listenerParameters: The network parameters to use for the listener. Default is `.tcp`.
+    ///   - serviceType: The Bonjour service type. Default is `BonjourSublimatory.httpTCPServiceType`.
+    ///   - maximumCount: The maximum number of connections. Default is `nil`.
+    ///   - addresses: A closure that asynchronously returns a list of addresses.
+    ///   - addressFilter: A closure that filters the addresses. Default is `String.isIPv4NotLocalhost(_:)`.
     public convenience init(
       listenerParameters: NWParameters = .tcp,
       serviceType: String = BonjourSublimatory.httpTCPServiceType,
@@ -54,6 +62,14 @@
     }
 
     #if os(macOS)
+      /// Initializes a `Sublimation` instance with the provided parameters on macOS.
+      ///
+      /// - Parameters:
+      ///   - listenerParameters: The network parameters to use for the listener. Default is `.tcp`.
+      ///   - serviceType: The Bonjour service type. Default is `BonjourSublimatory.httpTCPServiceType`.
+      ///   - maximumCount: The maximum number of connections. Default is `nil`.
+      ///   - addressFilter: A closure that filters the addresses.
+      ///   Default is `String.isIPv4NotLocalhost(_:)`.
       public convenience init(
         listenerParameters: NWParameters = .tcp,
         serviceType: String = BonjourSublimatory.httpTCPServiceType,
@@ -68,7 +84,6 @@
           addressFilter: addressFilter
         )
       }
-
     #endif
   }
 #endif

@@ -37,7 +37,7 @@ import Vapor
 
 #if os(macOS)
   extension Sublimation {
-    ///     Initializes the Sublimation lifecycle handler with default values for macOS.
+    ///     Initializes the Sublimation lifecycle handler using Ngrok with default values for macOS.
     ///
     ///     - Parameters:
     ///       - ngrokPath: The path to the Ngrok executable.
@@ -66,6 +66,12 @@ import Vapor
       )
     }
 
+    /// Description Initializes the Sublimation lifecycle handler using Ngrok with default values for macOS.
+    ///     - Parameters:
+    ///       - ngrokPath: The path to the Ngrok executable.
+    ///       - bucketName: The name of the bucket for the tunnel repository.
+    ///       - key: The key for the tunnel repository.
+    ///       - timeout: The amount of to wait for the ngrok to respond.
     public convenience init(
       ngrokPath: String,
       bucketName: String,
