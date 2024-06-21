@@ -40,7 +40,7 @@ Share your local development server easily with your Apple devices.
 
 # Introduction
 
-When you are developing a full stack Swift application, you want to easily test and debug your application on both the device (iPhone, Apple Watch, iPad, etc...) as well as your development server. If you are using simulator then setting your host server to `localhost` will work but often we need to test on an actual device. You can either be an IT expert your local network's DNS or you can use Sublimation to easily connect your local server to your device.
+When you are developing a full stack Swift application, you want to easily test and debug your application on both the device (iPhone, Apple Watch, iPad, etc...) as well as your development server. If you are using simulator then setting your host server to `localhost` will work but often we need to test on an actual device. You can either be an IT expert on your local network's DNS or you can use Sublimation to easily connect your local server to your device.
 
 ## Requirements 
 
@@ -54,6 +54,53 @@ When you are developing a full stack Swift application, you want to easily test 
 
 - Ubuntu 18.04 or later
 - Swift 5.5.2 or later
+
+## Bonjour vs Ngrok
+
+Unless you need public exposure for your development server, **your best bet is to use _Bonjour_ for letting your devices know about your server.** 
+
+## Using Bonjour
+
+In order to use Bonjour to notify your network devices of your server, you need to add Sublimation as part of the lifecycle of your server application. By default, Sublimation uses Bonjour and all the default parameters should be sufficient. Here's an example for Vapor:
+
+```swift
+#if os(macOS) && DEBUG
+  app.lifecycle.use(
+    Sublimation()
+  )
+#endif
+```
+
+Notice:
+1. You'll only want to run this in development.
+2. Sublimation only works on macOS and not Linux.
+
+### How it works 
+
+The `BonjourSublimatory` does 2 things:
+
+1. Gets the address of the server host.
+2. Start an NWListener to advertise those addresses.
+
+Once your server is started, it should automatically advertise these on your local network. 
+
+In your client application, you'll need to create a `BonjourDepositor`. The `BonjourDepositor` searches your network for you development server. You can call 'BonjourDepositor.urls' to get an `AsyncStream` of urls. However in most cases `.first` should be sufficient:
+
+```swift
+let baseURL : URL
+#if os(macOS) && DEBUG
+  let depositor = BonjourDepositor()
+  // hostURL = http://192.168.0.1
+  guard let hostURL = await depositor.first() else {
+    // handle when no url is returned
+  }
+  // hostURL = http://192.168.0.1/api/v1/
+  baseURL = hostURL.appendPathComponent("/api/v1/")
+#else
+  // handle instances where the server is running 
+  //  outside of your development environment
+#endif
+```
 
 ## Using Ngrok
 
