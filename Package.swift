@@ -3,13 +3,14 @@
 import PackageDescription
 
 let swiftSettings: [SwiftSetting] = [
-  //  .enableUpcomingFeature("BareSlashRegexLiterals"),
-//  .enableUpcomingFeature("ConciseMagicFile"),
-//  .enableUpcomingFeature("ExistentialAny"),
-//  .enableUpcomingFeature("ForwardTrailingClosures"),
-//  .enableUpcomingFeature("ImplicitOpenExistentials"),
-//  .enableUpcomingFeature("StrictConcurrency")
-//  .unsafeFlags(["-warn-concurrency", "-enable-actor-data-race-checks"])
+  SwiftSetting.enableUpcomingFeature("BareSlashRegexLiterals"),
+  SwiftSetting.enableUpcomingFeature("ConciseMagicFile"),
+  SwiftSetting.enableUpcomingFeature("ExistentialAny"),
+  SwiftSetting.enableUpcomingFeature("ForwardTrailingClosures"),
+  SwiftSetting.enableUpcomingFeature("ImplicitOpenExistentials"),
+  SwiftSetting.enableUpcomingFeature("DisableOutwardActorInference"),
+  SwiftSetting.enableExperimentalFeature("StrictConcurrency"),
+  SwiftSetting.unsafeFlags(["-warn-concurrency", "-enable-actor-data-race-checks"])
 ]
 
 let package = Package(
@@ -43,7 +44,8 @@ let package = Package(
     .package(
       url: "https://github.com/swift-server/swift-openapi-async-http-client",
       from: "1.0.0"
-    )
+    ),
+    .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0")
   ],
   targets: [
     .target(
@@ -62,6 +64,39 @@ let package = Package(
     ),
     .target(
       name: "Sublimation",
+      dependencies: [
+        "SublimationCore",
+        "SublimationBonjour",
+        "SublimationNgrok",
+        .product(name: "Logging", package: "swift-log")
+      ],
+      swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "SublimationCore",
+      dependencies: [
+        .product(name: "Logging", package: "swift-log")
+      ],
+      swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "SublimationTunnel",
+      dependencies: ["SublimationCore"],
+      swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "SublimationNgrok",
+      dependencies: ["SublimationTunnel", "Ngrokit"],
+      swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "SublimationKVdb",
+      dependencies: ["SublimationTunnel"],
+      swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "SublimationBonjour",
+      dependencies: ["SublimationCore"],
       swiftSettings: swiftSettings
     ),
     .target(
@@ -73,6 +108,7 @@ let package = Package(
         ),
         "Ngrokit",
         "Sublimation",
+        "SublimationKVdb",
         .product(
           name: "Vapor",
           package: "vapor"
@@ -82,7 +118,8 @@ let package = Package(
     ),
     .target(
       name: "NgrokitMocks",
-      dependencies: ["Ngrokit"]
+      dependencies: ["Ngrokit"],
+      swiftSettings: swiftSettings
     ),
     .testTarget(
       name: "NgrokitTests",
@@ -91,11 +128,22 @@ let package = Package(
     ),
     .target(
       name: "SublimationMocks",
-      dependencies: ["Sublimation"]
+      dependencies: ["Sublimation"],
+      swiftSettings: swiftSettings
     ),
     .testTarget(
-      name: "SublimationTests",
-      dependencies: ["Sublimation", "SublimationMocks"],
+      name: "SublimationBonjourTests",
+      dependencies: ["SublimationMocks", "SublimationBonjour"],
+      swiftSettings: swiftSettings
+    ),
+    .testTarget(
+      name: "SublimationTunnelTests",
+      dependencies: ["SublimationTunnel", "SublimationMocks"],
+      swiftSettings: swiftSettings
+    ),
+    .testTarget(
+      name: "SublimationKVdbTests",
+      dependencies: ["SublimationMocks", "SublimationKVdb"],
       swiftSettings: swiftSettings
     ),
     .testTarget(

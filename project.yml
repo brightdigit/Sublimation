@@ -2,7 +2,7 @@ name: Sublimation
 settings:
   LINT_MODE: ${LINT_MODE}
 packages:
-  Prch:
+  Sublimation:
     path: .
 projectReferences:
     Demo:

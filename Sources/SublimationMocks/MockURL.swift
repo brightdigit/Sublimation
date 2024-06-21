@@ -27,9 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Sublimation
-
-package struct MockURL: KVdbURLConstructable {
+package struct MockURL {
   package let kvDBBase: String
   package let keyBucketPath: String
   package init(kvDBBase: String, keyBucketPath: String) {
