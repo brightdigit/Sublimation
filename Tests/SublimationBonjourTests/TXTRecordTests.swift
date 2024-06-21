@@ -1,5 +1,5 @@
 //
-//  NWTXTRecord.swift
+//  TXTRecordTests.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,15 +27,36 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
-  import Network
+import Foundation
+@testable import SublimationBonjour
+import XCTest
 
-  extension NWTXTRecord: TXTRecord {
-    func getStringEntry(for key: String) -> String? {
-      guard case let .string(value) = self.getEntry(for: key) else {
-        return nil
-      }
-      return value
-    }
+struct MockTXTRecord: TXTRecord {
+  let dictionary: [String: String]
+
+  init(_ dictionary: [String: String]) {
+    self.dictionary = dictionary
   }
-#endif
+
+  func getStringEntry(for key: String) -> String? {
+    dictionary[key]
+  }
+
+  var count: Int {
+    dictionary.count
+  }
+}
+
+internal class TXTRecordTests: XCTestCase {
+  func testInit() {
+    XCTFail("Not Implemented")
+  }
+
+  func testGetEntry() {
+    XCTFail("Not Implemented")
+  }
+
+  func testURLs() {
+    XCTFail("Not Implemented")
+  }
+}

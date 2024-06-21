@@ -132,6 +132,11 @@ let package = Package(
       swiftSettings: swiftSettings
     ),
     .testTarget(
+      name: "SublimationBonjourTests",
+      dependencies: ["SublimationMocks", "SublimationBonjour"],
+      swiftSettings: swiftSettings
+    ),
+    .testTarget(
       name: "SublimationTunnelTests",
       dependencies: ["SublimationTunnel", "SublimationMocks"],
       swiftSettings: swiftSettings
