@@ -36,11 +36,17 @@
   #endif
   import Network
 
+  /// `BonjourDepositor` using Bonjour services, to collect URLs advertised by your `Sublimation` server.
   public actor BonjourDepositor {
+    /// Default configuration values for the `BonjourDepositor`.
     public enum Defaults {
+      /// The default port number used for the service.
       public static let port = 80
+      /// The default TLS setting for the service.
       public static let isTLS = false
+      /// The default Bonjour service type.
       public static let bonjourType = "_http._tcp"
+      /// The default Bonjour domain.
       public static let bonourDomain = "local."
     }
 
@@ -52,12 +58,16 @@
     private let defaultPort: Int
     private let defaultTLS: Bool
 
+    /// The current state of the NWBrowser.
     public var state: NWBrowser.State? {
       get async {
         await self.browser.currentState
       }
     }
 
+    /// An asynchronous stream of URLs discovered by the browser.
+    ///
+    /// If the stream manager is empty, it starts the browser and begins parsing results.
     public var urls: AsyncStream<URL> {
       get async {
         let browser = browser
@@ -75,13 +85,22 @@
           Task {
             await streams.append(continuation) {
               await browser.stop()
-              self.logger?.log { $0.debug("Shuting down browser.") }
+              self.logger?.log { $0.debug("Shutting down browser.") }
             }
           }
         }
       }
     }
 
+    /// Initializes a `BonjourDepositor` with a Bonjour service type and domain.
+    ///
+    /// - Parameters:
+    ///   - type: The Bonjour service type.
+    ///   - domain: The Bonjour domain.
+    ///   - parameters: The network parameters.
+    ///   - defaultPort: The default port number.
+    ///   - defaultTLS: The default TLS setting.
+    ///   - logger: An optional logger.
     public init(
       bonjourWithType type: String = Defaults.bonjourType,
       domain: String = Defaults.bonourDomain,
@@ -99,6 +118,14 @@
       )
     }
 
+    /// Initializes a `BonjourDepositor` with a browser descriptor.
+    ///
+    /// - Parameters:
+    ///   - descriptor: The browser descriptor.
+    ///   - parameters: The network parameters.
+    ///   - defaultPort: The default port number.
+    ///   - defaultTLS: The default TLS setting.
+    ///   - logger: An optional logger.
     public init(
       for descriptor: NWBrowser.Descriptor,
       using parameters: NWParameters,
@@ -126,6 +153,15 @@
       self.defaultPort = defaultPort
     }
 
+    /// Parses a browser result and extracts URLs.
+    ///
+    /// - Parameters:
+    ///   - result: The browser result.
+    ///   - logger: An optional logger.
+    ///   - defaultPort: The default port number.
+    ///   - defaultTLS: The default TLS setting.
+    ///
+    /// - Returns: An array of URLs if extraction is successful, otherwise nil.
     private static func urls(
       from result: NWBrowser.Result,
       logger: LoggingActor?,
@@ -143,6 +179,9 @@
       return txtRecord.urls(defaultPort: defaultPort, defaultTLS: defaultTLS, logger: logger)
     }
 
+    /// Parses the browser result and yields the extracted URLs to the stream manager.
+    ///
+    /// - Parameter result: The browser result to be parsed.
     private func parseResult(_ result: NWBrowser.Result) {
       guard let urls = Self.urls(
         from: result,
@@ -161,6 +200,9 @@
   }
 
   extension BonjourDepositor {
+    /// Retrieves the first URL from the asynchronous stream.
+    ///
+    /// - Returns: The first URL if available, otherwise nil.
     public func first() async -> URL? {
       for await baseURL in await self.urls {
         return baseURL
