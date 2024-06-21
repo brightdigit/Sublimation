@@ -33,10 +33,13 @@ import XCTest
 
 internal class TXTRecordTests: XCTestCase {
   internal func testInit() {
-    var filterCount = 0
+    let expectation = expectation(description: "Filter")
+
     let expectedIsTLS: Bool = .random()
     let expectedPort: Int = .random(in: 1_000 ... 9_000)
     let expectedAddresses: [String] = .randomIpAddresses(maxLength: 5)
+
+    expectation.expectedFulfillmentCount = expectedAddresses.count
 
     let record = MockTXTRecord(
       isTLS: expectedIsTLS,
@@ -44,7 +47,7 @@ internal class TXTRecordTests: XCTestCase {
       maximumCount: nil,
       addresses: expectedAddresses,
       filter: { _ in
-        filterCount += 1
+        expectation.fulfill()
         return true
       }
     )
@@ -57,7 +60,8 @@ internal class TXTRecordTests: XCTestCase {
     }
 
     XCTAssertEqual(record.count, expectedAddresses.count + 2)
-    XCTAssertEqual(filterCount, expectedAddresses.count)
+
+    wait(for: [expectation], timeout: 1.0)
   }
 
   internal func testGetEntry() {
