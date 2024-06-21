@@ -40,7 +40,7 @@ extension TXTRecord {
     self.init(.init(sublimationTxt: dictionary))
   }
 
-  public init(
+  internal init(
     isTLS: Bool,
     port: Int,
     maximumCount: Int?,
@@ -68,18 +68,18 @@ extension TXTRecord {
     self.init(dictionary)
   }
 
-  public func getEntry<T: SublimationValue>(for key: SublimationKey, of _: T.Type) -> EntryResult<T> {
+  internal func getEntry<T: SublimationValue>(for key: SublimationKey, of _: T.Type) -> EntryResult<T> {
     guard let string = getStringEntry(for: key.stringValue) else {
       return .empty
     }
     return .init(string: string)
   }
 
-  public func getEntry<T: SublimationValue>(for key: SublimationKey) -> EntryResult<T> {
+  internal func getEntry<T: SublimationValue>(for key: SublimationKey) -> EntryResult<T> {
     self.getEntry(for: key, of: T.self)
   }
 
-  public func urls(
+  internal func urls(
     defaultPort: Int,
     defaultTLS: Bool,
     logger: LoggingActor?

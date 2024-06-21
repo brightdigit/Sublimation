@@ -34,6 +34,11 @@ public protocol Sublimatory: Sendable {
 }
 
 extension Sublimatory {
+  /// Empty implementation of ``didBoot(from:)-warq``
+  /// - Parameter _:  The Sever Application
   public func didBoot(from _: @escaping @Sendable () -> any Application) async {}
+
+  /// Empty implementation of ``shutdown(from:)-warq``
+  /// - Parameter _:  The Sever Application
   public func shutdown(from _: @escaping @Sendable () -> any Application) async {}
 }

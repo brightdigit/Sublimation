@@ -29,7 +29,7 @@
 
 import Foundation
 
-public typealias AnyTunnelNetworkResult<ConnectionErrorType: Error> =
+package typealias AnyTunnelNetworkResult<ConnectionErrorType: Error> =
   NetworkResult<(any Tunnel)?, ConnectionErrorType>
 
 /// Represents the result of a network operation.
@@ -39,14 +39,14 @@ public typealias AnyTunnelNetworkResult<ConnectionErrorType: Error> =
 /// - failure: The operation failed with an error.
 ///
 /// - Note: This type is internal and should not be used outside of the framework.
-public enum NetworkResult<T, ConnectionErrorType: Error> {
+package enum NetworkResult<T, ConnectionErrorType: Error> {
   case success(T)
   case connectionRefused(ConnectionErrorType)
   case failure(any Error)
 }
 
 extension NetworkResult {
-  public init(error: any Error, isConnectionRefused: @escaping (ConnectionErrorType) -> Bool) {
+  package init(error: any Error, isConnectionRefused: @escaping (ConnectionErrorType) -> Bool) {
     guard let error = error as? ConnectionErrorType else {
       self = .failure(error)
       return
@@ -60,7 +60,7 @@ extension NetworkResult {
     self = .failure(error)
   }
 
-  public init(
+  package init(
     _ closure: @escaping () async throws -> T,
     isConnectionRefused: @escaping (ConnectionErrorType) -> Bool
   ) async {
@@ -71,7 +71,7 @@ extension NetworkResult {
     }
   }
 
-  public func get() throws -> T? {
+  package func get() throws -> T? {
     switch self {
     case .connectionRefused:
       return nil

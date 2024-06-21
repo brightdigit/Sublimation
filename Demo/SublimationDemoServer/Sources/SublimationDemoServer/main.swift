@@ -14,15 +14,11 @@ app.get { _ in
   "You're connected"
 }
 
-
-app.lifecycle.use(
-  Sublimation(
-    ngrokPath: Configuration.ngrokPath,
-    bucketName: Configuration.bucketName,
-    key: Configuration.key
+#if os(macOS) && DEBUG
+  app.lifecycle.use(
+    Sublimation()
   )
 #endif
-
 
 app.http.server.configuration.hostname = "::"
 try app.run()
