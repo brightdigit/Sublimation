@@ -30,48 +30,12 @@
 #if canImport(Network)
   import Network
 
-  extension NWTXTRecord {
-    private init(_ dictionary: [SublimationKey: any CustomStringConvertible]) {
-      self.init(.init(sublimationTxt: dictionary))
-    }
-
-    public init(
-      isTLS: Bool,
-      port: Int,
-      maximumCount: Int?,
-      filter: @Sendable @escaping (String) -> Bool,
-      addresses: @autoclosure () -> [String]
-    ) {
-      var dictionary: [SublimationKey: any CustomStringConvertible] = [
-        .tls: isTLS,
-        .port: port
-      ]
-
-      let allAddresses = addresses()
-      let addresses: any Sequence<String> = if let maximumCount {
-        allAddresses.prefix(maximumCount)
-      } else {
-        allAddresses
+  extension NWTXTRecord: TXTRecord {
+    internal func getStringEntry(for key: String) -> String? {
+      guard case let .string(value) = self.getEntry(for: key) else {
+        return nil
       }
-      for address in addresses {
-        guard filter(address) else {
-          continue
-        }
-        let index = dictionary.count - 2
-        dictionary[.address(index)] = address
-      }
-      self.init(dictionary)
-    }
-
-    public func getEntry<T: SublimationValue>(for key: SublimationKey, of _: T.Type) -> EntryResult<T> {
-      guard case let .string(string) = getEntry(for: key.stringValue) else {
-        return .empty
-      }
-      return .init(string: string)
-    }
-
-    public func getEntry<T: SublimationValue>(for key: SublimationKey) -> EntryResult<T> {
-      self.getEntry(for: key, of: T.self)
+      return value
     }
   }
 #endif

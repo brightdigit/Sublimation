@@ -50,7 +50,6 @@ internal actor StreamManager<Key: Hashable & Sendable, Value> {
       for url in urls {
         streamContinuation.value.yield(url)
       }
-      // logger?.log { $0.debug("Yielded to Stream \(streamContinuation.key)") }
     }
   }
 

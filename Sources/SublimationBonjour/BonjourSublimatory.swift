@@ -140,8 +140,8 @@
         isTLS: isTLS,
         port: port,
         maximumCount: maximumCount,
-        filter: addressFilter,
-        addresses: addresses
+        addresses: addresses,
+        filter: addressFilter
       )
       let listener: NWListener
       do {

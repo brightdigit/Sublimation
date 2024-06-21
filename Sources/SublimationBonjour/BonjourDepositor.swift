@@ -140,7 +140,7 @@
         logger?.log { $0.debug("No txt record.") }
         return nil
       }
-      return URL.urls(from: txtRecord, logger: logger, defaultPort: defaultPort, defaultTLS: defaultTLS)
+      return txtRecord.urls(defaultPort: defaultPort, defaultTLS: defaultTLS, logger: logger)
     }
 
     private func parseResult(_ result: NWBrowser.Result) {
@@ -160,13 +160,12 @@
     }
   }
 
-
-extension BonjourDepositor {
-  public func first() async -> URL? {
-    for await baseURL in await self.urls {
-      return baseURL
+  extension BonjourDepositor {
+    public func first() async -> URL? {
+      for await baseURL in await self.urls {
+        return baseURL
+      }
+      return nil
     }
-    return nil
   }
-}
 #endif

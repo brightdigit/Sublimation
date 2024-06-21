@@ -31,4 +31,4 @@ import Foundation
 import SublimationKVdb
 import SublimationTunnel
 
-extension KVdbTunnelClient: @retroactive TunnelClient {}
+extension KVdbTunnelClient: TunnelClient {}
