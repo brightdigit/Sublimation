@@ -9,7 +9,8 @@ let swiftSettings: [SwiftSetting] = [
   SwiftSetting.enableUpcomingFeature("ForwardTrailingClosures"),
   SwiftSetting.enableUpcomingFeature("ImplicitOpenExistentials"),
   SwiftSetting.enableUpcomingFeature("DisableOutwardActorInference"),
-  SwiftSetting.enableExperimentalFeature("StrictConcurrency")
+  SwiftSetting.enableExperimentalFeature("StrictConcurrency"),
+  SwiftSetting.unsafeFlags(["-warn-concurrency", "-enable-actor-data-race-checks"])
 ]
 
 let package = Package(

@@ -69,7 +69,7 @@ extension SublimationKeyValues {
 }
 
 extension [String: String] {
-  internal init(sublimationTxt: [SublimationKey: any CustomStringConvertible]) {
+  public init(sublimationTxt: [SublimationKey: any CustomStringConvertible]) {
     let pairs = sublimationTxt
       .map { (key: SublimationKey, value: any CustomStringConvertible) in
         (key.stringValue, value.description)

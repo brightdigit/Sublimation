@@ -111,4 +111,3 @@ internal class TXTRecordTests: XCTestCase {
     XCTAssertEqual(urls, expectedURLs)
   }
 }
- 

@@ -27,10 +27,12 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import Ngrokit
 import NIOCore
 import OpenAPIAsyncHTTPClient
 import OpenAPIRuntime
 import Sublimation
+import SublimationTunnel
 import Vapor
 
 extension Sublimation: LifecycleHandler {
@@ -52,3 +54,51 @@ extension Sublimation: LifecycleHandler {
     }
   }
 }
+
+#if os(macOS)
+  extension Sublimation {
+    ///     Initializes the Sublimation lifecycle handler with default values for macOS.
+    ///
+    ///     - Parameters:
+    ///       - ngrokPath: The path to the Ngrok executable.
+    ///       - bucketName: The name of the bucket for the tunnel repository.
+    ///       - key: The key for the tunnel repository.
+    ///
+    ///     - Note: This initializer is only available on macOS.
+    ///
+    ///     - SeeAlso: `KVdbTunnelRepositoryFactory`
+    ///     - SeeAlso: `NgrokCLIAPIServerFactory`
+    public convenience init(
+      ngrokPath: String,
+      bucketName: String,
+      key: some Sendable,
+      isConnectionRefused: @escaping @Sendable (ClientError) -> Bool,
+      ngrokClient: @escaping @Sendable () -> NgrokClient
+    ) {
+      self.init(
+        sublimatory: TunnelSublimatory(
+          ngrokPath: ngrokPath,
+          bucketName: bucketName,
+          key: key,
+          isConnectionRefused: isConnectionRefused,
+          ngrokClient: ngrokClient
+        )
+      )
+    }
+
+    public convenience init(
+      ngrokPath: String,
+      bucketName: String,
+      key: some Sendable,
+      timeout: TimeAmount = .seconds(1)
+    ) {
+      let tunnelSublimatory = TunnelSublimatory(
+        ngrokPath: ngrokPath,
+        bucketName: bucketName,
+        key: key,
+        timeout: timeout
+      )
+      self.init(sublimatory: tunnelSublimatory)
+    }
+  }
+#endif

@@ -30,25 +30,14 @@
 import Foundation
 import Logging
 
-/// Server Application
 public protocol Application {
   /// The port number for the HTTP server configuration.
   var httpServerConfigurationPort: Int { get }
 
-  /// Whether the server is running on https or http.
   var httpServerTLS: Bool { get }
 
   /// The logger for the server application.
   var logger: Logger { get }
-
-  /// Posts data to a url.
-  /// - Parameters:
-  ///   - url: The url to post to.
-  ///   - body: The optional data.
   func post(to url: URL, body: Data?) async throws
-
-  /// Makes a client call to a url.
-  /// - Parameter url: The url to call.
-  /// - Returns: <#description#>
   func get(from url: URL) async throws -> Data?
 }

@@ -35,7 +35,6 @@
 ///
 /// - Important: Make sure to call the `start()` method to start the Ngrok server.
 public protocol TunnelServer {
-  /// Type of connection error which denotes whether the service isn't available.
   associatedtype ConnectionErrorType: Error
   ///   Starts the Ngrok server.
   ///

@@ -29,28 +29,28 @@
 
 import Foundation
 
-internal enum EntryResult<T: SublimationValue> {
+public enum EntryResult<T: SublimationValue> {
   case empty
   case failure(String)
   case success(T)
 }
 
 extension EntryResult {
-  internal var invalidEntryString: String? {
+  public var invalidEntryString: String? {
     if case let .failure(string) = self {
       return string
     }
     return nil
   }
 
-  internal var value: T? {
+  public var value: T? {
     if case let .success(value) = self {
       return value
     }
     return nil
   }
 
-  internal var isEmpty: Bool {
+  public var isEmpty: Bool {
     if case .empty = self {
       return true
     }
