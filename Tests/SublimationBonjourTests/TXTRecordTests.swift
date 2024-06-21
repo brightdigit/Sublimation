@@ -31,32 +31,79 @@ import Foundation
 @testable import SublimationBonjour
 import XCTest
 
-struct MockTXTRecord: TXTRecord {
-  let dictionary: [String: String]
-
-  init(_ dictionary: [String: String]) {
-    self.dictionary = dictionary
-  }
-
-  func getStringEntry(for key: String) -> String? {
-    dictionary[key]
-  }
-
-  var count: Int {
-    dictionary.count
-  }
-}
-
 internal class TXTRecordTests: XCTestCase {
-  func testInit() {
-    XCTFail("Not Implemented")
+  internal func testInit() {
+    var filterCount = 0
+    let expectedIsTLS: Bool = .random()
+    let expectedPort: Int = .random(in: 1_000 ... 9_000)
+    let expectedAddresses: [String] = .randomIpAddresses(maxLength: 5)
+
+    let record = MockTXTRecord(
+      isTLS: expectedIsTLS,
+      port: expectedPort,
+      maximumCount: nil,
+      addresses: expectedAddresses,
+      filter: { _ in
+        filterCount += 1
+        return true
+      }
+    )
+
+    XCTAssertEqual(record.dictionary[SublimationKey.port.stringValue], expectedPort.description)
+    XCTAssertEqual(record.dictionary[SublimationKey.tls.stringValue], expectedIsTLS.description)
+
+    for (index, expectedAddress) in expectedAddresses.enumerated() {
+      XCTAssertEqual(record.dictionary[SublimationKey.address(index).stringValue], expectedAddress)
+    }
+
+    XCTAssertEqual(record.count, expectedAddresses.count + 2)
+    XCTAssertEqual(filterCount, expectedAddresses.count)
   }
 
-  func testGetEntry() {
-    XCTFail("Not Implemented")
+  internal func testGetEntry() {
+    let expectedIsTLS: Bool = .random()
+    let expectedPort: Int = .random(in: 1_000 ... 9_000)
+    let expectedAddresses: [String] = .randomIpAddresses(maxLength: 5)
+
+    let record = MockTXTRecord(
+      isTLS: expectedIsTLS,
+      port: expectedPort,
+      maximumCount: nil,
+      addresses: expectedAddresses,
+      filter: { _ in
+        true
+      }
+    )
+
+    XCTAssertEqual(record.getEntry(for: .port).value, expectedPort)
+    XCTAssertEqual(record.getEntry(for: .tls).value, expectedIsTLS)
+
+    for (index, expectedAddress) in expectedAddresses.enumerated() {
+      XCTAssertEqual(record.getEntry(for: .address(index)).value, expectedAddress)
+    }
   }
 
-  func testURLs() {
-    XCTFail("Not Implemented")
+  internal func testURLs() {
+    let expectedIsTLS: Bool = .random()
+    let expectedPort: Int = .random(in: 1_000 ... 9_000)
+    let expectedAddresses: [String] = .randomIpAddresses(maxLength: 5)
+
+    let record = MockTXTRecord(
+      isTLS: expectedIsTLS,
+      port: expectedPort,
+      maximumCount: nil,
+      addresses: expectedAddresses,
+      filter: String.isIPv4NotLocalhost(_:)
+    )
+
+    let urls = record.urls(defaultPort: 0, defaultTLS: !expectedIsTLS, logger: nil)
+    let expectedURLs = expectedAddresses.compactMap { host -> URL? in
+      guard String.isIPv4NotLocalhost(host) else {
+        return nil
+      }
+      return URL(scheme: expectedIsTLS ? "https" : "http", host: host, port: expectedPort)
+    }
+
+    XCTAssertEqual(urls, expectedURLs)
   }
 }

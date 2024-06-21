@@ -31,7 +31,7 @@
   import Network
 
   extension NWTXTRecord: TXTRecord {
-    func getStringEntry(for key: String) -> String? {
+    internal func getStringEntry(for key: String) -> String? {
       guard case let .string(value) = self.getEntry(for: key) else {
         return nil
       }

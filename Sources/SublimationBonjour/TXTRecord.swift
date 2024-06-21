@@ -27,10 +27,12 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import Foundation
+
 internal protocol TXTRecord {
+  var count: Int { get }
   init(_ dictionary: [String: String])
   func getStringEntry(for key: String) -> String?
-  var count: Int { get }
 }
 
 extension TXTRecord {
@@ -42,8 +44,8 @@ extension TXTRecord {
     isTLS: Bool,
     port: Int,
     maximumCount: Int?,
-    filter: @Sendable @escaping (String) -> Bool,
-    addresses: @autoclosure () -> [String]
+    addresses: @autoclosure () -> [String],
+    filter: @Sendable @escaping (String) -> Bool
   ) {
     var dictionary: [SublimationKey: any CustomStringConvertible] = [
       .tls: isTLS,
@@ -75,5 +77,67 @@ extension TXTRecord {
 
   public func getEntry<T: SublimationValue>(for key: SublimationKey) -> EntryResult<T> {
     self.getEntry(for: key, of: T.self)
+  }
+
+  public func urls(
+    defaultPort: Int,
+    defaultTLS: Bool,
+    logger: LoggingActor?
+  ) -> [URL] {
+    let configuration = self.urlConfiguration(
+      logger: logger,
+      defaultPort: defaultPort,
+      defaultTLS: defaultTLS
+    )
+    logger?.log { $0.debug("Parsing \(configuration.count) Addresses") }
+    return (0 ..< configuration.count).compactMap { index -> URL? in
+      let host: String? = self.getEntry(for: .address(index)).value
+      assert(host != nil)
+      guard let host else {
+        logger?.log { $0.debug("Invalid Address At Index: \(index)") }
+        return nil
+      }
+      return URL(scheme: configuration.scheme, host: host, port: configuration.port)
+    }
+  }
+
+  private func urlConfiguration(
+    at offset: Int,
+    port: Int,
+    isTLS: Bool,
+    logger: LoggingActor?
+  ) -> URL.Configuration {
+    let scheme = isTLS ? "https" : "http"
+    logger?.log { $0.debug("Scheme: \(scheme)") }
+    let addressCount = self.count - offset
+    return .init(scheme: scheme, port: port, count: addressCount)
+  }
+
+  private func urlConfiguration(
+    logger: LoggingActor?,
+    defaultPort: Int,
+    defaultTLS: Bool
+  ) -> URL.Configuration {
+    var offset = 0
+
+    let portEntry = self.getEntry(for: .port, of: Int.self)
+    let port = portEntry.value ?? defaultPort
+    offset += portEntry.isEmpty ? 0 : 1
+
+    if let invalidPortEntryString = portEntry.invalidEntryString {
+      assert(portEntry.invalidEntryString == nil, "Port Entry is invalid: \(invalidPortEntryString)")
+      logger?.log { $0.warning("Port Entry is invalid: \(invalidPortEntryString)") }
+    }
+
+    let tlsEntry = self.getEntry(for: .tls, of: Bool.self)
+    let isTLS = tlsEntry.value ?? defaultTLS
+    offset += tlsEntry.isEmpty ? 0 : 1
+
+    if let invalidTLSEntryString = tlsEntry.invalidEntryString {
+      assert(tlsEntry.invalidEntryString == nil, "Port Entry is invalid: \(invalidTLSEntryString)")
+      logger?.log { $0.warning("Port Entry is invalid: \(invalidTLSEntryString)") }
+    }
+
+    return self.urlConfiguration(at: offset, port: port, isTLS: isTLS, logger: logger)
   }
 }
