@@ -29,13 +29,12 @@ Share your local development server easily with your Apple devices.
 
 * [Introduction](#introduction)
    * [Requirements](#requirements)
-   * [Using Ngrok](#using-ngrok)
-   * [Using the Cloud for Meta-Server Access](#using-the-cloud-for-meta-server-access)
-* [Features](#features)
 * [Installation](#installation)
-   * [Cloud Setup](#cloud-setup)
    * [Server Installation](#server-installation)
    * [Client Installation](#client-installation)
+* [Bonjour vs Ngrok](#bonjour-vs-ngrok)
+   * [Using Bonjour](#using-bonjour)
+   * [Using Ngrok](#using-ngrok)
 * [License](#license)
 
 # Introduction
@@ -46,16 +45,51 @@ When you are developing a full stack Swift application, you want to easily test 
 
 **Apple Platforms**
 
-- Xcode 13.3 or later
-- Swift 5.5.2 or later
-- iOS 14 / watchOS 6 / tvOS 14 / macOS 12 or later deployment targets
+- Xcode 15.0 or later
+- Swift 5.9 or later
+- iOS 17 / watchOS 10.0 / tvOS 17 / macOS 14 or later deployment targets
 
 **Linux**
 
-- Ubuntu 18.04 or later
-- Swift 5.5.2 or later
+- Ubuntu 20.04 or later
+- Swift 5.9 or later
 
-## Bonjour vs Ngrok
+# Installation
+
+Sublimation has two components: Server and Client. You can check out the SublimationDemoApp Xcode project for an example. Before setting up our server and client app, let's setup our key-value storage.
+
+## Server Installation
+
+To integrate **Sublimation** into your Vapor app using SPM, specify it in your Package.swift file:
+
+```swift    
+let package = Package(
+  ...
+  dependencies: [
+    .package(url: "https://github.com/brightdigit/Sublimation.git", from: "2.0.0")
+  ],
+  targets: [
+      .target(
+          name: "YourVaporServerApp",
+          dependencies: [
+            .product(name: "SublimationVapor", package: "Sublimation"), ...
+          ]),
+      ...
+  ]
+)
+```
+
+## Client Installation
+
+In your Xcode project, add the swift package for Sublimation at:
+
+```
+https://github.com/brightdigit/Sublimation.git
+```
+
+In your application target, you only need a reference to the `Sublimation` library. 
+
+# Bonjour vs Ngrok
 
 Unless you need public exposure for your development server, **your best bet is to use _Bonjour_ for letting your devices know about your server.** 
 
@@ -116,23 +150,13 @@ Now you'll get a message saying your vapor app is served through ngrok:
 Forwarding https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io -> http://localhost:1337 
 ```
 
-Great! So how can I make sure my app uses that address for the host name?
+Sublimation can be used to automate this process and let your client devices automatically know.
 
-* Hard Code It! 
-* Parse Environment Variable?
-* Magic?
+### Using the Cloud for Meta-Server Access
 
-That's where Sublimation comes in...
+With Sublimation and Ngrok you save the address (such as `https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io`) to a key-value storage and pull that address from your Apple device during development.
 
-## Using the Cloud for Meta-Server Access
-
-With Sublimation you save the address (such as `https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io`) to a key-value storage and pull that address from your Apple device during development.
-
-# Installation
-
-Sublimation has two components: Server and Client. You can check out the SublimationDemoApp Xcode project for an example. Before setting up our server and client app, let's setup our key-value storage.
-
-## Cloud Setup
+### Cloud Setup
 
 If you haven't already setup an account with ngrok and install the command-line tool via homebrew. Next let's setup a key-value storage with kvdb.io which is currently supported. _If you have another service, please create an issue in the repo. Your feedback is helpful._ 
 
@@ -143,34 +167,16 @@ Sign up at kvdb.io and get a bucket name you'll use. You'll be using that for yo
 * your kvdb.io key - you just need to pick something unique for your server and client to use
 
 Now let's setup your Vapor server application...
-## Server Installation
 
-To integrate **Sublimation** into your Vapor app using SPM, specify it in your Package.swift file:
+### On your server
 
-```swift    
-let package = Package(
-  ...
-  dependencies: [
-    .package(url: "https://github.com/brightdigit/Sublimation.git", from: "0.1.0")
-  ],
-  targets: [
-      .target(
-          name: "YourVaporServerApp",
-          dependencies: [
-            .product(name: "SublimationVapor", package: "Sublimation"), ...
-          ]),
-      ...
-  ]
-)
-```
-
-`SublimationVapor` is the product which gives us the `TunnelSublimationLifecycleHandler` we'll use to integrate `Sublimation` with your Vapor app. Simply add `TunnelSublimationLifecycleHandler` to your application:
+`Sublimation`  makes it easy to setup `Ngrok` by passing in the path to ngrok and the information from KVdb. Simply add `Sublimation` to your server application. In the case of Vapor add it to your lifecycle:
 
 ```swift
 let app = Application(env)
 ...
 app.lifecycle.use(
-  TunnelSublimationLifecycleHandler(
+  Sublimation(
     ngrokPath: "/opt/homebrew/bin/ngrok",
     bucketName: "bucket-name",
     key: "application key name"
@@ -182,15 +188,7 @@ This will run `ngrok` and setup the forwarding address. Once it receives the add
 
 Remember the ngrok path is the path from your development machine while the bucket name is from kvdb.io. However, the key can be anything you want as long as it's consistent and used by your client. Speaking of your client, let's talk about setting this up in your iOS app.
 
-## Client Installation
-
-In your Xcode project, add the swift package for Sublimation at:
-
-```
-https://github.com/brightdigit/Sublimation.git
-```
-
-In your application target, you only need a reference to the `Sublimation` library. 
+### On your device
 
 Now to pull the url saved by your service, all you have to call is:
 
