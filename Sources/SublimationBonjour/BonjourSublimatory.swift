@@ -145,8 +145,10 @@
       
       let bootstrap = NIOTSListenerBootstrap(group: NIOTSEventLoopGroup.singleton)
       
+      let channel = bootstrap.bind(endpoint: .service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.", interface: nil))
       
-      let channel = try await bootstrap.withNWListener(listener)
+      return try  await channel.get().closeFuture.get()
+      //let channel = try await bootstrap.withNWListener(listener)
       //try await channel.closeFuture.get()
     }
   }

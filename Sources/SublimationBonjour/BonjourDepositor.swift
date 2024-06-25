@@ -168,6 +168,7 @@
       defaultPort: Int,
       defaultTLS: Bool
     ) -> [URL]? {
+      dump(result)
       guard case .service = result.endpoint else {
         logger?.log { $0.debug("Not service.") }
         return nil
