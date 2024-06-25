@@ -32,6 +32,7 @@
   import Logging
   import Network
   import SublimationCore
+  import NIOTransportServices
 
   public actor BonjourSublimatory: Sublimatory {
     public static let httpTCPServiceType = "_http._tcp"
@@ -126,15 +127,40 @@
     public func shutdown(from _: @escaping @Sendable () -> any Application) async {
       self.stop()
     }
+    
+    public func initialize(from application: @escaping () -> any Application) async throws {
+      let application = application()
+      try await self.listener(
+        application.httpServerTLS,
+        application.httpServerConfigurationPort,
+        application.logger
+      )
+    }
+    
+    public func run() async throws {
+      guard let listener else {
+#warning("Should Crash")
+        return
+      }
+      
+      let bootstrap = NIOTSListenerBootstrap(group: NIOTSEventLoopGroup.singleton)
+      
+      
+      let channel = try await bootstrap.withNWListener(listener)
+      //try await channel.closeFuture.get()
+    }
   }
 
   extension BonjourSublimatory {
-    internal func start(
-      isTLS: Bool,
-      port: Int,
-      logger: Logger
-    ) async {
-      self.logger = logger
+    fileprivate func listener(from application: @escaping @Sendable () -> any Application) async throws -> NWListener  {
+      let application = application()
+      return try await self.listener(
+        application.httpServerTLS,
+        application.httpServerConfigurationPort,
+        application.logger
+      )
+    }
+    fileprivate func listener(_ isTLS: Bool, _ port: Int, _ logger: Logger) async throws -> NWListener {
       let addresses = await self.addresses()
       let txtRecord: NWTXTRecord = .init(
         isTLS: isTLS,
@@ -144,20 +170,47 @@
         filter: addressFilter
       )
       let listener: NWListener
-      do {
+      
         listener = try NWListener(
           using: listenerParameters,
           serviceType: self.serviceType,
           txtRecord: txtRecord
         )
+      
+      self.listener = listener
+      //listener.start(queue: .global(qos: .default))
+      return listener
+    }
+    
+    internal func start(from application: @escaping @Sendable () -> any Application
+    ) async {
+      
+      let logger =  application().logger
+      do {
+        let listener = try await listener(from: application)
+        listener.start(queue: .global())
       } catch {
         assertionFailure("Unable to create listener: \(error.localizedDescription)")
         logger.error("Unable to create listener: \(error.localizedDescription)")
         return
       }
-
-      self.listener = listener
-      listener.start(queue: .global(qos: .default))
+    }
+    
+    internal func start(
+      isTLS: Bool,
+      port: Int,
+      logger: Logger
+    ) async {
+      self.logger = logger
+      do {
+        let listener  = try await listener(isTLS, port, logger)
+        
+        listener.start(queue: .global())
+      } catch {
+        assertionFailure("Unable to create listener: \(error.localizedDescription)")
+        logger.error("Unable to create listener: \(error.localizedDescription)")
+        return
+      }
     }
   }
 

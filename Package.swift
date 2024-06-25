@@ -26,6 +26,7 @@ let package = Package(
   products: [
     .library(name: "Sublimation", targets: ["Sublimation"]),
     .library(name: "SublimationVapor", targets: ["SublimationVapor"]),
+    .library(name: "SublimationService", targets: ["SublimationService"]),
     .library(name: "Ngrokit", targets: ["Ngrokit"])
   ],
   dependencies: [
@@ -45,7 +46,10 @@ let package = Package(
       url: "https://github.com/swift-server/swift-openapi-async-http-client",
       from: "1.0.0"
     ),
-    .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0")
+    .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
+    .package(url: "https://github.com/swift-server/swift-service-lifecycle.git", from: "2.6.0"),
+    .package(url: "https://github.com/apple/swift-nio-transport-services.git", from: "1.20.0")
+    
   ],
   targets: [
     .target(
@@ -73,6 +77,21 @@ let package = Package(
       swiftSettings: swiftSettings
     ),
     .target(
+      name: "SublimationService",
+      dependencies: [
+        .product(
+          name: "OpenAPIAsyncHTTPClient",
+          package: "swift-openapi-async-http-client"
+        ),
+        "Ngrokit",
+        "Sublimation",
+        "SublimationKVdb",
+        .product(name: "ServiceLifecycle", package: "swift-service-lifecycle"),
+        .product(name: "NIOTransportServices", package: "swift-nio-transport-services")
+      ],
+      swiftSettings: swiftSettings
+    ),
+    .target(
       name: "SublimationCore",
       dependencies: [
         .product(name: "Logging", package: "swift-log")
@@ -96,7 +115,8 @@ let package = Package(
     ),
     .target(
       name: "SublimationBonjour",
-      dependencies: ["SublimationCore"],
+      dependencies: ["SublimationCore",
+      .product(name: "NIOTransportServices", package: "swift-nio-transport-services")],
       swiftSettings: swiftSettings
     ),
     .target(

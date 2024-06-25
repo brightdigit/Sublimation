@@ -39,6 +39,7 @@ public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   TunnelServerFactoryType: TunnelServerFactory
 >: Sublimatory, TunnelServerDelegate {
+  
   public typealias Key = WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
   public typealias ConnectionErrorType = TunnelServerFactoryType.Configuration.Server.ConnectionErrorType
   private let factory: TunnelServerFactoryType
