@@ -47,7 +47,28 @@
         Task {
           await self.onResultsChanged(to: newResults, withChanges: changes)
         }
+        let result = newResults.first { result in
+          guard case let .service( service) = result.endpoint else {
+            return false
+          }
+          return service.name == "Sublimation"
+        }
+        
+        guard let result else {
+          return
+        }
+        
+        let connection = NWConnection(to: result.endpoint, using: .tcp)
+        connection.start(queue: .global())
+        connection.receiveMessage { content, contentContext, isComplete, error in
+          guard let content else {
+            return
+          }
+          let text = String(decoding : content, as: UTF8.self)
+          print(text)
+        }
       }
+      
     }
 
     private init(browser: NWBrowser) {

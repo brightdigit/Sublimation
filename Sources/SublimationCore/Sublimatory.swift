@@ -31,6 +31,7 @@ public protocol Sublimatory: Sendable {
   func willBoot(from application: @escaping @Sendable () -> any Application) async
   func didBoot(from application: @escaping @Sendable () -> any Application) async
   func shutdown(from application: @escaping @Sendable () -> any Application) async
+  func shutdown()
   func initialize(from application: @escaping @Sendable () -> any Application) async throws
   func run() async throws
 }
@@ -46,4 +47,5 @@ extension Sublimatory {
   
   public func initialize(from application: @escaping @Sendable () -> any Application) async throws {}
   public func run() async throws {}
+  
 }

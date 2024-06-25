@@ -14,6 +14,16 @@ extension Sublimation : Service {
     try await self.sublimatory.initialize(from: application)
   }
   public func run() async throws {
-    try await self.sublimatory.run()
+    try await withGracefulShutdownHandler {
+      
+      try await self.sublimatory.run()
+    } onGracefulShutdown: {
+      do {
+        try self.sublimatory.shutdown()
+      } catch {
+        
+      }
+    }
+
   }
 }

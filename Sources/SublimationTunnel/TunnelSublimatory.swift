@@ -194,4 +194,8 @@ public actor TunnelSublimatory<
   public func willBoot(from application: @escaping @Sendable () -> any Application) async {
     await self.beginFromApplication(application)
   }
+  
+  nonisolated public func shutdown() {
+    
+  }
 }

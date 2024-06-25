@@ -53,7 +53,7 @@ public final class Sublimation: Sendable {
 
   public func shutdown(_ application: @Sendable @escaping () -> any Application) {
     Task {
-      await self.sublimatory.shutdown(from: application)
+      await self.sublimatory.shutdown()
     }
   }
 }

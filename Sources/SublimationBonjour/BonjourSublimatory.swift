@@ -36,6 +36,13 @@
 import NIOCore
 import NIOPosix
 
+public class PipelineHandler : ChannelDuplexHandler {
+  public typealias InboundIn = Data
+  
+  public typealias OutboundIn = Data
+  
+}
+
   public actor BonjourSublimatory: Sublimatory {
     public static let httpTCPServiceType = "_http._tcp"
     private let serviceType: String
@@ -130,6 +137,12 @@ import NIOPosix
       self.stop()
     }
     
+    nonisolated public func shutdown() {
+      Task {
+        await self.stop()
+      }
+    }
+    
     public func initialize(from application: @escaping () -> any Application) async throws {
       let application = application()
       try await self.listener(
@@ -150,7 +163,8 @@ import NIOPosix
       
       let options = NWProtocolTCP.Options()
       
-      let service = NWListener.Service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.")
+     // let service = NWListener.Service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.")
+      
       let addresses = await self.addresses()
       let txtRecord: NWTXTRecord = .init(
         isTLS: false,
@@ -160,11 +174,17 @@ import NIOPosix
         filter: addressFilter
       )
       
+      
       let channel = try await bootstrap.bind(endpoint: .service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.", interface: nil)) { channel in
-        
-        dump(channel)
-        return channel.write(txtRecord.data).map {
-          txtRecord.data
+        return channel.eventLoop.makeCompletedFuture{
+          return try NIOAsyncChannel(
+            wrappingChannelSynchronously: channel,
+            configuration: .init(
+              isOutboundHalfClosureEnabled: true,
+              inboundType: ByteBuffer.self,
+              outboundType: ByteBuffer.self
+            )
+          )
         }
       }
        //bootstrap.bind(endpoint: .service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.", interface: nil))
@@ -172,11 +192,20 @@ import NIOPosix
       await withDiscardingTaskGroup { group in
         do {
           
-          try await channel.executeThenClose { inbound, outbound in
+          try await channel.executeThenClose { clients in
+            //dump(inbound)
             
-            for try await data in inbound {
+            for try await childChannel in clients {
+              dump(childChannel)
               group.addTask {
-                print(String(decoding: data, as: UTF8.self))
+                do {
+                  try await childChannel.executeThenClose { inbound, outbound in
+                    try await outbound.write(.init(data: txtRecord.data))
+                  }
+                } catch {
+                  dump(error)
+                }
+                //print(String(decoding: data, as: UTF8.self))
               }
               //outbound.write(data)
               
