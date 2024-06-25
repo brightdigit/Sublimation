@@ -33,6 +33,8 @@
   import Network
   import SublimationCore
   import NIOTransportServices
+import NIOCore
+import NIOPosix
 
   public actor BonjourSublimatory: Sublimatory {
     public static let httpTCPServiceType = "_http._tcp"
@@ -144,10 +146,48 @@
       }
       
       let bootstrap = NIOTSListenerBootstrap(group: NIOTSEventLoopGroup.singleton)
+        .childChannelOption(ChannelOptions.allowRemoteHalfClosure, value: true)
       
-      let channel = bootstrap.bind(endpoint: .service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.", interface: nil))
+      let options = NWProtocolTCP.Options()
       
-      return try  await channel.get().closeFuture.get()
+      let service = NWListener.Service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.")
+      let addresses = await self.addresses()
+      let txtRecord: NWTXTRecord = .init(
+        isTLS: false,
+        port: 8080,
+        maximumCount: maximumCount,
+        addresses: addresses,
+        filter: addressFilter
+      )
+      
+      let channel = try await bootstrap.bind(endpoint: .service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.", interface: nil)) { channel in
+        
+        dump(channel)
+        return channel.write(txtRecord.data).map {
+          txtRecord.data
+        }
+      }
+       //bootstrap.bind(endpoint: .service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.", interface: nil))
+      
+      await withDiscardingTaskGroup { group in
+        do {
+          
+          try await channel.executeThenClose { inbound, outbound in
+            
+            for try await data in inbound {
+              group.addTask {
+                print(String(decoding: data, as: UTF8.self))
+              }
+              //outbound.write(data)
+              
+            }
+          }
+        } catch {
+          print("Waiting on child channel: \(error)")
+        }
+      }
+      
+      print("Closing out")
       //let channel = try await bootstrap.withNWListener(listener)
       //try await channel.closeFuture.get()
     }
