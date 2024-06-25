@@ -173,6 +173,7 @@
         logger?.log { $0.debug("Not service.") }
         return nil
       }
+      dump(result.metadata)
       guard case let .bonjour(txtRecord) = result.metadata else {
         logger?.log { $0.debug("No txt record.") }
         return nil
