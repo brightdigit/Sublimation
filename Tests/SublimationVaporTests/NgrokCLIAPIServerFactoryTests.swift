@@ -27,10 +27,24 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import HTTPTypes
 import Ngrokit
 import NgrokitMocks
-@testable import SublimationVapor
+import OpenAPIRuntime
+@testable import SublimationNgrok
 import XCTest
+
+internal final class MockTransport: ClientTransport {
+  // swiftlint:disable:next unavailable_function
+  internal func send(
+    _: HTTPTypes.HTTPRequest,
+    body _: OpenAPIRuntime.HTTPBody?,
+    baseURL _: URL,
+    operationID _: String
+  ) async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?) {
+    fatalError("Not implemented")
+  }
+}
 
 internal class NgrokCLIAPIServerFactoryTests: XCTestCase {
   // swiftlint:disable:next function_body_length
@@ -38,13 +52,16 @@ internal class NgrokCLIAPIServerFactoryTests: XCTestCase {
     let loggerLabel = UUID().uuidString
     let application = MockServerApplication(
       httpServerConfigurationPort: .random(in: 10 ... 10_000),
+      httpServerTLS: .random(),
       logger: .init(label: loggerLabel)
     )
     let delegateID = UUID()
     let processID = UUID()
     let configuration = NgrokCLIAPIConfiguration(serverApplication: application)
     let factory = NgrokCLIAPIServerFactory<MockProcess>(
-      cliAPI: MockNgrokCLIAPI(id: processID)
+      cliAPI: MockNgrokCLIAPI(id: processID), ngrokClient: {
+        NgrokClient(transport: MockTransport())
+      }
     )
     let server = factory.server(
       from: configuration,

@@ -85,7 +85,7 @@ public struct NgrokClient: Sendable {
   ///   - Returns: The created tunnel.
   ///
   ///   - Throws: An error if the tunnel creation fails.
-  public func startTunnel(_ request: TunnelRequest) async throws -> Tunnel {
+  public func startTunnel(_ request: TunnelRequest) async throws -> NgrokTunnel {
     let tunnelRequest: Components.Schemas.TunnelRequest
     tunnelRequest = .init(request: request)
     let response = try await underlyingClient.startTunnel(
@@ -93,7 +93,7 @@ public struct NgrokClient: Sendable {
         body: .json(tunnelRequest)
       )
     ).created.body.json
-    let tunnel: Tunnel = try .init(response: response)
+    let tunnel: NgrokTunnel = try .init(response: response)
     return tunnel
   }
 
@@ -111,10 +111,10 @@ public struct NgrokClient: Sendable {
   ///   - Returns: An array of tunnels.
   ///
   ///   - Throws: An error if the tunnel listing fails.
-  public func listTunnels() async throws -> [Tunnel] {
+  public func listTunnels() async throws -> [NgrokTunnel] {
     try await underlyingClient
       .listTunnels()
       .ok.body.json.tunnels
-      .map(Tunnel.init(response:))
+      .map(NgrokTunnel.init(response:))
   }
 }

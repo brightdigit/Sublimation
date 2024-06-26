@@ -52,10 +52,7 @@ extension DataHandle {
     guard let data = try readToEnd() else {
       throw RuntimeError.unknownError
     }
-
-    guard let text = String(data: data, encoding: .utf8) else {
-      throw RuntimeError.invalidErrorData(data)
-    }
+    let text = String(decoding: data, as: UTF8.self)
 
     guard let match = ngrokCLIErrorRegex.firstMatch(
       in: text,

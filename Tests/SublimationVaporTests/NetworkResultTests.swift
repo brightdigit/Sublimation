@@ -29,6 +29,7 @@
 
 import AsyncHTTPClient
 import OpenAPIRuntime
+@testable import SublimationTunnel
 @testable import SublimationVapor
 import XCTest
 
@@ -54,7 +55,7 @@ internal class NetworkResultTests: XCTestCase {
         underlyingError: posixError
       )
       let actualPosixError: HTTPClient.NWPOSIXError? =
-        NetworkResult<Void>(error: clientPosixError).underlyingClientError()
+        NetworkResult<Void, ClientError>(error: clientPosixError, isConnectionRefused: { $0.isConnectionRefused }).underlyingClientError()
       XCTAssertEqual(
         actualPosixError?.errorCode,
         posixError.errorCode
@@ -70,16 +71,16 @@ internal class NetworkResultTests: XCTestCase {
     )
 
     let actualTimeoutError: HTTPClientError? =
-      NetworkResult<Void>(error: clientTimeoutError).underlyingClientError()
+      NetworkResult<Void, ClientError>(error: clientTimeoutError, isConnectionRefused: { $0.isConnectionRefused }).underlyingClientError()
     XCTAssertEqual(
       actualTimeoutError,
       timeoutError
     )
 
     #if canImport(Network)
-      XCTAssert(NetworkResult<Void>(error: posixError).isFailure)
+      XCTAssert(NetworkResult<Void, ClientError>(error: posixError, isConnectionRefused: { $0.isConnectionRefused }).isFailure)
     #endif
-    XCTAssert(NetworkResult<Void>(error: timeoutError).isFailure)
+    XCTAssert(NetworkResult<Void, ClientError>(error: timeoutError, isConnectionRefused: { $0.isConnectionRefused }).isFailure)
   }
 
   // swiftlint:disable:next function_body_length
@@ -104,7 +105,7 @@ internal class NetworkResultTests: XCTestCase {
 
     #if canImport(Network)
       let actualPosixError: HTTPClient.NWPOSIXError? =
-        await NetworkResult<Void> { throw clientPosixError }.underlyingClientError()
+        await NetworkResult<Void, ClientError> { throw clientPosixError } isConnectionRefused: { $0.isConnectionRefused }.underlyingClientError()
       XCTAssertEqual(
         actualPosixError?.errorCode,
         posixError.errorCode
@@ -112,7 +113,7 @@ internal class NetworkResultTests: XCTestCase {
     #endif
 
     let actualTimeoutError: HTTPClientError? =
-      await NetworkResult<Void> { throw clientTimeoutError }.underlyingClientError()
+      await NetworkResult<Void, ClientError> { throw clientTimeoutError } isConnectionRefused: { $0.isConnectionRefused }.underlyingClientError()
     XCTAssertEqual(
       actualTimeoutError,
       timeoutError
@@ -120,12 +121,12 @@ internal class NetworkResultTests: XCTestCase {
 
     #if canImport(Network)
 
-      await XCTAsyncAssert { await NetworkResult<Void> { throw posixError }.isFailure }
+      await XCTAsyncAssert { await NetworkResult<Void, ClientError> { throw posixError } isConnectionRefused: { $0.isConnectionRefused }.isFailure }
     #endif
-    await XCTAsyncAssert { await NetworkResult<Void> { throw timeoutError }.isFailure }
-    await XCTAsyncAssert { await NetworkResult<Void> { throw timeoutError }.isFailure }
+    await XCTAsyncAssert { await NetworkResult<Void, ClientError> { throw timeoutError } isConnectionRefused: { $0.isConnectionRefused }.isFailure }
+    await XCTAsyncAssert { await NetworkResult<Void, ClientError> { throw timeoutError } isConnectionRefused: { $0.isConnectionRefused }.isFailure }
 
-    await XCTAsyncAssert { await NetworkResult {}.isSuccess }
+    await XCTAsyncAssert { await NetworkResult<Void, ClientError> {} isConnectionRefused: { $0.isConnectionRefused }.isSuccess }
   }
 
   // swiftlint:disable:next function_body_length
@@ -158,7 +159,7 @@ internal class NetworkResultTests: XCTestCase {
 
     #if canImport(Network)
       do {
-        let value: Void? = try await NetworkResult<Void> { throw clientPosixError }.get()
+        let value: Void? = try await NetworkResult<Void, ClientError> { throw clientPosixError } isConnectionRefused: { $0.isConnectionRefused }.get()
         XCTAssertNil(value)
       } catch {
         XCTAssertNil(error)
@@ -166,7 +167,7 @@ internal class NetworkResultTests: XCTestCase {
     #endif
 
     do {
-      let value: Void? = try await NetworkResult<Void> { throw clientTimeoutError }.get()
+      let value: Void? = try await NetworkResult<Void, ClientError> { throw clientTimeoutError } isConnectionRefused: { $0.isConnectionRefused }.get()
       XCTAssertNil(value)
     } catch {
       XCTAssertNil(error)
@@ -174,7 +175,7 @@ internal class NetworkResultTests: XCTestCase {
 
     var error: (any Error)?
     do {
-      _ = try await NetworkResult<Void> { throw clientOtherError }.get()
+      _ = try await NetworkResult<Void, ClientError> { throw clientOtherError } isConnectionRefused: { $0.isConnectionRefused }.get()
       error = nil
     } catch let caughtError as ClientError {
       error = caughtError
@@ -184,7 +185,7 @@ internal class NetworkResultTests: XCTestCase {
     XCTAssertNotNil(error)
 
     do {
-      let value: ()? = try await NetworkResult {}.get()
+      let value: ()? = try await NetworkResult<Void, ClientError> {} isConnectionRefused: { $0.isConnectionRefused }.get()
       XCTAssertNotNil(value)
     } catch {
       XCTAssertNil(error)
@@ -207,7 +208,7 @@ extension NetworkResult {
     return true
   }
 
-  internal func underlyingClientError<Failure: Error>() -> Failure? {
+  internal func underlyingClientError<Failure: Error>() -> Failure? where ConnectionErrorType == ClientError {
     guard case let .connectionRefused(clientError) = self else {
       return nil
     }

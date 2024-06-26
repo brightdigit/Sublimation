@@ -38,7 +38,7 @@ import XCTest
 
 internal class NgrokClientTests: XCTestCase {
   private func assertTunnelEqual(
-    _ actualOutput: Tunnel,
+    _ actualOutput: NgrokTunnel,
     _ expectedOutput: Components.Schemas.TunnelResponse
   ) {
     XCTAssertEqual(actualOutput.publicURL.absoluteString, expectedOutput.public_url)

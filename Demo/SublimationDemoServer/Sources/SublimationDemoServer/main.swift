@@ -1,10 +1,11 @@
-import SublimationDemoConfiguration
-import SublimationVapor
 import Vapor
+import SublimationDemoConfiguration
+import Sublimation
+import SublimationVapor
 
 var env = try Environment.detect()
 try LoggingSystem.bootstrap(from: &env)
-let app = Application(env)
+let app = Vapor.Application(env)
 defer {
   app.shutdown()
 }
@@ -13,12 +14,11 @@ app.get { _ in
   "You're connected"
 }
 
-app.lifecycle.use(
-  SublimationLifecycleHandler(
-    ngrokPath: Configuration.ngrokPath,
-    bucketName: Configuration.bucketName,
-    key: Configuration.key
+#if os(macOS) && DEBUG
+  app.lifecycle.use(
+    Sublimation()
   )
-)
+#endif
 
+app.http.server.configuration.hostname = "::"
 try app.run()

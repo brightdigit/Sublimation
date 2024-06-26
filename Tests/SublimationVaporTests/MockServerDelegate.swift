@@ -27,12 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Ngrokit
-import NgrokitMocks
-@testable import SublimationVapor
+@testable import SublimationTunnel
 import XCTest
 
-internal final class MockServerDelegate: NgrokServerDelegate {
+internal final class MockServerDelegate: TunnelServerDelegate {
   internal let id: UUID
 
   internal init(id: UUID) {
@@ -40,8 +38,8 @@ internal final class MockServerDelegate: NgrokServerDelegate {
   }
 
   internal func server(
-    _: any SublimationVapor.NgrokServer, updatedTunnel _: Ngrokit.Tunnel
+    _: any TunnelServer, updatedTunnel _: any Tunnel
   ) {}
 
-  internal func server(_: any SublimationVapor.NgrokServer, errorDidOccur _: any Error) {}
+  internal func server(_: any TunnelServer, errorDidOccur _: any Error) {}
 }

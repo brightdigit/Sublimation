@@ -34,7 +34,7 @@ import Foundation
 #endif
 
 extension URL {
-  public static func random() -> URL {
+  package static func random() -> URL {
     URL(fileURLWithPath: NSTemporaryDirectory())
   }
 }

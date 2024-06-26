@@ -1,30 +1,24 @@
 import Sublimation
+import Network
 import SublimationDemoConfiguration
 import SwiftUI
 
-extension View {
-  func taskPolyfill(_ action: @escaping @Sendable () async -> Void) -> some View {
-    if #available(iOS 15.0, *) {
-      return self.task(action)
-    } else {
-      return onAppear {
-        Task {
-          await action()
-        }
-      }
-    }
-  }
-}
-
 struct ContentView: View {
+  let networkExplorer =
+  BonjourDepositor(logger: {
+    
+    .init(subsystem: Bundle.main.bundleIdentifier!, category: "bonjour")
+  })
+  //NetworkExplorer(logger: .init(subsystem: Bundle.main.bundleIdentifier!, category: "bonjour"))
+  @State var baseURL: String = ""
   @State var serverResponse: String = ""
-
+  
   enum DemoError: LocalizedError {
     case noURLSetAt(String, String)
     case invalidStringData(Data)
     case invalidResponse(URLResponse)
     case httpErrorStatusCode(Int)
-
+    
     var errorDescription: String? {
       switch self {
       case let .noURLSetAt(bucket, key):
@@ -38,17 +32,6 @@ struct ContentView: View {
       }
     }
   }
-
-  func getBaseURL(
-    fromBucket bucketName: String,
-    withKey key: String
-  ) async throws -> URL {
-    guard let url = try await KVdb.url(withKey: key, atBucket: bucketName) else {
-      throw DemoError.noURLSetAt(bucketName, key)
-    }
-    return url
-  }
-
   func getServerResponse(
     from url: URL,
     using session: URLSession = .shared,
@@ -66,30 +49,37 @@ struct ContentView: View {
     }
     return response
   }
-
+  
   var body: some View {
     VStack {
       Image(systemName: "globe")
         .imageScale(.large)
         .foregroundColor(.accentColor)
+      Text(self.baseURL)
       Text(serverResponse)
     }
     .padding()
-    .taskPolyfill {
-      let serverResponse: String
-      do {
-        let url = try await getBaseURL(
-          fromBucket: Configuration.bucketName,
-          withKey: Configuration.key
-        )
-        serverResponse = try await getServerResponse(from: url)
-      } catch {
-        serverResponse = error.localizedDescription
+    .onAppear(perform: {
+      Task {
+        for await baseURL in await networkExplorer.urls {
+          var shouldCancel = false
+          let serverResponse: String
+          do {
+            serverResponse = try await getServerResponse(from: baseURL)
+            shouldCancel = true
+          } catch {
+            serverResponse = error.localizedDescription
+          }
+          await MainActor.run {
+            self.baseURL = baseURL.absoluteString
+            self.serverResponse = serverResponse
+          }
+          if shouldCancel {
+            break
+          }
+        }
       }
-      await MainActor.run {
-        self.serverResponse = serverResponse
-      }
-    }
+    })
   }
 }
 

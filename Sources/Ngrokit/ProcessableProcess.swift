@@ -86,12 +86,8 @@ import Foundation
       _ closure: @escaping @Sendable (ProcessableProcess) -> Void
     ) {
       process.terminationHandler = { process in
-        guard let pprocess = process as? ProcessableProcess else {
-          assertionFailure()
-          closure(self)
-          return
-        }
-        closure(pprocess)
+        assert(process == self.process)
+        closure(self)
       }
     }
 
