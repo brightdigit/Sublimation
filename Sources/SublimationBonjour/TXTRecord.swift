@@ -33,6 +33,7 @@ internal protocol TXTRecord {
   var count: Int { get }
   init(_ dictionary: [String: String])
   func getStringEntry(for key: String) -> String?
+  func getKeys() -> any Sequence<String>
 }
 
 extension TXTRecord {
@@ -89,6 +90,9 @@ extension TXTRecord {
       defaultPort: defaultPort,
       defaultTLS: defaultTLS
     )
+    guard let configuration else {
+      return []
+    }
     logger?.log { $0.debug("Parsing \(configuration.count) Addresses") }
     return (0 ..< configuration.count).compactMap { index -> URL? in
       let host: String? = self.getEntry(for: .address(index)).value
@@ -117,7 +121,7 @@ extension TXTRecord {
     logger: LoggingActor?,
     defaultPort: Int,
     defaultTLS: Bool
-  ) -> URL.Configuration {
+  ) -> URL.Configuration? {
     var offset = 0
 
     let portEntry = self.getEntry(for: .port, of: Int.self)
@@ -136,6 +140,14 @@ extension TXTRecord {
     if let invalidTLSEntryString = tlsEntry.invalidEntryString {
       assert(tlsEntry.invalidEntryString == nil, "Port Entry is invalid: \(invalidTLSEntryString)")
       logger?.log { $0.warning("Port Entry is invalid: \(invalidTLSEntryString)") }
+    }
+
+    let isValid = self.getKeys().allSatisfy { key in
+      SublimationKey.isValid(key)
+    }
+
+    guard isValid else {
+      return nil
     }
 
     return self.urlConfiguration(at: offset, port: port, isTLS: isTLS, logger: logger)

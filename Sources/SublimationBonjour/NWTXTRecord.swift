@@ -37,5 +37,9 @@
       }
       return value
     }
+
+    internal func getKeys() -> any Sequence<String> {
+      self.dictionary.keys
+    }
   }
 #endif
