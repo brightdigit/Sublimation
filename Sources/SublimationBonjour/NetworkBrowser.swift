@@ -64,8 +64,12 @@
           guard let content else {
             return
           }
-          let text = String(decoding : content, as: UTF8.self)
-          print(text)
+          do {
+            let configuration = try ServerConfiguration(serializedData: content)
+            dump(configuration)
+          } catch {
+            dump(error)
+          }
         }
       }
       

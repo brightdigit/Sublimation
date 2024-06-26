@@ -36,11 +36,13 @@
 import NIOCore
 import NIOPosix
 
-public class PipelineHandler : ChannelDuplexHandler {
-  public typealias InboundIn = Data
-  
-  public typealias OutboundIn = Data
-  
+extension ServerConfiguration {
+  init (isSecure: Bool? = nil, port: Int? = nil, hosts: [String] = []) {
+    self.init()
+    self.isSecure = isSecure ?? false
+    self.port = port.map(UInt32.init) ?? 8080
+    self.hosts = hosts
+  }
 }
 
   public actor BonjourSublimatory: Sublimatory {
@@ -166,13 +168,8 @@ public class PipelineHandler : ChannelDuplexHandler {
      // let service = NWListener.Service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.")
       
       let addresses = await self.addresses()
-      let txtRecord: NWTXTRecord = .init(
-        isTLS: false,
-        port: 8080,
-        maximumCount: maximumCount,
-        addresses: addresses,
-        filter: addressFilter
-      )
+
+      let configuration = ServerConfiguration(isSecure: false, port: 8080, hosts: addresses)
       
       
       let channel = try await bootstrap.bind(endpoint: .service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.", interface: nil)) { channel in
@@ -187,6 +184,7 @@ public class PipelineHandler : ChannelDuplexHandler {
           )
         }
       }
+      
        //bootstrap.bind(endpoint: .service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.", interface: nil))
       
       await withDiscardingTaskGroup { group in
@@ -200,7 +198,7 @@ public class PipelineHandler : ChannelDuplexHandler {
               group.addTask {
                 do {
                   try await childChannel.executeThenClose { inbound, outbound in
-                    try await outbound.write(.init(data: txtRecord.data))
+                    try await outbound.write(.init(data: configuration.serializedData()))
                   }
                 } catch {
                   dump(error)
