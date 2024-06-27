@@ -33,13 +33,13 @@ public protocol Sublimatory: Sendable {
 //  func shutdown()
   func initialize(from application: @escaping @Sendable () -> any Application) async throws
   func run() async throws
-  func shutdown ()
+  func shutdown()
 }
 
 extension Sublimatory {
   /// Empty implementation of ``didBoot(from:)-warq``
   /// - Parameter _:  The Sever Application
-  public func initialize(from application: @escaping @Sendable () -> any Application) async throws {}
+  public func initialize(from _: @escaping @Sendable () -> any Application) async throws {}
   public func run() async throws {}
-  public func shutdown () {}
+  public func shutdown() {}
 }

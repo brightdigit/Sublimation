@@ -75,11 +75,13 @@
         if await self.streams.isEmpty {
           logger?.log { $0.debug("Starting Browser.") }
 
-          await browser.start(queue: queue, parser: { result in
-            Task {
-              await self.parseResult(result)
-            }
-          })
+          await browser.start(queue: queue)
+          //, parser: { result in
+            #warning("replace this")
+//            Task {
+//              await self.parseResult(result)
+//            }
+          //})
         }
         return AsyncStream { continuation in
           Task {
@@ -153,52 +155,7 @@
       self.defaultPort = defaultPort
     }
 
-    /// Parses a browser result and extracts URLs.
-    ///
-    /// - Parameters:
-    ///   - result: The browser result.
-    ///   - logger: An optional logger.
-    ///   - defaultPort: The default port number.
-    ///   - defaultTLS: The default TLS setting.
-    ///
-    /// - Returns: An array of URLs if extraction is successful, otherwise nil.
-    private static func urls(
-      from result: NWBrowser.Result,
-      logger: LoggingActor?,
-      defaultPort: Int,
-      defaultTLS: Bool
-    ) -> [URL]? {
-      dump(result)
-      guard case .service = result.endpoint else {
-        logger?.log { $0.debug("Not service.") }
-        return nil
-      }
-      dump(result.metadata)
-      guard case let .bonjour(txtRecord) = result.metadata else {
-        logger?.log { $0.debug("No txt record.") }
-        return nil
-      }
-      return txtRecord.urls(defaultPort: defaultPort, defaultTLS: defaultTLS, logger: logger)
-    }
 
-    /// Parses the browser result and yields the extracted URLs to the stream manager.
-    ///
-    /// - Parameter result: The browser result to be parsed.
-    private func parseResult(_ result: NWBrowser.Result) {
-      guard let urls = Self.urls(
-        from: result,
-        logger: logger,
-        defaultPort: defaultPort,
-        defaultTLS: defaultTLS
-      ) else {
-        return
-      }
-      let logger = logger
-      let streams = streams
-      Task {
-        await streams.yield(urls, logger: logger)
-      }
-    }
   }
 
   extension BonjourDepositor {

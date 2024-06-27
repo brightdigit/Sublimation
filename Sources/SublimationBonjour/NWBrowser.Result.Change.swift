@@ -30,7 +30,7 @@
 #if canImport(Network)
   import Network
 
-@available(*, deprecated)
+  @available(*, deprecated)
   extension NWBrowser.Result.Change {
     internal var newMetadataChange: NWBrowser.Result? {
       if case let .added(result) = self {

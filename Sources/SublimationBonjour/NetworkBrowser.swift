@@ -48,19 +48,19 @@
           await self.onResultsChanged(to: newResults, withChanges: changes)
         }
         let result = newResults.first { result in
-          guard case let .service( service) = result.endpoint else {
+          guard case let .service(service) = result.endpoint else {
             return false
           }
           return service.name == "Sublimation"
         }
-        
+
         guard let result else {
           return
         }
-        
+
         let connection = NWConnection(to: result.endpoint, using: .tcp)
         connection.start(queue: .global())
-        connection.receiveMessage { content, contentContext, isComplete, error in
+        connection.receiveMessage { content, _, _, error in
           guard let content else {
             return
           }
@@ -72,7 +72,6 @@
           }
         }
       }
-      
     }
 
     private init(browser: NWBrowser) {
@@ -80,11 +79,10 @@
     }
 
     internal func start(
-      queue: DispatchQueue,
-      parser: @Sendable @escaping (NWBrowser.Result) -> Void
+      queue: DispatchQueue
     ) {
       browser.start(queue: queue)
-      parseResult = parser
+      //parseResult = parser
     }
 
     private func onUpdateState(_ state: NWBrowser.State) {

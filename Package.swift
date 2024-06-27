@@ -50,7 +50,7 @@ let package = Package(
     .package(url: "https://github.com/swift-server/swift-service-lifecycle.git", from: "2.6.0"),
     .package(url: "https://github.com/apple/swift-nio-transport-services.git", from: "1.20.0"),
     .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.6.0")
-    
+
   ],
   targets: [
     .target(
@@ -118,7 +118,7 @@ let package = Package(
       name: "SublimationBonjour",
       dependencies: [
         "SublimationCore",
-      .product(name: "NIOTransportServices", package: "swift-nio-transport-services"),
+        .product(name: "NIOTransportServices", package: "swift-nio-transport-services"),
         .product(name: "SwiftProtobuf", package: "swift-protobuf")
       ],
       swiftSettings: swiftSettings
