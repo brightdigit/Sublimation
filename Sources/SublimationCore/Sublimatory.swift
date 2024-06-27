@@ -28,24 +28,18 @@
 //
 
 public protocol Sublimatory: Sendable {
-  func willBoot(from application: @escaping @Sendable () -> any Application) async
-  func didBoot(from application: @escaping @Sendable () -> any Application) async
-  func shutdown(from application: @escaping @Sendable () -> any Application) async
-  func shutdown()
+//  func willBoot(from application: @escaping @Sendable () -> any Application) async
+//  func didBoot(from application: @escaping @Sendable () -> any Application) async
+//  func shutdown()
   func initialize(from application: @escaping @Sendable () -> any Application) async throws
   func run() async throws
+  func shutdown ()
 }
 
 extension Sublimatory {
   /// Empty implementation of ``didBoot(from:)-warq``
   /// - Parameter _:  The Sever Application
-  public func didBoot(from _: @escaping @Sendable () -> any Application) async {}
-
-  /// Empty implementation of ``shutdown(from:)-warq``
-  /// - Parameter _:  The Sever Application
-  public func shutdown(from _: @escaping @Sendable () -> any Application) async {}
-  
   public func initialize(from application: @escaping @Sendable () -> any Application) async throws {}
   public func run() async throws {}
-  
+  public func shutdown () {}
 }

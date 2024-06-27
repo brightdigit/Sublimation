@@ -29,6 +29,7 @@
 
 import Foundation
 
+@available(*, deprecated)
 internal protocol TXTRecord {
   var count: Int { get }
   init(_ dictionary: [String: String])

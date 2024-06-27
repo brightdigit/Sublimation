@@ -9,21 +9,10 @@ import ServiceLifecycle
 import Sublimation
 import SublimationCore
 
-extension Sublimation : Service {
-  public func initialize(from application: @escaping @Sendable () -> any Application) async throws {
-    try await self.sublimatory.initialize(from: application)
+extension Sublimation : Service, Serviceable {
+  public static func withGracefulShutdownHandler<T>(operation: () async throws -> T, onGracefulShutdown handler: @escaping () -> Void) async rethrows -> T {
+    try await ServiceLifecycle.withGracefulShutdownHandler(operation: operation, onGracefulShutdown: handler)
   }
-  public func run() async throws {
-    try await withGracefulShutdownHandler {
-      
-      try await self.sublimatory.run()
-    } onGracefulShutdown: {
-      do {
-        try self.sublimatory.shutdown()
-      } catch {
-        
-      }
-    }
+  
 
-  }
 }

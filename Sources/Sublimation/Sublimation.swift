@@ -32,6 +32,27 @@ import Logging
 import OpenAPIRuntime
 import SublimationCore
 
+public protocol Serviceable {
+  static func withGracefulShutdownHandler<T>(
+      operation: () async throws -> T,
+      onGracefulShutdown handler: @Sendable @escaping () -> Void
+  ) async rethrows -> T
+}
+
+extension Serviceable where Self : Sublimation {
+  public func run() async throws {
+    try await Self.withGracefulShutdownHandler {
+      try await self.sublimatory.run()
+    } onGracefulShutdown: {
+      do {
+        try self.sublimatory.shutdown()
+      } catch {
+        #warning("What should I do in this case.")
+      }
+    }
+
+  }
+}
 public final class Sublimation: Sendable {
   public let sublimatory: any Sublimatory
 
@@ -39,21 +60,26 @@ public final class Sublimation: Sendable {
     self.sublimatory = sublimatory
   }
 
-  public func willBoot(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.willBoot(from: application)
-    }
+  public func initialize(from application: @escaping @Sendable () -> any Application) async throws {
+    try await self.sublimatory.initialize(from: application)
   }
+  
 
-  public func didBoot(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.didBoot(from: application)
-    }
-  }
-
-  public func shutdown(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.shutdown()
-    }
-  }
+//  public func willBoot(_ application: @Sendable @escaping () -> any Application) {
+//    Task {
+//      await self.sublimatory.willBoot(from: application)
+//    }
+//  }
+//
+//  public func didBoot(_ application: @Sendable @escaping () -> any Application) {
+//    Task {
+//      await self.sublimatory.didBoot(from: application)
+//    }
+//  }
+//
+//  public func shutdown(_ application: @Sendable @escaping () -> any Application) {
+//    Task {
+//      await self.sublimatory.shutdown()
+//    }
+//  }
 }
