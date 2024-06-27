@@ -32,6 +32,13 @@ import Foundation
 import XCTest
 
 internal class TXTRecordTests: XCTestCase {
+  internal func testBadRecord() {
+    let record = MockTXTRecord(["Serial Number": UUID().uuidString])
+    let urls = record.urls(defaultPort: 0, defaultTLS: false, logger: nil)
+
+    XCTAssert(urls.isEmpty)
+  }
+
   internal func testInit() {
     let expectation = expectation(description: "Filter")
 
@@ -111,4 +118,3 @@ internal class TXTRecordTests: XCTestCase {
     XCTAssertEqual(urls, expectedURLs)
   }
 }
- 

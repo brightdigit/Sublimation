@@ -53,6 +53,24 @@ extension SublimationKey {
     }
     return [prefix, value.description].joined(separator: "_")
   }
+
+  internal static func isValid(_ string: String) -> Bool {
+    if SublimationKeyValues(rawValue: string) != nil {
+      return true
+    }
+    if string.hasPrefix(SublimationKeyValues.address.rawValue),
+       string.count > SublimationKeyValues.address.rawValue.count + 1 {
+      let indexString = string.suffix(
+        from: string.index(
+          string.startIndex,
+          offsetBy: SublimationKeyValues.address.rawValue.count + 1
+        )
+      )
+
+      return (Int(indexString) ?? .min) >= 0
+    }
+    return false
+  }
 }
 
 extension SublimationKeyValues {
