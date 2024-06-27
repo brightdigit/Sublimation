@@ -56,7 +56,6 @@
     private nonisolated(unsafe) var logger: Logger?
     
 
-    internal private(set) var state: NWListener.State?
 
     public init(
       listenerParameters: NWParameters = .tcp,
@@ -95,10 +94,6 @@
     #endif
 
     
-    private func updateState(_ newState: NWListener.State) {
-      state = newState
-      logger?.debug("Listener changed state to \(newState.debugDescription).")
-    }
 
     
     public func run() async throws {

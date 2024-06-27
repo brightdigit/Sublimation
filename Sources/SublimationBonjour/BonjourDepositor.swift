@@ -75,7 +75,9 @@
         if await self.streams.isEmpty {
           logger?.log { $0.debug("Starting Browser.") }
 
-          await browser.start(queue: queue)
+          await browser.start(queue: queue) { urls in
+            await streams.yield(urls, logger: logger)
+          }
           //, parser: { result in
             #warning("replace this")
 //            Task {
