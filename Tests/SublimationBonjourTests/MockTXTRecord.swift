@@ -32,6 +32,10 @@ import Foundation
 import XCTest
 
 internal struct MockTXTRecord: TXTRecord {
+  func getKeys() -> any Sequence<String> {
+    dictionary.keys
+  }
+
   internal let dictionary: [String: String]
 
   internal var count: Int {
