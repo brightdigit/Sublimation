@@ -54,6 +54,7 @@ extension ServerConfiguration {
     private let addressFilter: @Sendable (String) -> Bool
     private let listenerParameters: NWParameters
     private nonisolated(unsafe) var logger: Logger?
+    @available(*, deprecated)
     private var listener: NWListener? {
       didSet {
         guard let listener else {
@@ -114,6 +115,7 @@ extension ServerConfiguration {
       }
     #endif
 
+    @available(*, deprecated)
     internal func stop() {
       assert(listener != nil)
       listener?.stateUpdateHandler = nil
@@ -126,6 +128,7 @@ extension ServerConfiguration {
       logger?.debug("Listener changed state to \(newState.debugDescription).")
     }
 
+    @available(*, deprecated)
     public func willBoot(from application: @escaping @Sendable () -> any Application) async {
       let application = application()
       await self.start(
@@ -155,17 +158,9 @@ extension ServerConfiguration {
     }
     
     public func run() async throws {
-      guard let listener else {
-#warning("Should Crash")
-        return
-      }
-      
       let bootstrap = NIOTSListenerBootstrap(group: NIOTSEventLoopGroup.singleton)
         .childChannelOption(ChannelOptions.allowRemoteHalfClosure, value: true)
       
-      let options = NWProtocolTCP.Options()
-      
-     // let service = NWListener.Service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.")
       
       let addresses = await self.addresses()
 

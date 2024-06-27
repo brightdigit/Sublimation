@@ -29,7 +29,7 @@
 
 #if canImport(Network)
   import Network
-
+@available(*, deprecated)
   extension NWTXTRecord: TXTRecord {
     internal func getStringEntry(for key: String) -> String? {
       guard case let .string(value) = self.getEntry(for: key) else {

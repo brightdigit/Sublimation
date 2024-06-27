@@ -26,7 +26,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
-
+@available(*, deprecated)
 public protocol SublimationValue: CustomStringConvertible {
   init?(_ string: String)
 }

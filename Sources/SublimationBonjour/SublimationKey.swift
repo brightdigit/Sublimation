@@ -26,19 +26,19 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
-
+@available(*, deprecated)
 private enum SublimationKeyValues: String {
   case tls = "Sublimation_TLS"
   case port = "Sublimation_Port"
   case address = "Sublimation_Address"
 }
-
+@available(*, deprecated)
 public enum SublimationKey: Hashable {
   case tls
   case port
   case address(Int)
 }
-
+@available(*, deprecated)
 extension SublimationKey {
   internal var stringValue: String {
     let value: (any CustomStringConvertible)? = switch self {
@@ -54,7 +54,7 @@ extension SublimationKey {
     return [prefix, value.description].joined(separator: "_")
   }
 }
-
+@available(*, deprecated)
 extension SublimationKeyValues {
   fileprivate init(key: SublimationKey) {
     switch key {
@@ -67,7 +67,7 @@ extension SublimationKeyValues {
     }
   }
 }
-
+@available(*, deprecated)
 extension [String: String] {
   internal init(sublimationTxt: [SublimationKey: any CustomStringConvertible]) {
     let pairs = sublimationTxt

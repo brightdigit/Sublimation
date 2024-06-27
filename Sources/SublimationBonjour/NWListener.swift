@@ -31,6 +31,7 @@
   import Foundation
   import Network
 
+@available(*, deprecated)
   extension NWListener {
     internal convenience init(
       using parameters: NWParameters,
