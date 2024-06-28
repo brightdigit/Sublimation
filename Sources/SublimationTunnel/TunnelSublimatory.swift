@@ -39,6 +39,7 @@ public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   TunnelServerFactoryType: TunnelServerFactory
 >: Sublimatory, TunnelServerDelegate {
+  
   public typealias Key = WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
   public typealias ConnectionErrorType = TunnelServerFactoryType.Configuration.Server.ConnectionErrorType
   private let factory: TunnelServerFactoryType
@@ -48,7 +49,7 @@ public actor TunnelSublimatory<
 
   private var tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?
   private var logger: Logger?
-  private var server: (any TunnelServer)?
+  private var server: (any TunnelServer<ConnectionErrorType>)?
 
   private let isConnectionRefused: @Sendable (ConnectionErrorType) -> Bool
   ///   Initializes the Sublimation lifecycle handler.
@@ -82,7 +83,7 @@ public actor TunnelSublimatory<
     key: Key,
     tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?,
     logger: Logger?,
-    server: (any TunnelServer)?,
+    server: (any TunnelServer<ConnectionErrorType>)?,
     repoClientFactory: @escaping RepositoryClientFactory<Key>,
     isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool
   ) {
@@ -177,7 +178,7 @@ public actor TunnelSublimatory<
       repoClientFactory(application)
     )
     self.server = server
-    server.start(isConnectionRefused: isConnectionRefused)
+    
   }
 
   ///   Called when the application is about to boot.
@@ -190,8 +191,27 @@ public actor TunnelSublimatory<
   ///   - Note: This method is nonisolated.
   ///
   ///   - SeeAlso: `Application`
-  public func willBoot(from application: @escaping @Sendable () -> any Application) async {
-    await self.beginFromApplication(application)
+//  public func willBoot(from application: @escaping @Sendable () -> any Application) async {
+//    await self.beginFromApplication(application)
+//  }
+  
+  public func initialize(from application: @escaping @Sendable () -> any SublimationCore.Application) async {
+    let server = factory.server(
+      from: TunnelServerFactoryType.Configuration(application: application()),
+      handler: self
+    )
+    logger = application().logger
+    tunnelRepo = repoFactory.setupClient(
+      repoClientFactory(application)
+    )
+    self.server = server
+  }
+  
+  public func run() async throws {
+    guard let server else {
+      fatalError("Initialized not run.")
+    }
+    server.start(isConnectionRefused: self.isConnectionRefused)
   }
 
   public nonisolated func shutdown() {}

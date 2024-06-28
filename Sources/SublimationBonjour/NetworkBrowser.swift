@@ -28,53 +28,91 @@
 //
 
 #if canImport(Network)
+  import Foundation
   import Network
-import Foundation
+import os.log
+
+extension ServerConfiguration {
+  func urls (defaultPort: Int, defaultIsSecure: Bool, logger: Logger?) -> [URL] {
+    let portInt32 = self.hasPort ? self.port : nil
+    let port = portInt32.map(Int.init) ?? defaultPort
+    let isSecure = self.hasIsSecure ? self.isSecure : defaultIsSecure
+    let scheme = isSecure ? "https" : "http"
+    return self.hosts.compactMap { host in
+      guard let url = URL(scheme: scheme, host: host, port: port) else {
+        logger?.warning("Invalid URL with Host: \(host)")
+        return nil
+      }
+      return url
+    }
+  }
+}
 
   internal actor NetworkBrowser {
     internal private(set) var currentState: NWBrowser.State?
     private let browser: NWBrowser
-    private var parseResult: ((NWBrowser.Result) -> Void)?
-
-    private let serviceName = "Sublimation"
-    private let parameters : NWParameters = .tcp
-    private let dispatchQueue : () -> DispatchQueue
-    internal init(for descriptor: NWBrowser.Descriptor, using parameters: NWParameters) {
+    private var withURLs : (@Sendable (Result<[URL], any Error>) -> Void)!
+    
+    internal init(
+      for descriptor: NWBrowser.Descriptor,
+      using parameters: NWParameters = .tcp,
+      service serviceName: String,// = "Sublimation",
+      defaultPort: Int,// = 8080,
+      defaultIsSecure: Bool,// = false,
+      logger: Logger?,
+      queue: @Sendable @escaping () -> DispatchQueue
+    ) {
       let browser = NWBrowser(for: descriptor, using: parameters)
-      self.init(browser: browser)
+      self.browser = browser
       browser.stateUpdateHandler = { state in
         Task {
           await self.onUpdateState(state)
         }
       }
-      browser.browseResultsChangedHandler = { newResults, changes in
-        let endPoints : [NWEndpoint] = newResults.compactMap { result in
+      browser.browseResultsChangedHandler = { newResults, _ in
+        let endPoints: [NWEndpoint] = newResults.compactMap { result in
           guard case let .service(service) = result.endpoint else {
             return nil
           }
-          guard service.name == self.serviceName else {
+          guard service.name == serviceName else {
             return nil
           }
           dump(result.endpoint)
           return result.endpoint
         }
-        let parameters = self.parameters
+        
         for endpoint in endPoints {
-          
           Task {
+            let withURLs = await self.withURLs
             let connection = NWConnection(to: endpoint, using: parameters)
-            connection.start(queue: self.dispatchQueue())
-            let urls : [URL] = try await withCheckedThrowingContinuation { continuation in
-              connection.receiveMessage { content, contentContext, isComplete, error in
-                if let error {
-                  continuation.resume(throwing: error)
+            connection.start(queue: queue())
+            let result : Result<[URL], any Error>
+            do {
+              let urls: [URL] = try await withCheckedThrowingContinuation { continuation in
+                connection.receiveMessage { content, _, _, error in
+                  if let error {
+                    continuation.resume(throwing: error)
+                  } else if let content {
+                    let configuration : ServerConfiguration
+                    do {
+                      configuration = try ServerConfiguration(serializedData: content)
+                    } catch {
+                      continuation.resume(throwing: error)
+                      return
+                    }
+                    let urls = configuration.urls(defaultPort: defaultPort, defaultIsSecure: defaultIsSecure, logger: logger)
+                    continuation.resume(returning: urls)
+                  }
                 }
               }
+              result = .success(urls)
+            } catch {
+              result = .failure(error)
             }
+            withURLs!(result)
           }
         }
 
-        
 //        connection.start(queue: .global())
 //        connection.receiveMessage { content, _, _, error in
 //          guard let content else {
@@ -86,20 +124,22 @@ import Foundation
 //          } catch {
 //            dump(error)
 //          }
-//          
+//
 //        }
       }
     }
 
-    private init(browser: NWBrowser) {
-      self.browser = browser
-    }
+//    private init(browser: NWBrowser) {
+//      self.browser = browser
+//    }
 
     internal func start(
-      queue: DispatchQueue
+      queue: DispatchQueue,
+      _ withURLs: @Sendable @escaping (Result<[URL], any Error>) -> Void
     ) {
+      self.withURLs = withURLs
       browser.start(queue: queue)
-      //parseResult = parser
+      // parseResult = parser
     }
 
     private func onUpdateState(_ state: NWBrowser.State) {

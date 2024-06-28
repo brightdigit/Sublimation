@@ -5,10 +5,7 @@ import SwiftUI
 
 struct ContentView: View {
   let networkExplorer =
-  BonjourDepositor(logger: {
-    
-    .init(subsystem: Bundle.main.bundleIdentifier!, category: "bonjour")
-  })
+  BonjourDepositor(logger: .init(subsystem: Bundle.main.bundleIdentifier!, category: "sublimation"))
   //NetworkExplorer(logger: .init(subsystem: Bundle.main.bundleIdentifier!, category: "bonjour"))
   @State var baseURL: String = ""
   @State var serverResponse: String = ""

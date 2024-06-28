@@ -42,7 +42,7 @@ public protocol Serviceable {
 extension Serviceable where Self: Sublimation {
   public func run() async throws {
     try await Self.withGracefulShutdownHandler {
-      try await self.sublimatory.run()
+      try await self.run()
     } onGracefulShutdown: {
       do {
         try self.sublimatory.shutdown()
@@ -60,8 +60,12 @@ public final class Sublimation: Sendable {
     self.sublimatory = sublimatory
   }
 
-  public func initialize(from application: @escaping @Sendable () -> any Application) async throws {
-    try await self.sublimatory.initialize(from: application)
+  public func initialize(from application: @escaping @Sendable () -> any Application) async {
+     await self.sublimatory.initialize(from: application)
+  }
+  
+  public func run() async throws {
+    try await self.sublimatory.run()
   }
 
 //  public func willBoot(_ application: @Sendable @escaping () -> any Application) {

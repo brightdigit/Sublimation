@@ -33,6 +33,7 @@
   import Logging
 #endif
 
+@available(*, deprecated)
 internal actor LoggingActor {
   private let logger: Logger
 

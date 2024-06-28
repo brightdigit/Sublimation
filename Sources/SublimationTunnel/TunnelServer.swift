@@ -34,7 +34,7 @@
 /// - Note: The Ngrok server allows you to expose a local server to the internet.
 ///
 /// - Important: Make sure to call the `start()` method to start the Ngrok server.
-public protocol TunnelServer {
+public protocol TunnelServer<ConnectionErrorType> {
   /// Type of connection error which denotes whether the service isn't available.
   associatedtype ConnectionErrorType: Error
   ///   Starts the Ngrok server.

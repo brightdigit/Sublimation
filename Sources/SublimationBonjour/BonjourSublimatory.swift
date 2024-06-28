@@ -54,8 +54,6 @@
     private let addressFilter: @Sendable (String) -> Bool
     private let listenerParameters: NWParameters
     private nonisolated(unsafe) var logger: Logger?
-    
-
 
     public init(
       listenerParameters: NWParameters = .tcp,
@@ -93,9 +91,6 @@
       }
     #endif
 
-    
-
-    
     public func run() async throws {
       let bootstrap = NIOTSListenerBootstrap(group: NIOTSEventLoopGroup.singleton)
         .childChannelOption(ChannelOptions.allowRemoteHalfClosure, value: true)
@@ -149,6 +144,5 @@
       // try await channel.closeFuture.get()
     }
   }
-
 
 #endif

@@ -29,6 +29,8 @@
 
 import Foundation
 
+import os.log
+
 internal actor StreamManager<Key: Hashable & Sendable, Value> {
   private var streamContinuations = [Key: AsyncStream<Value>.Continuation]()
 
@@ -42,9 +44,9 @@ internal actor StreamManager<Key: Hashable & Sendable, Value> {
     self.newID = newID
   }
 
-  internal func yield(_ urls: [Value], logger: LoggingActor?) {
+  internal func yield(_ urls: [Value], logger: Logger?) {
     if streamContinuations.isEmpty {
-      logger?.log { $0.debug("Missing Continuations.") }
+      logger?.debug("Missing Continuations.")
     }
     for streamContinuation in streamContinuations {
       for url in urls {
