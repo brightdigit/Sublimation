@@ -120,11 +120,16 @@
             // dump(inbound)
 
             for try await childChannel in clients {
+              //dump(childChannel)
+              print("Received Client")
               dump(childChannel)
               group.addTask {
                 do {
-                  try await childChannel.executeThenClose { _, outbound in
+                  try await childChannel.executeThenClose { inbound, outbound in
+                    
                     try await outbound.write(.init(data: configuration.serializedData()))
+                    outbound.finish()
+                    print("Closing Child Channel")
                   }
                 } catch {
                   dump(error)
@@ -133,6 +138,7 @@
               }
               // outbound.write(data)
             }
+            print("Closing Main Channel")
           }
         } catch {
           print("Waiting on child channel: \(error)")

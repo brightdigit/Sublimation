@@ -33,13 +33,27 @@
 import os.log
 
 extension ServerConfiguration {
+
+  func isValidIPv6Address(_ ip: String) -> Bool {
+      var sin6 = sockaddr_in6()
+      return ip.withCString { cstring in inet_pton(AF_INET6, cstring, &sin6.sin6_addr) } == 1
+  }
+
+  func formatIPv6ForURL(_ ip: String) -> String {
+      if isValidIPv6Address(ip) {
+          return "[\(ip)]"
+      } else {
+          return ip
+      }
+  }
+
   func urls (defaultPort: Int, defaultIsSecure: Bool, logger: Logger?) -> [URL] {
     let portInt32 = self.hasPort ? self.port : nil
     let port = portInt32.map(Int.init) ?? defaultPort
     let isSecure = self.hasIsSecure ? self.isSecure : defaultIsSecure
     let scheme = isSecure ? "https" : "http"
     return self.hosts.compactMap { host in
-      guard let url = URL(scheme: scheme, host: host, port: port) else {
+      guard let url = URL(scheme: scheme, host: formatIPv6ForURL(host), port: port) else {
         logger?.warning("Invalid URL with Host: \(host)")
         return nil
       }
@@ -70,27 +84,33 @@ extension ServerConfiguration {
         }
       }
       browser.browseResultsChangedHandler = { newResults, _ in
-        let endPoints: [NWEndpoint] = newResults.compactMap { result in
-          guard case let .service(service) = result.endpoint else {
-            return nil
+        Task {
+          let endPoints: [NWEndpoint] = newResults.compactMap { result in
+            guard case let .service(service) = result.endpoint else {
+              return nil
+            }
+            guard service.name == serviceName else {
+              return nil
+            }
+            dump(result.endpoint)
+            return result.endpoint
           }
-          guard service.name == serviceName else {
-            return nil
-          }
-          dump(result.endpoint)
-          return result.endpoint
-        }
-        
-        for endpoint in endPoints {
-          Task {
+          print(endPoints.count)
+          for endpoint in endPoints {
+            print(endpoint)
             let withURLs = await self.withURLs
-            let connection = NWConnection(to: endpoint, using: parameters)
-            connection.start(queue: queue())
+            let connection = NWConnection(to: endpoint, using: .tcp)
+            connection.start(queue: .global())
             let result : Result<[URL], any Error>
             do {
               let urls: [URL] = try await withCheckedThrowingContinuation { continuation in
-                connection.receiveMessage { content, _, _, error in
+                
+                connection.receiveMessage { content, context, isComplete, error in
+                  print("Received Message")
+                  dump(context?.identifier)
+                  dump(isComplete)
                   if let error {
+                    dump(error)
                     continuation.resume(throwing: error)
                   } else if let content {
                     let configuration : ServerConfiguration
@@ -102,6 +122,9 @@ extension ServerConfiguration {
                     }
                     let urls = configuration.urls(defaultPort: defaultPort, defaultIsSecure: defaultIsSecure, logger: logger)
                     continuation.resume(returning: urls)
+                  } else {
+                    print("no return value")
+                    continuation.resume(returning: [])
                   }
                 }
               }
@@ -109,9 +132,11 @@ extension ServerConfiguration {
             } catch {
               result = .failure(error)
             }
+            dump(result)
             withURLs!(result)
           }
         }
+        
 
 //        connection.start(queue: .global())
 //        connection.receiveMessage { content, _, _, error in
