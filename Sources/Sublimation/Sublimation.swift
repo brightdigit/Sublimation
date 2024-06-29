@@ -44,11 +44,7 @@ extension Serviceable where Self: Sublimation {
     try await Self.withGracefulShutdownHandler {
       try await self.run()
     } onGracefulShutdown: {
-      do {
-        try self.sublimatory.shutdown()
-      } catch {
-        #warning("What should I do in this case.")
-      }
+      self.sublimatory.shutdown()
     }
   }
 }
@@ -67,22 +63,4 @@ public final class Sublimation: Sendable {
   public func run() async throws {
     try await self.sublimatory.run()
   }
-
-//  public func willBoot(_ application: @Sendable @escaping () -> any Application) {
-//    Task {
-//      await self.sublimatory.willBoot(from: application)
-//    }
-//  }
-//
-//  public func didBoot(_ application: @Sendable @escaping () -> any Application) {
-//    Task {
-//      await self.sublimatory.didBoot(from: application)
-//    }
-//  }
-//
-//  public func shutdown(_ application: @Sendable @escaping () -> any Application) {
-//    Task {
-//      await self.sublimatory.shutdown()
-//    }
-//  }
 }

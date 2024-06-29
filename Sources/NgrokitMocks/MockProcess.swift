@@ -83,7 +83,7 @@ package final class MockProcess: Processable {
     isTerminationHandlerSet = true
   }
 
-  package func run() throws {
+  package func obsoleteRun() throws {
     isRunCalled = true
     if let error = runError {
       throw error

@@ -93,7 +93,6 @@
 
     public func run() async throws {
       let bootstrap = NIOTSListenerBootstrap(group: NIOTSEventLoopGroup.singleton)
-        .childChannelOption(ChannelOptions.allowRemoteHalfClosure, value: true)
 
       let addresses = await self.addresses()
 
@@ -101,16 +100,14 @@
 
       let channel = try await bootstrap.bind(endpoint: .service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.", interface: nil)) { channel in
         channel.eventLoop.makeCompletedFuture {
-          try NIOAsyncChannel(
-            wrappingChannelSynchronously: channel,
-            configuration: .init(
-              isOutboundHalfClosureEnabled: true,
-              inboundType: ByteBuffer.self,
-              outboundType: ByteBuffer.self
-            )
+          
+          try NIOAsyncChannel<ByteBuffer, ByteBuffer>(
+            wrappingChannelSynchronously: channel
           )
         }
       }
+      
+      
 
       // bootstrap.bind(endpoint: .service(name: "Sublimation", type: Self.httpTCPServiceType, domain: "local.", interface: nil))
 
@@ -122,20 +119,31 @@
             for try await childChannel in clients {
               //dump(childChannel)
               print("Received Client")
-              dump(childChannel)
-              group.addTask {
+              //dump(childChannel)
                 do {
+                  childChannel.channel.
+                  let data = try! configuration.serializedData()
+                  try await childChannel.channel.writeAndFlush(data)
                   try await childChannel.executeThenClose { inbound, outbound in
-                    
-                    try await outbound.write(.init(data: configuration.serializedData()))
                     outbound.finish()
-                    print("Closing Child Channel")
                   }
+                  try await childChannel.channel.close()
+//                  try await childChannel.executeThenClose { inbound, outbound in
+//                    
+//                    print("Writing \(data.count) bytes")
+//                    
+//                    try await outbound.write(.init(data: data))
+//                    print("Finishing")
+//                    //outbound.finish()
+//                    //try!  await Task.sleep(for: .seconds(1.0))
+//                    print("Closing Child Channel")
+//                    outbound.finish()
+//                  }
                 } catch {
                   dump(error)
                 }
                 // print(String(decoding: data, as: UTF8.self))
-              }
+              
               // outbound.write(data)
             }
             print("Closing Main Channel")

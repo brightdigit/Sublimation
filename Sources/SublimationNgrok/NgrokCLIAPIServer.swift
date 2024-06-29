@@ -46,6 +46,11 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
     let isOld: Bool
     let tunnel: any Tunnel
   }
+  
+  private enum GetTunnelResult {
+    case tunnel(TunnelResult?)
+    case task(Task<Void, any Error>)
+  }
 
   /// The delegate for the server.
   internal let delegate: any TunnelServerDelegate
@@ -61,6 +66,8 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
 
   /// The logger for logging server events.
   internal let logger: Logger
+  
+  
 
   ///   Initializes a new instance of `NgrokCLIAPIServer`.
   ///
@@ -102,9 +109,16 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
       { try await client.listTunnels().first },
       isConnectionRefused: isConnectionRefused
     )
-
-    if let tunnel = try await self.getTunnel(from: result) {
+    let getTunnelResult = try await self.getTunnel(from: result)
+    
+    switch getTunnelResult {
+    case .task(let task):
+      //self.processTask = task
+      break
+    case .tunnel(.some(let tunnel)):
       return tunnel
+    default:
+      break
     }
 
     return try await client.searchForCreatedTunnel(
@@ -119,29 +133,30 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
 
   private func getTunnel(
     from result: NetworkResult<NgrokTunnel?, ClientError>
-  ) async throws -> TunnelResult?? {
+  ) async throws -> GetTunnelResult? {
     switch result {
     case .connectionRefused:
       logger.notice(
         "Ngrok not running. Waiting for Process and New Tunnel... (about 30 secs)"
       )
-      try await process.run(onError: cliError(_:))
+      return .task( Task {
+        try await process.run()
+      })
+     // try await process.obsoleteRun(onError: cliError(_:))
 
     case let .success(tunnel):
       logger.debug("Process Already Running.")
-      return TunnelResult??.some(tunnel.map { .init(isOld: true, tunnel: $0) })
+      return .tunnel( tunnel.map { .init(isOld: true, tunnel: $0) })
 
     case let .failure(error):
       throw error
     }
-    return nil
   }
 
   internal func newTunnel(
     isConnectionRefused: @escaping (ClientError) -> Bool) async throws -> any Tunnel {
     if let tunnel = try await searchForExistingTunnel(
       within: 60.0,
-
       isConnectionRefused: isConnectionRefused
     ) {
       if tunnel.isOld {

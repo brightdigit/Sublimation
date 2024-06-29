@@ -82,7 +82,7 @@ internal class NgrokMacProcessTests: XCTestCase {
       httpPort: httpPort,
       processType: MockProcess.self
     )
-    try await process.run { _ in }
+    try await process.obsoleteRun { _ in }
 
     let actualProcess = await process.process
     XCTAssertTrue(actualProcess.isRunCalled)

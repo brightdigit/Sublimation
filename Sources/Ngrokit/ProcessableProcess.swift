@@ -98,8 +98,31 @@ import Foundation
       Pipe()
     }
 
-    public func run() throws {
+    public func obsoleteRun() throws {
       try process.run()
+    }
+    
+    public func run() async throws {
+      
+      return try await withCheckedThrowingContinuation { continuation in
+        let pipe = Pipe()
+        self.process.standardError = pipe
+        self.process.terminationHandler = { process in
+          let error: any Error
+          do {
+            error = try pipe.fileHandleForReading.parseNgrokErrorCode()
+          } catch let runtimeError as RuntimeError {
+            error = runtimeError
+          } catch let otherError {
+            
+            assertionFailure("Invalid Error: \(otherError)")
+            error = otherError
+          }
+          continuation.resume(throwing: error)
+        }
+        self.process.waitUntilExit()
+      }
+      
     }
   }
 

@@ -37,5 +37,5 @@ package final class MockNgrokProcess: NgrokProcess {
     self.id = id
   }
 
-  package func run(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
+  package func obsoleteRun(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
 }

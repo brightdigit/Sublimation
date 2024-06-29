@@ -42,9 +42,9 @@ import Foundation
 ///
 /// - SeeAlso: `NgrokProcess`
 public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
-  private var terminationHandler: (@Sendable (any Error) -> Void)?
+  //private var terminationHandler: (@Sendable (any Error) -> Void)?
   internal let process: ProcessType
-  private let pipe: ProcessType.PipeType
+  //private let pipe: ProcessType.PipeType
 
   ///   Initializes a new instance of `NgrokMacProcess`.
   ///
@@ -73,33 +73,33 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
     pipe: ProcessType.PipeType? = nil,
     terminationHandler: (@Sendable (any Error) -> Void)? = nil
   ) {
-    self.terminationHandler = terminationHandler
+    //self.terminationHandler = terminationHandler
     self.process = process
-    if let pipe {
-      self.pipe = pipe
-    } else {
-      let newPipe: ProcessType.PipeType = process.createPipe()
-      self.process.standardError = newPipe
-      self.pipe = newPipe
-    }
+//    if let pipe {
+//      self.pipe = pipe
+//    } else {
+//      let newPipe: ProcessType.PipeType = process.createPipe()
+//      self.process.standardError = newPipe
+//      self.pipe = newPipe
+//    }
   }
 
   ///   A private method that handles the termination of the process.
   ///
   ///   - Parameters:
   ///     - forProcess: The process that has terminated.
-  @Sendable
-  private nonisolated func terminationHandler(forProcess _: any Processable) {
-    Task {
-      let error: any Error
-      do {
-        error = try self.pipe.fileHandleForReading.parseNgrokErrorCode()
-      } catch let runtimeError as RuntimeError {
-        error = runtimeError
-      }
-      await self.terminationHandler?(error)
-    }
-  }
+//  @Sendable
+//  private nonisolated func terminationHandler(forProcess _: any Processable) {
+//    Task {
+//      let error: any Error
+//      do {
+//        error = try self.pipe.fileHandleForReading.parseNgrokErrorCode()
+//      } catch let runtimeError as RuntimeError {
+//        error = runtimeError
+//      }
+//      await self.terminationHandler?(error)
+//    }
+//  }
 
   ///   Runs the Ngrok process.
   ///
@@ -107,9 +107,13 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
   ///     - onError: A closure that handles any errors that occur during the process.
   ///
   ///   - Throws: An error if the process fails to run.
-  public func run(onError: @Sendable @escaping (any Error) -> Void) async throws {
-    process.setTerminationHandler(terminationHandler(forProcess:))
-    terminationHandler = onError
-    try process.run()
+  public func obsoleteRun(onError: @Sendable @escaping (any Error) -> Void) async throws {
+//    process.setTerminationHandler(terminationHandler(forProcess:))
+//    terminationHandler = onError
+//    try process.obsoleteRun()
+  }
+  
+  public func run() async throws {
+    try await process.run()
   }
 }

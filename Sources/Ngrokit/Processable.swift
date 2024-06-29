@@ -99,5 +99,8 @@ public protocol Processable: Sendable, AnyObject {
   ///   - Throws: An error if the process fails.
   ///
   ///   - Requires: This method must be implemented.
-  func run() throws
+  @available(*, deprecated)
+  func obsoleteRun() throws
+  
+  func run () async throws
 }

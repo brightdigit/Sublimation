@@ -41,5 +41,9 @@ public protocol TunnelServer<ConnectionErrorType> {
   ///
   ///   Call this method to start the Ngrok server and
   ///   expose your local server to the internet.
+  @available(*, deprecated)
   func start(isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool)
+  
+  
+  func run(isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool) async throws
 }

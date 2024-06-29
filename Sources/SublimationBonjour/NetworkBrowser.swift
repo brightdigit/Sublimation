@@ -65,7 +65,76 @@ extension ServerConfiguration {
   internal actor NetworkBrowser {
     internal private(set) var currentState: NWBrowser.State?
     private let browser: NWBrowser
+    private let defaultPort : Int
+    private let defaultIsSecure : Bool
+    private let logger : Logger?
     private var withURLs : (@Sendable (Result<[URL], any Error>) -> Void)!
+    private var connections = [UUID : NWConnection]()
+    
+    private nonisolated func beginConnection(to endpoint: NWEndpoint, queue: DispatchQueue) {
+      Task {
+        await self.startConnection(to: endpoint, queue: queue)
+      }
+    }
+    
+    private func startConnection(to endpoint: NWEndpoint, queue: DispatchQueue) {
+      let withURLs = self.withURLs
+      let id = UUID()
+      let connection = NWConnection(to: endpoint, using: .tcp)
+      self.connections[id] = connection
+      print(connection.maximumDatagramSize)
+      connection.stateUpdateHandler = { state in
+        switch state {
+        case .cancelled:
+          withURLs!(.success([]))
+        case .failed(let error):
+          dump(error)
+          withURLs!(.failure(error))
+        case .ready:
+          print("Receiving Message")
+          
+          connection.receiveMessage {
+            
+            self.onMessage($0, $1, $2, $3, from: id)
+          }
+        default:
+          dump(state)
+        }
+      }
+      connection.start(queue: queue)
+    }
+    
+    private nonisolated func onMessage (_ content: Data?, _ contentContext: NWConnection.ContentContext?, _ isComplete: Bool, _ error: NWError?, from id: UUID) {
+      Task {
+        await self.receiveMessage(content, contentContext, isComplete, error, from: id)
+      }
+    }
+    
+    private func receiveMessage (_ content: Data?, _ contentContext: NWConnection.ContentContext?, _ isComplete: Bool, _ error: NWError?, from id: UUID) {
+      print("Received Message")
+      print(contentContext?.identifier ?? "")
+      print(isComplete)
+      let result : Result<[URL], any Error>
+      if let error {
+        print("error: \(error)")
+        result = .failure(error)
+      } else if let content {
+        print("content: \(content.count)")
+        let configuration : ServerConfiguration
+        do {
+          configuration = try ServerConfiguration(serializedData: content)
+          
+          let urls = configuration.urls(defaultPort: self.defaultPort, defaultIsSecure: self.defaultIsSecure, logger: self.logger)
+          result = .success(urls)
+        } catch {
+          result = .failure(error)
+        }
+      } else {
+        print("no return value")
+        result = .success([])
+      }
+      self.withURLs!(result)
+    }
     
     internal init(
       for descriptor: NWBrowser.Descriptor,
@@ -78,13 +147,16 @@ extension ServerConfiguration {
     ) {
       let browser = NWBrowser(for: descriptor, using: parameters)
       self.browser = browser
+      self.defaultPort = defaultPort
+      self.defaultIsSecure = defaultIsSecure
+      self.logger = logger
       browser.stateUpdateHandler = { state in
         Task {
           await self.onUpdateState(state)
         }
       }
       browser.browseResultsChangedHandler = { newResults, _ in
-        Task {
+        
           let endPoints: [NWEndpoint] = newResults.compactMap { result in
             guard case let .service(service) = result.endpoint else {
               return nil
@@ -95,47 +167,79 @@ extension ServerConfiguration {
             dump(result.endpoint)
             return result.endpoint
           }
-          print(endPoints.count)
-          for endpoint in endPoints {
-            print(endpoint)
-            let withURLs = await self.withURLs
-            let connection = NWConnection(to: endpoint, using: .tcp)
-            connection.start(queue: .global())
-            let result : Result<[URL], any Error>
-            do {
-              let urls: [URL] = try await withCheckedThrowingContinuation { continuation in
-                
-                connection.receiveMessage { content, context, isComplete, error in
-                  print("Received Message")
-                  dump(context?.identifier)
-                  dump(isComplete)
-                  if let error {
-                    dump(error)
-                    continuation.resume(throwing: error)
-                  } else if let content {
-                    let configuration : ServerConfiguration
-                    do {
-                      configuration = try ServerConfiguration(serializedData: content)
-                    } catch {
-                      continuation.resume(throwing: error)
-                      return
-                    }
-                    let urls = configuration.urls(defaultPort: defaultPort, defaultIsSecure: defaultIsSecure, logger: logger)
-                    continuation.resume(returning: urls)
-                  } else {
-                    print("no return value")
-                    continuation.resume(returning: [])
-                  }
-                }
-              }
-              result = .success(urls)
-            } catch {
-              result = .failure(error)
-            }
-            dump(result)
-            withURLs!(result)
-          }
+        for endpoint in endPoints {
+          self.beginConnection(to: endpoint, queue: queue())
         }
+//          print(endPoints.count)
+//          for endpoint in endPoints {
+//            print(endpoint)
+//            let withURLs = await self.withURLs
+//            let connection = NWConnection(to: endpoint, using: .tcp)
+//            let didConnect : Bool
+//            do {
+//              didConnect = try await withCheckedThrowingContinuation { continuation in
+//                
+//                connection.stateUpdateHandler = { state in
+//                  dump(state)
+//                  switch state {
+//                  case .ready:
+//                    continuation.resume(returning: true)
+//                    connection.stateUpdateHandler = nil
+//                  case .failed(let error):
+//                    continuation.resume(throwing: error)
+//                    connection.stateUpdateHandler = nil
+//                  case .cancelled:
+//                    continuation.resume(returning: false)
+//                    connection.stateUpdateHandler = nil
+//                  default:
+//                    break
+//                  }
+//                }
+//                connection.start(queue: .global())
+//              }
+//            } catch {
+//              dump(error)
+//              continue
+//            }
+//            guard didConnect else {
+//              print("Connection cancelled")
+//              continue
+//            }
+//            let result : Result<[URL], any Error>
+//            do {
+//              let urls: [URL] = try await withCheckedThrowingContinuation { continuation in
+//                var tries = 0
+//                connection.receiveMessage { content, context, isComplete, error in
+//                  print("Received Message")
+//                  dump(context?.identifier)
+//                  dump(isComplete)
+//                  if let error {
+//                    dump(error)
+//                    continuation.resume(throwing: error)
+//                  } else if let content {
+//                    let configuration : ServerConfiguration
+//                    do {
+//                      configuration = try ServerConfiguration(serializedData: content)
+//                    } catch {
+//                      continuation.resume(throwing: error)
+//                      return
+//                    }
+//                    let urls = configuration.urls(defaultPort: defaultPort, defaultIsSecure: defaultIsSecure, logger: logger)
+//                    continuation.resume(returning: urls)
+//                  } else {
+//                    print("no return value")
+//                    continuation.resume(returning: [])
+//                  }
+//                }
+//              }
+//              result = .success(urls)
+//            } catch {
+//              result = .failure(error)
+//            }
+//            dump(result)
+//            withURLs!(result)
+//          }
+        
         
 
 //        connection.start(queue: .global())
