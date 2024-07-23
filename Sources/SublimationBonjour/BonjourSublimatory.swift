@@ -30,8 +30,8 @@
 #if canImport(Network)
   import Foundation
   import Logging
-  import Network
-  import SublimationCore
+  public import Network
+public import SublimationCore
 
   public actor BonjourSublimatory: Sublimatory {
     public static let httpTCPServiceType = "_http._tcp"

@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import SublimationCore
+public import SublimationCore
 
 /// A protocol that defines the configuration for an Ngrok server.
 ///

@@ -27,8 +27,8 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import Logging
+public import Foundation
+public import Logging
 
 /// Server Application
 public protocol Application {

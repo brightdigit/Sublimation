@@ -27,10 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
+public import Foundation
 
 #if canImport(FoundationNetworking)
-  import FoundationNetworking
+public   import FoundationNetworking
 #endif
 
 public final class TunnelClientRepository<Key: Sendable>: WritableTunnelRepository {

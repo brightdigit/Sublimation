@@ -29,8 +29,7 @@
 
 import Foundation
 import Logging
-import OpenAPIRuntime
-import SublimationCore
+public import SublimationCore
 
 public final class Sublimation: Sendable {
   public let sublimatory: any Sublimatory

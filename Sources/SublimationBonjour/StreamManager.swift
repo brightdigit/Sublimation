@@ -29,7 +29,7 @@
 
 import Foundation
 
-internal actor StreamManager<Key: Hashable & Sendable, Value> {
+internal actor StreamManager<Key: Hashable & Sendable, Value: Sendable> {
   private var streamContinuations = [Key: AsyncStream<Value>.Continuation]()
 
   private var newID: @Sendable () -> Key

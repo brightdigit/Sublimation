@@ -28,13 +28,13 @@
 //
 
 #if canImport(Network)
-  import Foundation
+  public import Foundation
   #if canImport(os)
-    import os
+public import os
   #else
-    import Logging
+public import Logging
   #endif
-  import Network
+public import Network
 
   /// `BonjourDepositor` using Bonjour services, to collect URLs advertised by your `Sublimation` server.
   public actor BonjourDepositor {

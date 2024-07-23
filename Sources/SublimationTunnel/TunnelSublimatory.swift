@@ -29,7 +29,7 @@
 
 import Foundation
 import Logging
-import SublimationCore
+public import SublimationCore
 
 /// Closure which returns a ``TunnelClient`` from the ``Application``.
 public typealias RepositoryClientFactory<Key> =
