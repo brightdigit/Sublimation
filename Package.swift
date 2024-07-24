@@ -40,7 +40,8 @@ let package = Package(
   products: [
     .library(name: "Sublimation", targets: ["Sublimation"]),
     .library(name: "SublimationCore", targets: ["SublimationCore"]),
-    .library(name: "SublimationTunnel", targets: ["SublimationTunnel"])
+    .library(name: "SublimationTunnel", targets: ["SublimationTunnel"]),
+    .library(name: "SublimationKVdb", targets: ["SublimationKVdb"])
     // .library(name: "SublimationVapor", targets: ["SublimationVapor"]),
     // .library(name: "Ngrokit", targets: ["Ngrokit"])
   ],
@@ -61,6 +62,7 @@ let package = Package(
 //      url: "https://github.com/swift-server/swift-openapi-async-http-client",
 //      from: "1.0.0"
 //    ),
+    .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.26.0"),
     .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0")
   ],
   targets: [
@@ -112,7 +114,11 @@ let package = Package(
     ),
     .target(
       name: "SublimationBonjour",
-      dependencies: ["SublimationCore"],
+      dependencies: [
+        "SublimationCore",
+
+        .product(name: "SwiftProtobuf", package: "swift-protobuf")
+      ],
       swiftSettings: swiftSettings
     )
 //    .target(

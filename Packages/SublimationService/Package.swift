@@ -41,9 +41,18 @@ let package = Package(
     .library(name: "SublimationService", targets: ["SublimationService"])
   ],
   dependencies: [
+    .package(path: "../.."),
+    .package(url: "https://github.com/swift-server/swift-service-lifecycle.git", from: "2.6.0")
   ],
   targets: [
-    .target(name: "SublimationService")
+    .target(
+      name: "SublimationService",
+      dependencies: [
+        .product(name: "Sublimation", package: "Sublimation"),
+        .product(name: "ServiceLifecycle", package: "swift-service-lifecycle")
+      ],
+      swiftSettings: swiftSettings
+    )
   ]
 )
 // swiftlint:enable explicit_acl explicit_top_level_acl

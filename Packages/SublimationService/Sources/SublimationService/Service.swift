@@ -33,3 +33,12 @@
 //
 //  Created by Leo Dion on 7/22/24.
 //
+
+public import ServiceLifecycle
+public import Sublimation
+
+extension Sublimation: @retroactive Service {
+  public func run() async throws {
+    try await self.sublimatory.run()
+  }
+}

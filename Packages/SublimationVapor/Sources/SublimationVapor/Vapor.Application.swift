@@ -28,7 +28,7 @@
 //
 
 import protocol SublimationCore.Application
-import Vapor
+public import Vapor
 
 extension Vapor.Application: Application {
   public var httpServerConfigurationPort: Int {

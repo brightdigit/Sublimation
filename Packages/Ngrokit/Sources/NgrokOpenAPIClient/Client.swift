@@ -45,7 +45,7 @@ package struct Client: APIProtocol {
         try await client.send(
             input: input,
             forOperation: Operations.get_sol_api.id,
-            serializer: { input in
+            serializer: { _ in
                 let path = try converter.renderedPath(
                     template: "/api",
                     parameters: []

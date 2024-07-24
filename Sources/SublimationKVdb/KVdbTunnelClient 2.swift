@@ -1,5 +1,5 @@
 //
-//  Sublimation.swift
+//  KVdbTunnelClient 2.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,28 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import NIOCore
-import OpenAPIAsyncHTTPClient
-import OpenAPIRuntime
-public import Sublimation
-public import Vapor
+import Foundation
+import SublimationTunnel
 
-extension Sublimation: LifecycleHandler {
-  public func willBoot(_ application: Vapor.Application) throws {
-    Task {
-      self.willBoot { application }
-    }
-  }
-
-  public func didBoot(_ application: Vapor.Application) throws {
-    Task {
-      self.didBoot { application }
-    }
-  }
-
-  public func shutdown(_ application: Vapor.Application) {
-    Task {
-      self.shutdown { application }
-    }
-  }
-}
+extension KVdbTunnelClient: TunnelClient {}

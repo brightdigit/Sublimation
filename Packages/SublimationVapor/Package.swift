@@ -45,19 +45,19 @@ let package = Package(
     .package(
       url: "https://github.com/vapor/vapor.git",
       from: "4.92.0"
-    )
+    ),
 //    .package(
 //      url: "https://github.com/apple/swift-openapi-generator",
 //      from: "1.0.0"
 //    ),
-//    .package(
-//      url: "https://github.com/apple/swift-openapi-runtime",
-//      from: "1.0.0"
-//    ),
-//    .package(
-//      url: "https://github.com/swift-server/swift-openapi-async-http-client",
-//      from: "1.0.0"
-//    ),
+    .package(
+      url: "https://github.com/apple/swift-openapi-runtime",
+      from: "1.0.0"
+    ),
+    .package(
+      url: "https://github.com/swift-server/swift-openapi-async-http-client",
+      from: "1.0.0"
+    )
 //    .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0")
   ],
   targets: [
@@ -115,16 +115,19 @@ let package = Package(
     .target(
       name: "SublimationVapor",
       dependencies: [
-        //        .product(
-//          name: "OpenAPIAsyncHTTPClient",
-//          package: "swift-openapi-async-http-client"
-//        ),
+        .product(
+          name: "OpenAPIAsyncHTTPClient",
+          package: "swift-openapi-async-http-client"
+        ),
 //        "Ngrokit",
         .product(
           name: "SublimationCore",
           package: "Sublimation"
         ),
-        // "SublimationKVdb",
+        .product(
+          name: "SublimationKVdb",
+          package: "Sublimation"
+        ),
         .product(
           name: "Vapor",
           package: "vapor"

@@ -30,7 +30,7 @@
 public import Foundation
 
 #if canImport(FoundationNetworking)
-public import FoundationNetworking
+  public import FoundationNetworking
 #endif
 
 /// A client for interacting with KVdb Tunnel.

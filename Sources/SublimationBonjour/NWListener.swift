@@ -29,7 +29,7 @@
 
 #if canImport(Network)
   import Foundation
-public import Network
+  public import Network
 
   extension NWListener {
     internal convenience init(
@@ -42,7 +42,7 @@ public import Network
     }
   }
 
-extension NWListener.State: @retroactive CustomDebugStringConvertible {
+  extension NWListener.State: @retroactive CustomDebugStringConvertible {
     public var debugDescription: String {
       switch self {
       case .setup:

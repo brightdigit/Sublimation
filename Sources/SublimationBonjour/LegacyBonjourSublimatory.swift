@@ -1,5 +1,5 @@
 //
-//  BonjourSublimatory.swift
+//  LegacyBonjourSublimatory.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -31,9 +31,9 @@
   import Foundation
   import Logging
   public import Network
-public import SublimationCore
+  public import SublimationCore
 
-  public actor BonjourSublimatory: Sublimatory {
+  public actor LegacyBonjourSublimatory: Sublimatory {
     public static let httpTCPServiceType = "_http._tcp"
     private let serviceType: String
     private let maximumCount: Int?

@@ -30,7 +30,7 @@
 public import Foundation
 
 #if canImport(FoundationNetworking)
-public   import FoundationNetworking
+  public import FoundationNetworking
 #endif
 
 public final class TunnelClientRepository<Key: Sendable>: WritableTunnelRepository {

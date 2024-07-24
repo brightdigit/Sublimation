@@ -28,10 +28,10 @@
 //
 
 #if canImport(Network)
-public import Network
+  public import Network
 
-  @_exported public  import class SublimationBonjour.BonjourDepositor
-public import class SublimationBonjour.BonjourSublimatory
+  @_exported public import class SublimationBonjour.BonjourDepositor
+  public import class SublimationBonjour.BonjourSublimatory
 
   extension Sublimation {
     /// Initializes a `Sublimation` instance with the provided parameters.

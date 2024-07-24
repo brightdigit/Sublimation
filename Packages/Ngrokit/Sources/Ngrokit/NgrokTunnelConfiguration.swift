@@ -38,7 +38,7 @@
 public import Foundation
 
 #if canImport(FoundationNetworking)
-public import FoundationNetworking
+  public import FoundationNetworking
 #endif
 
 public struct NgrokTunnelConfiguration: Sendable {
