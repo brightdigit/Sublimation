@@ -77,6 +77,10 @@ public struct NgrokClient: Sendable {
   internal init(underlyingClient: any APIProtocol) {
     self.underlyingClient = underlyingClient
   }
+  
+  public func status() async throws {
+    _ = try await self.underlyingClient.get_sol_api().ok
+  }
 
   ///   Starts a new tunnel.
   ///

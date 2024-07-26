@@ -39,6 +39,8 @@ public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   TunnelServerFactoryType: TunnelServerFactory
 >: Sublimatory, TunnelServerDelegate {
+
+  
   public typealias Key = WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
   public typealias ConnectionErrorType = TunnelServerFactoryType.Configuration.Server.ConnectionErrorType
   private let factory: TunnelServerFactoryType
@@ -46,11 +48,11 @@ public actor TunnelSublimatory<
   private let key: Key
   private let repoClientFactory: RepositoryClientFactory<Key>
 
-  private var tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?
-  private var logger: Logger?
-  private var server: (any TunnelServer)?
+  private let tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType
+  private let logger: Logger
+  private var server: TunnelServerFactoryType.Configuration.Server!
 
-  private let isConnectionRefused: @Sendable (ConnectionErrorType) -> Bool
+  private nonisolated let isConnectionRefused: @Sendable (ConnectionErrorType) -> Bool
   ///   Initializes the Sublimation lifecycle handler.
   ///
   ///   - Parameters:
@@ -61,39 +63,48 @@ public actor TunnelSublimatory<
     factory: TunnelServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
     key: WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key,
+    application: @Sendable @escaping () -> any Application,
     repoClientFactory: @escaping RepositoryClientFactory<Key>,
     isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool
-  ) {
-    self.init(
+  ) async {
+    let logger = application().logger
+    let tunnelRepo = repoFactory.setupClient(
+      repoClientFactory(application)
+    )
+    await self.init(
       factory: factory,
       repoFactory: repoFactory,
       key: key,
-      tunnelRepo: nil,
-      logger: nil,
-      server: nil,
+      tunnelRepo: tunnelRepo,
+      logger: logger,
       repoClientFactory: repoClientFactory,
       isConnectionRefused: isConnectionRefused
-    )
+    ) {
+      factory.server(
+        from: TunnelServerFactoryType.Configuration(application: application()),
+        handler: $0
+      )
+    }
   }
 
   private init(
     factory: TunnelServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
     key: Key,
-    tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType?,
-    logger: Logger?,
-    server: (any TunnelServer)?,
+    tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType,
+    logger: Logger,
     repoClientFactory: @escaping RepositoryClientFactory<Key>,
-    isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool
-  ) {
+    isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool,
+    server: @escaping @Sendable (TunnelSublimatory<WritableTunnelRepositoryFactoryType, TunnelServerFactoryType>) -> TunnelServerFactoryType.Configuration.Server
+  ) async {
     self.factory = factory
     self.repoFactory = repoFactory
     self.key = key
     self.tunnelRepo = tunnelRepo
     self.logger = logger
-    self.server = server
     self.repoClientFactory = repoClientFactory
     self.isConnectionRefused = isConnectionRefused
+    self.server = server(self)
   }
 
   ///   Saves the tunnel URL to the tunnel repository.
@@ -106,9 +117,9 @@ public actor TunnelSublimatory<
   ///   - SeeAlso: `Tunnel`
   private func saveTunnel(_ tunnel: any Tunnel) async {
     do {
-      try await tunnelRepo?.saveURL(tunnel.publicURL, withKey: key)
+      try await tunnelRepo.saveURL(tunnel.publicURL, withKey: key)
     } catch {
-      logger?.error(
+      logger.error(
         "Unable to save url to repository: \(error.localizedDescription)"
       )
       return
@@ -125,7 +136,7 @@ public actor TunnelSublimatory<
   ///
   ///   - Note: This method is asynchronous.
   private func onError(_ error: any Error) async {
-    logger?.error("Error running tunnel: \(error.localizedDescription)")
+    logger.error("Error running tunnel: \(error.localizedDescription)")
   }
 
   ///   Called when an Ngrok server updates a tunnel.
@@ -167,18 +178,18 @@ public actor TunnelSublimatory<
   ///   - Note: This method is private and asynchronous.
   ///
   ///   - SeeAlso: `Application`
-  private func beginFromApplication(_ application: @Sendable @escaping () -> any Application) async {
-    let server = factory.server(
-      from: TunnelServerFactoryType.Configuration(application: application()),
-      handler: self
-    )
-    logger = application().logger
-    tunnelRepo = repoFactory.setupClient(
-      repoClientFactory(application)
-    )
-    self.server = server
-    server.start(isConnectionRefused: isConnectionRefused)
-  }
+//  private func beginFromApplication(_ application: @Sendable @escaping () -> any Application) async {
+//    let server = factory.server(
+//      from: TunnelServerFactoryType.Configuration(application: application()),
+//      handler: self
+//    )
+//    logger = application().logger
+//    tunnelRepo = repoFactory.setupClient(
+//      repoClientFactory(application)
+//    )
+//    self.server = server
+//    server.start(isConnectionRefused: isConnectionRefused)
+//  }
 
   ///   Called when the application is about to boot.
   ///
@@ -190,7 +201,41 @@ public actor TunnelSublimatory<
   ///   - Note: This method is nonisolated.
   ///
   ///   - SeeAlso: `Application`
-  public func willBoot(from application: @escaping @Sendable () -> any Application) async {
-    await self.beginFromApplication(application)
+//  public func willBoot(from application: @escaping @Sendable () -> any Application) async {
+//    await self.beginFromApplication(application)
+//  }
+//  
+//  func setupForApplication(_ application: @escaping @Sendable () -> any Application) {
+//    let server = factory.server(
+//      from: TunnelServerFactoryType.Configuration(application: application()),
+//      handler: self
+//    )
+//    logger = application().logger
+//    tunnelRepo = repoFactory.setupClient(
+//      repoClientFactory(application)
+//    )
+//    self.server = server
+//  }
+//  
+//  public nonisolated func initialize(for application: @escaping @Sendable  () -> any Application) {
+//    Task {
+//      await self.setupForApplication(application)
+//    }
+//  }
+//
+  func shutdownServer () {
+    server.shutdown()
+  }
+  public nonisolated func shutdown() {
+    Task {
+      await self.shutdownServer()
+    }
+  }
+  public func run() async throws {
+    
+
+    let isConnectionRefused = self.isConnectionRefused
+    
+    try await server.run(isConnectionRefused: isConnectionRefused)
   }
 }

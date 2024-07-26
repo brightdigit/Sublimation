@@ -27,16 +27,16 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network) && false
-  internal import BitnessOpenAPITypes
+#if canImport(Network)
 
   internal import Foundation
 
   internal import Network
 
-  internal import ServiceLifecycle
+public import SublimationCore
 
-  struct Sublimation: Service {
+struct BonjourSublimatory : Sublimatory {
+  
     internal init(
       serverConfiguration: BindingConfiguration, name: String = Self.defaultName,
       type: String = Self.defaultHttpTCPServiceType
@@ -53,52 +53,55 @@
     static let defaultName = "Sublimation"
     static let defaultHttpTCPServiceType = "_sublimation._tcp"
 
-    @available(*, unavailable, message: "Temporary Code for pulling ipaddresses.")
-    static func getAllIPAddresses() -> [String: [String]] {
-      var addresses: [String: [String]] = [:]
+//    @available(*, unavailable, message: "Temporary Code for pulling ipaddresses.")
+//    static func getAllIPAddresses() -> [String: [String]] {
+//      var addresses: [String: [String]] = [:]
+//
+//      let monitor = NWPathMonitor()
+//      let queue = DispatchQueue.global(qos: .background)
+//
+//      monitor.pathUpdateHandler = { path in
+//        for interface in path.availableInterfaces {
+//          var interfaceAddresses: [String] = []
+//          let endpoint = NWEndpoint.Host(interface.debugDescription)
+//          let parameters = NWParameters.tcp
+//          parameters.requiredInterface = interface
+//
+//          let connection = NWConnection(host: endpoint, port: 80, using: parameters)
+//          connection.stateUpdateHandler = { state in
+//            if case .ready = state {
+//              if let localEndpoint = connection.currentPath?.localEndpoint {
+//                switch localEndpoint {
+//                case let .hostPort(host, _):
+//                  interfaceAddresses.append(host.debugDescription)
+//                default:
+//                  break
+//                }
+//              }
+//              addresses[interface.debugDescription] = interfaceAddresses
+//            }
+//          }
+//          connection.start(queue: queue)
+//        }
+//        monitor.cancel()
+//      }
+//
+//      monitor.start(queue: queue)
+//
+//      // Wait for a short period to gather the results
+//      sleep(2)
+//
+//      return addresses
+//    }
 
-      let monitor = NWPathMonitor()
-      let queue = DispatchQueue.global(qos: .background)
-
-      monitor.pathUpdateHandler = { path in
-        for interface in path.availableInterfaces {
-          var interfaceAddresses: [String] = []
-          let endpoint = NWEndpoint.Host(interface.debugDescription)
-          let parameters = NWParameters.tcp
-          parameters.requiredInterface = interface
-
-          let connection = NWConnection(host: endpoint, port: 80, using: parameters)
-          connection.stateUpdateHandler = { state in
-            if case .ready = state {
-              if let localEndpoint = connection.currentPath?.localEndpoint {
-                switch localEndpoint {
-                case let .hostPort(host, _):
-                  interfaceAddresses.append(host.debugDescription)
-                default:
-                  break
-                }
-              }
-              addresses[interface.debugDescription] = interfaceAddresses
-            }
-          }
-          connection.start(queue: queue)
-        }
-        monitor.cancel()
-      }
-
-      monitor.start(queue: queue)
-
-      // Wait for a short period to gather the results
-      sleep(2)
-
-      return addresses
-    }
-
+  func shutdown() {
+      // listener cancel
+  }
+  
     func run() async throws {
       let data = try self.serverConfiguration.serializedData()
-      let listener = try NWListener(using: .tcp)
-      #warning("Use BitnessUtilities.")
-      let txtRecordValues = data.base64EncodedString().chunks(ofCount: 199)
+      let listener = try NWListener(using: .tcp)      
+      let txtRecordValues = data.base64EncodedString().splitByMaxLength(199)
       let dictionary = txtRecordValues.enumerated().reduce(into: [String: String]()) {
         result, value in
         result["Sublimation_\(value.offset)"] = String(value.element)

@@ -42,6 +42,8 @@ import Foundation
 ///
 /// - SeeAlso: `NgrokProcess`
 public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
+
+  
   private var terminationHandler: (@Sendable (any Error) -> Void)?
   internal let process: ProcessType
   private let pipe: ProcessType.PipeType
@@ -111,5 +113,9 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
     process.setTerminationHandler(terminationHandler(forProcess:))
     terminationHandler = onError
     try process.run()
+  }
+  
+  nonisolated public func terminate() {
+    self.process.terminate()
   }
 }

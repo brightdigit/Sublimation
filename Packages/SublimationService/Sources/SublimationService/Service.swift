@@ -39,6 +39,11 @@ public import Sublimation
 
 extension Sublimation: @retroactive Service {
   public func run() async throws {
-    try await self.sublimatory.run()
+    try await withGracefulShutdownHandler {
+      try await self.sublimatory.run()
+    } onGracefulShutdown: {
+      self.sublimatory.shutdown()
+    }
+
   }
 }

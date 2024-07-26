@@ -100,4 +100,6 @@ public protocol Processable: Sendable, AnyObject {
   ///
   ///   - Requires: This method must be implemented.
   func run() throws
+  
+  func terminate ()
 }

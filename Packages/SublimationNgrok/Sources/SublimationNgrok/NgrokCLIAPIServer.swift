@@ -88,10 +88,12 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
   ///
   ///   - Parameter error: The error that occurred.
   @Sendable
+  @available(*, deprecated)
   private func cliError(_ error: any Error) {
     delegate.server(self, errorDidOccur: error)
   }
-
+  
+  @available(*, deprecated)
   private func searchForExistingTunnel(
     within timeout: TimeInterval,
     isConnectionRefused: @escaping (ClientError) -> Bool
@@ -103,7 +105,33 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
       isConnectionRefused: isConnectionRefused
     )
 
-    if let tunnel = try await self.getTunnel(from: result) {
+    if let tunnel = try await self.getTunnel(from: result, onTerminationError: self.cliError(_:)) {
+      return tunnel
+    }
+
+    return try await client.searchForCreatedTunnel(
+      within: timeout,
+      logger: logger,
+      isConnectionRefused: isConnectionRefused
+    )
+    .map {
+      .init(isOld: false, tunnel: $0)
+    }
+  }
+  
+  private func searchForExistingTunnel(
+    within timeout: TimeInterval,
+    isConnectionRefused: @escaping (ClientError) -> Bool,
+    onTerminationError: @Sendable @escaping (any Error) -> Void
+  ) async throws -> TunnelResult? {
+    logger.debug("Starting Search for Existing Tunnel")
+
+    let result = await NetworkResult(
+      { try await client.listTunnels().first },
+      isConnectionRefused: isConnectionRefused
+    )
+
+    if let tunnel = try await self.getTunnel(from: result, onTerminationError: onTerminationError) {
       return tunnel
     }
 
@@ -118,14 +146,15 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
   }
 
   private func getTunnel(
-    from result: NetworkResult<NgrokTunnel?, ClientError>
+    from result: NetworkResult<NgrokTunnel?, ClientError>,
+    onTerminationError: @Sendable @escaping (any Error) -> Void
   ) async throws -> TunnelResult?? {
     switch result {
     case .connectionRefused:
       logger.notice(
         "Ngrok not running. Waiting for Process and New Tunnel... (about 30 secs)"
       )
-      try await process.run(onError: cliError(_:))
+      try await process.run(onError: onTerminationError)
 
     case let .success(tunnel):
       logger.debug("Process Already Running.")
@@ -136,12 +165,42 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
     }
     return nil
   }
+  
 
   internal func newTunnel(
-    isConnectionRefused: @escaping (ClientError) -> Bool) async throws -> any Tunnel {
+    isConnectionRefused: @Sendable @escaping (ClientError) -> Bool,
+    onTerminationError: @Sendable @escaping (any Error) -> Void
+  ) async throws -> any Tunnel {
     if let tunnel = try await searchForExistingTunnel(
       within: 60.0,
+      isConnectionRefused: isConnectionRefused,
+      onTerminationError: onTerminationError
+    ) {
+      if tunnel.isOld {
+        try await client.stopTunnel(withName: tunnel.tunnel.name)
+        logger.info("Existing Tunnel Stopped. \(tunnel.tunnel.publicURL)")
+      } else {
+        return tunnel.tunnel
+      }
+    }
 
+    return try await client.startTunnel(
+      .init(
+        port: port,
+        name: "vapor-development"
+      )
+    )
+  }
+  
+  internal func status () async throws {    
+    try await self.client.status()
+  }
+
+  internal func newTunnel(
+    isConnectionRefused: @escaping (ClientError) -> Bool
+  ) async throws -> any Tunnel {
+    if let tunnel = try await searchForExistingTunnel(
+      within: 60.0,
       isConnectionRefused: isConnectionRefused
     ) {
       if tunnel.isOld {

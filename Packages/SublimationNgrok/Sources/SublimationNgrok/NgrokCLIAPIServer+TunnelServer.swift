@@ -30,10 +30,11 @@
 import Foundation
 public import OpenAPIRuntime
 import SublimationTunnel
+import Ngrokit
 
 extension NgrokCLIAPIServer {
   ///   Runs the server.
-  public func run(
+  public func begin(
     isConnectionRefused: @escaping (ClientError) -> Bool) async {
     let start = Date()
     let newTunnel: any Tunnel
@@ -53,7 +54,56 @@ extension NgrokCLIAPIServer {
   public func start(
     isConnectionRefused: @escaping @Sendable (ClientError) -> Bool) {
     Task {
-      await run(isConnectionRefused: isConnectionRefused)
+      await begin(isConnectionRefused: isConnectionRefused)
     }
+  }
+  actor HasStarted {
+    internal private(set) var isStarted = false
+    
+    func started() {
+      isStarted = true
+    }
+  }
+  
+  public func shutdown() {
+    self.process.terminate()
+  }
+  public func run(isConnectionRefused: @escaping @Sendable (ClientError) -> Bool) async throws {
+    try await withThrowingTaskGroup(of: Void.self, body: { group in
+      let started = HasStarted()
+      group.addTask{
+        try await withCheckedThrowingContinuation { continuation in
+          
+          let start = Date()
+          Task {
+            let newTunnel = try await self.newTunnel(
+              isConnectionRefused: isConnectionRefused) { error in
+                if let error = error as? RuntimeError {
+                  if case let .unknownEarlyTermination(string) = error {
+                    continuation.resume()
+                    return
+                  }
+                }
+                continuation.resume(throwing: error)
+              }
+            let seconds = Int(-start.timeIntervalSinceNow)
+            logger.notice("New Tunnel Created in \(seconds) secs: \(newTunnel.publicURL)")
+            delegate.server(self, updatedTunnel: newTunnel)
+            await started.started()
+          }
+        }
+      }
+      group.addTask{
+        var isActive = true
+        
+        while isActive {
+          try await Task.sleep(for: .seconds(5.0), tolerance: .seconds(2.5))
+          if await started.isStarted {
+            try await self.status()
+          }
+        }
+      }
+      try await group.waitForAll()
+    })
   }
 }

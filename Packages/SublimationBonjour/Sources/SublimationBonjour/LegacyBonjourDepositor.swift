@@ -37,7 +37,8 @@
   public import Network
 
   /// `BonjourDepositor` using Bonjour services, to collect URLs advertised by your `Sublimation` server.
-  public actor BonjourDepositor {
+@available(*, deprecated, message: "Use `BonjourClient` instead.")
+  public actor LegacyBonjourDepositor {
     /// Default configuration values for the `BonjourDepositor`.
     public enum Defaults {
       /// The default port number used for the service.
@@ -199,7 +200,7 @@
     }
   }
 
-  extension BonjourDepositor {
+  extension LegacyBonjourDepositor {
     /// Retrieves the first URL from the asynchronous stream.
     ///
     /// - Returns: The first URL if available, otherwise nil.

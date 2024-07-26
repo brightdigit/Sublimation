@@ -34,12 +34,17 @@
 /// - Note: The Ngrok server allows you to expose a local server to the internet.
 ///
 /// - Important: Make sure to call the `start()` method to start the Ngrok server.
-public protocol TunnelServer {
+public protocol TunnelServer : Sendable {
   /// Type of connection error which denotes whether the service isn't available.
   associatedtype ConnectionErrorType: Error
   ///   Starts the Ngrok server.
   ///
   ///   Call this method to start the Ngrok server and
   ///   expose your local server to the internet.
+  @available(*, deprecated)
   func start(isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool)
+  
+  func run(isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool) async throws
+  
+  func shutdown()
 }

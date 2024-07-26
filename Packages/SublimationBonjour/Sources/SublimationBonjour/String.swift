@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-internal import Foundation
+public import Foundation
 
 extension String {
   internal func isLocalhost() -> Bool {
@@ -61,5 +61,108 @@ extension String {
       return false
     }
     return true
+  }
+}
+
+extension Data {
+  public struct DictionaryPrefix {
+    let separator: String
+    let expectedValue: String?
+  }
+
+  public enum TXTRecordError: Error {
+    case key(String)
+    case index(String)
+    case mismatchKeyPrefix(String)
+    case indexMismatch(Int)
+    case base64Decoding
+  }
+  static private func indexString(fromKey key: String, withPrefix prefix: DictionaryPrefix?) throws
+    -> String
+  {
+    guard let prefix else {
+      return key
+    }
+    let components = key.components(separatedBy: prefix.separator)
+    guard components.count == 2, let indexString = components.last, let keyPrefix = components.first
+    else {
+      throw TXTRecordError.key(key)
+    }
+    if let expectedValue = prefix.expectedValue {
+      guard keyPrefix == expectedValue else {
+        throw TXTRecordError.mismatchKeyPrefix(keyPrefix)
+      }
+    }
+    return indexString
+  }
+  public init(txtRecordDictionary: [String: String], prefix: DictionaryPrefix?) throws {
+    let pairs = try txtRecordDictionary.map { (key: String, value: String) in
+      let indexString = try Self.indexString(fromKey: key, withPrefix: prefix)
+      guard let index = Int(indexString) else {
+        throw TXTRecordError.index(indexString)
+      }
+      return (index, value)
+    }
+    .sorted {
+      $0.0 < $1.0
+    }
+
+    let keys = pairs.map(\.0)
+
+    var lastIndex: Int?
+    for index in keys {
+      if let lastIndex {
+        guard index == lastIndex + 1 else {
+          throw TXTRecordError.indexMismatch(index)
+        }
+      } else {
+        guard index == 0 else {
+          throw TXTRecordError.indexMismatch(index)
+        }
+      }
+      lastIndex = index
+    }
+
+    let values = pairs.map(\.1)
+
+    guard let data = Data(base64Encoded: values.joined()) else {
+      throw TXTRecordError.base64Decoding
+    }
+
+    self = data
+  }
+}
+
+extension String {
+  func splitByMaxLength(_ maxLength: Int) -> [String] {
+    var result: [String] = []
+    var currentIndex = self.startIndex
+
+    while currentIndex < self.endIndex {
+      let endIndex =
+        self.index(currentIndex, offsetBy: maxLength, limitedBy: self.endIndex) ?? self.endIndex
+      let substring = String(self[currentIndex..<endIndex])
+      result.append(substring)
+      currentIndex = endIndex
+    }
+
+    return result
+  }
+}
+extension Dictionary where Key == String, Value == String {
+  public init(
+    txtRecordData: Data,
+    maximumValueSize: Int,
+    separator: String = "_",
+    keyPrefix: String? = nil
+  ) {
+    let txtRecordValues = txtRecordData.base64EncodedString().splitByMaxLength(maximumValueSize)
+    self = txtRecordValues.enumerated().reduce(into: [String: String]()) {
+      result, value in
+      let key = [keyPrefix, value.offset.description]
+        .compactMap { $0 }
+        .joined(separator: separator)
+      result[key] = String(value.element)
+    }
   }
 }

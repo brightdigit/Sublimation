@@ -39,7 +39,9 @@ public import Foundation
   ///   property before executing the process.
   ///
   ///   - SeeAlso: `Processable`
-  public final class ProcessableProcess: Processable {
+public final class ProcessableProcess: Processable {
+
+  
     /// The type of pipe used for standard error.
     public typealias PipeType = Pipe
 
@@ -101,6 +103,10 @@ public import Foundation
     public func run() throws {
       try process.run()
     }
+  
+  public func terminate() {
+    process.terminate()
+  }
   }
 
   extension Pipe: Pipable {}

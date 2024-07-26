@@ -33,10 +33,8 @@
   public import Network
   public import SublimationCore
 
-  public actor LegacyBonjourSublimatory: Sublimatory {
-    public nonisolated func initialize(for _: @escaping @Sendable () -> any SublimationCore.Application) {
-      fatalError()
-    }
+
+public actor LegacyBonjourSublimatory: Sublimatory {
 
     public func run() async throws {
       fatalError()

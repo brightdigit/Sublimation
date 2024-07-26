@@ -38,21 +38,19 @@ public final class Sublimation: Sendable {
     self.sublimatory = sublimatory
   }
 
-  public func willBoot(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.willBoot(from: application)
-    }
-  }
-
-  public func didBoot(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.didBoot(from: application)
-    }
-  }
-
-  public func shutdown(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.shutdown(from: application)
-    }
-  }
+//  public func willBoot(_ application: @Sendable @escaping () -> any Application) {
+//    Task {
+//      try await await self.sublimatory.run()
+//    }
+//  }
+//
+//  public func didBoot(_ application: @Sendable @escaping () -> any Application) {
+//    Task {
+//      await self.sublimatory.didBoot(from: application)
+//    }
+//  }
+//
+//  public func shutdown(_ application: @Sendable @escaping () -> any Application) {
+//    self.sublimatory.shutdown()
+//  }
 }

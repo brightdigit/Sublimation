@@ -30,6 +30,7 @@
 import Foundation
 
 /// A delegate protocol for `NgrokServer` that handles server events and errors.
+@available(*, deprecated)
 public protocol TunnelServerDelegate: AnyObject, Sendable {
   ///   Notifies the delegate that a tunnel has been updated.
   ///
