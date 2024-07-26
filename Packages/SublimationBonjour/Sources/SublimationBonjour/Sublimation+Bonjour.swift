@@ -41,48 +41,19 @@
     ///   - addresses: A closure that asynchronously returns a list of addresses.
     ///   - addressFilter: A closure that filters the addresses. Default is `String.isIPv4NotLocalhost(_:)`.
     public convenience init(
-      listenerParameters: NWParameters = .tcp,
-      serviceType: String = BonjourSublimatory.defaultHttpTCPServiceType,
-      maximumCount: Int? = nil,
-      addresses: @escaping @Sendable () async -> [String],
-      addressFilter: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:)
+      bindingConfiguration: BindingConfiguration,
+      name: String = BonjourSublimatory.defaultName,
+      type: String = BonjourSublimatory.defaultHttpTCPServiceType,
+      listenerParameters: NWParameters = .tcp
     ) {
-      let sublimatory = BonjourSublimatory(serverConfiguration: listenerParameters, name: serviceType, type: serviceType)
       
-        
-//      let sublimatory = BonjourSublimatory(
-//        listenerParameters: listenerParameters,
-//        serviceType: serviceType,
-//        maximumCount: maximumCount,
-//        addresses: addresses,
-//        addressFilter: addressFilter
-//      )
+      let sublimatory = BonjourSublimatory(
+        serverConfiguration: bindingConfiguration,
+        name: name,
+        type: type,
+        parameters: listenerParameters
+      )
       self.init(sublimatory: sublimatory)
     }
-
-    #if os(macOS)
-      /// Initializes a `Sublimation` instance with the provided parameters on macOS.
-      ///
-      /// - Parameters:
-      ///   - listenerParameters: The network parameters to use for the listener. Default is `.tcp`.
-      ///   - serviceType: The Bonjour service type. Default is `BonjourSublimatory.httpTCPServiceType`.
-      ///   - maximumCount: The maximum number of connections. Default is `nil`.
-      ///   - addressFilter: A closure that filters the addresses.
-      ///   Default is `String.isIPv4NotLocalhost(_:)`.
-      public convenience init(
-        listenerParameters: NWParameters = .tcp,
-        serviceType: String = BonjourSublimatory.httpTCPServiceType,
-        maximumCount: Int? = nil,
-        addressFilter: @escaping @Sendable (String) -> Bool = String.isIPv4NotLocalhost(_:)
-      ) {
-        self.init(
-          listenerParameters: listenerParameters,
-          serviceType: serviceType,
-          maximumCount: maximumCount,
-          addresses: BonjourSublimatory.addressesFromHost,
-          addressFilter: addressFilter
-        )
-      }
-    #endif
   }
 #endif
