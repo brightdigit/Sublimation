@@ -49,7 +49,7 @@ private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVer
   typealias Version = _2
 }
 
-package struct BindingConfiguration {
+public struct BindingConfiguration {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -129,7 +129,7 @@ extension BindingConfiguration: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  package static func == (lhs: BindingConfiguration, rhs: BindingConfiguration) -> Bool {
+  public static func == (lhs: BindingConfiguration, rhs: BindingConfiguration) -> Bool {
     if lhs._isSecure != rhs._isSecure { return false }
     if lhs._port != rhs._port { return false }
     if lhs.hosts != rhs.hosts { return false }

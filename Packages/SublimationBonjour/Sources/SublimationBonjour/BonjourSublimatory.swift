@@ -35,9 +35,9 @@
 
 public import SublimationCore
 
-struct BonjourSublimatory : Sublimatory {
+public struct BonjourSublimatory : Sublimatory {
   
-    internal init(
+  public  init(
       serverConfiguration: BindingConfiguration, name: String = Self.defaultName,
       type: String = Self.defaultHttpTCPServiceType
     ) {
@@ -50,8 +50,8 @@ struct BonjourSublimatory : Sublimatory {
     let type: String
     let serverConfiguration: BindingConfiguration
 
-    static let defaultName = "Sublimation"
-    static let defaultHttpTCPServiceType = "_sublimation._tcp"
+  public static let defaultName = "Sublimation"
+    public static let defaultHttpTCPServiceType = "_sublimation._tcp"
 
 //    @available(*, unavailable, message: "Temporary Code for pulling ipaddresses.")
 //    static func getAllIPAddresses() -> [String: [String]] {
@@ -94,11 +94,11 @@ struct BonjourSublimatory : Sublimatory {
 //      return addresses
 //    }
 
-  func shutdown() {
+  public func shutdown() {
       // listener cancel
   }
   
-    func run() async throws {
+  public func run() async throws {
       let data = try self.serverConfiguration.serializedData()
       let listener = try NWListener(using: .tcp)      
       let txtRecordValues = data.base64EncodedString().splitByMaxLength(199)

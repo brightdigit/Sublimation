@@ -35,7 +35,7 @@
 //
 
 public import ServiceLifecycle
-public import Sublimation
+@_exported public import class Sublimation.Sublimation
 
 extension Sublimation: @retroactive Service {
   public func run() async throws {
