@@ -1,6 +1,6 @@
 //
-//  Sublimation.swift
-//  Sublimation
+//  BonjourSublimatory.swift
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -31,107 +31,107 @@
 
   internal import Foundation
 
-  internal import Network
+  public import Network
 
-public import SublimationCore
+  public import SublimationCore
 
-public struct BonjourSublimatory : Sublimatory {
-  
-  public  init(
-      serverConfiguration: BindingConfiguration, name: String = Self.defaultName,
-      type: String = Self.defaultHttpTCPServiceType
+  public struct BonjourSublimatory: Sublimatory {
+    public init(
+      serverConfiguration: BindingConfiguration,
+      name: String = Self.defaultName,
+      type: String = Self.defaultHttpTCPServiceType,
+      parameters: NWParameters = Self.defaultParameters
     ) {
       self.name = name
       self.type = type
       self.serverConfiguration = serverConfiguration
+      self.parameters = parameters
     }
 
     let name: String
     let type: String
     let serverConfiguration: BindingConfiguration
+    let parameters: NWParameters
 
-  public static let defaultName = "Sublimation"
+    public static let defaultName = "Sublimation"
     public static let defaultHttpTCPServiceType = "_sublimation._tcp"
+    public static let defaultParameters : NWParameters = .tcp
 
-//    @available(*, unavailable, message: "Temporary Code for pulling ipaddresses.")
-//    static func getAllIPAddresses() -> [String: [String]] {
-//      var addresses: [String: [String]] = [:]
-//
-//      let monitor = NWPathMonitor()
-//      let queue = DispatchQueue.global(qos: .background)
-//
-//      monitor.pathUpdateHandler = { path in
-//        for interface in path.availableInterfaces {
-//          var interfaceAddresses: [String] = []
-//          let endpoint = NWEndpoint.Host(interface.debugDescription)
-//          let parameters = NWParameters.tcp
-//          parameters.requiredInterface = interface
-//
-//          let connection = NWConnection(host: endpoint, port: 80, using: parameters)
-//          connection.stateUpdateHandler = { state in
-//            if case .ready = state {
-//              if let localEndpoint = connection.currentPath?.localEndpoint {
-//                switch localEndpoint {
-//                case let .hostPort(host, _):
-//                  interfaceAddresses.append(host.debugDescription)
-//                default:
-//                  break
-//                }
-//              }
-//              addresses[interface.debugDescription] = interfaceAddresses
-//            }
-//          }
-//          connection.start(queue: queue)
-//        }
-//        monitor.cancel()
-//      }
-//
-//      monitor.start(queue: queue)
-//
-//      // Wait for a short period to gather the results
-//      sleep(2)
-//
-//      return addresses
-//    }
+    //    @available(*, unavailable, message: "Temporary Code for pulling ipaddresses.")
+    //    static func getAllIPAddresses() -> [String: [String]] {
+    //      var addresses: [String: [String]] = [:]
+    //
+    //      let monitor = NWPathMonitor()
+    //      let queue = DispatchQueue.global(qos: .background)
+    //
+    //      monitor.pathUpdateHandler = { path in
+    //        for interface in path.availableInterfaces {
+    //          var interfaceAddresses: [String] = []
+    //          let endpoint = NWEndpoint.Host(interface.debugDescription)
+    //          let parameters = NWParameters.tcp
+    //          parameters.requiredInterface = interface
+    //
+    //          let connection = NWConnection(host: endpoint, port: 80, using: parameters)
+    //          connection.stateUpdateHandler = { state in
+    //            if case .ready = state {
+    //              if let localEndpoint = connection.currentPath?.localEndpoint {
+    //                switch localEndpoint {
+    //                case let .hostPort(host, _):
+    //                  interfaceAddresses.append(host.debugDescription)
+    //                default:
+    //                  break
+    //                }
+    //              }
+    //              addresses[interface.debugDescription] = interfaceAddresses
+    //            }
+    //          }
+    //          connection.start(queue: queue)
+    //        }
+    //        monitor.cancel()
+    //      }
+    //
+    //      monitor.start(queue: queue)
+    //
+    //      // Wait for a short period to gather the results
+    //      sleep(2)
+    //
+    //      return addresses
+    //    }
 
-  public func shutdown() {
+    public func shutdown() {
       // listener cancel
-  }
-  
-  public func run() async throws {
+    }
+    public func run() async throws {
       let data = try self.serverConfiguration.serializedData()
-      let listener = try NWListener(using: .tcp)      
+      let listener = try NWListener(using: self.parameters)
       let txtRecordValues = data.base64EncodedString().splitByMaxLength(199)
-      let dictionary = txtRecordValues.enumerated().reduce(into: [String: String]()) {
-        result, value in
-        result["Sublimation_\(value.offset)"] = String(value.element)
-      }
+      let dictionary = txtRecordValues.enumerated()
+        .reduce(into: [String: String]()) { result, value in
+          result["Sublimation_\(value.offset)"] = String(value.element)
+        }
       let txtRecord = NWTXTRecord(dictionary)
       listener.service = .init(name: name, type: type, txtRecord: txtRecord)
 
       listener.newConnectionHandler = { connection in
         connection.stateUpdateHandler = { state in
-          switch state {
-          case let .waiting(error):
+          switch state { case let .waiting(error):
 
             print("Connection Waiting error: \(error)")
 
-          case .ready:
-            print("Connection Ready ")
-            print("Sending \(data.count) bytes")
-            connection.send(
-              content: data,
-              completion: .contentProcessed { error in
-                print("content sent")
-                dump(error)
-                connection.cancel()
-              }
-            )
-          case let .failed(error):
-            print("Connection Failure: \(error)")
+            case .ready:
+              print("Connection Ready ")
+              print("Sending \(data.count) bytes")
+              connection.send(
+                content: data,
+                completion: .contentProcessed { error in
+                  print("content sent")
+                  dump(error)
+                  connection.cancel()
+                }
+              )
+            case let .failed(error): print("Connection Failure: \(error)")
 
-          default:
-            print("Connection state updated: \(state)")
+            default: print("Connection state updated: \(state)")
           }
         }
         connection.start(queue: .global())
@@ -141,19 +141,16 @@ public struct BonjourSublimatory : Sublimatory {
 
       return try await withCheckedThrowingContinuation { continuation in
         listener.stateUpdateHandler = { state in
-          switch state {
-          case let .waiting(error):
+          switch state { case let .waiting(error):
 
             print("Listener Waiting error: \(error)")
             continuation.resume(throwing: error)
 
-          case let .failed(error):
-            print("Listener Failure: \(error)")
-            continuation.resume(throwing: error)
-          case .cancelled:
-            continuation.resume()
-          default:
-            print("Listener state updated: \(state)")
+            case let .failed(error):
+              print("Listener Failure: \(error)")
+              continuation.resume(throwing: error)
+            case .cancelled: continuation.resume()
+            default: print("Listener state updated: \(state)")
           }
         }
       }

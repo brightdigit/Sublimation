@@ -1,6 +1,6 @@
 //
 //  SublimationValue.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,9 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public protocol SublimationValue: CustomStringConvertible {
-  init?(_ string: String)
-}
+public protocol SublimationValue: CustomStringConvertible { init?(_ string: String) }
 
 extension Bool: SublimationValue {}
 

@@ -1,6 +1,6 @@
 //
 //  BindingConfiguration.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -37,12 +37,15 @@
 
   extension BindingConfiguration {
     internal init?(_ content: Data?, _: NWConnection.ContentContext?, _: Bool, _ error: NWError?)
-      throws {
+      throws
+    {
       if let error {
         throw error
-      } else if let content {
+      }
+      else if let content {
         try self.init(serializedData: content)
-      } else {
+      }
+      else {
         return nil
       }
     }
@@ -51,12 +54,8 @@
       let isSecure = self.hasIsSecure ? self.isSecure : defaultIsSecure
       let port = self.hasPort ? Int(self.port) : defaultPort
       return self.hosts.compactMap { host in
-        if host.isLocalhost() {
-          return nil
-        }
-        if host.isValidIPv6Address() {
-          return nil
-        }
+        if host.isLocalhost() { return nil }
+        if host.isValidIPv6Address() { return nil }
         let url = URL(scheme: isSecure ? "https" : "http", host: host, port: port)
         assert(url != nil)
         return url

@@ -49,6 +49,7 @@ let package = Package(
     .target(
       name: "SublimationBonjour",
       dependencies: [
+        .product(name: "Sublimation", package: "Sublimation"),
         .product(name: "SublimationCore", package: "Sublimation"),
         .product(name: "SwiftProtobuf", package: "swift-protobuf")
       ],

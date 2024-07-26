@@ -1,6 +1,6 @@
 //
 //  SublimationKey.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-private enum SublimationKeyValues: String {
+fileprivate enum SublimationKeyValues: String {
   case tls = "Sublimation_TLS"
   case port = "Sublimation_Port"
   case address = "Sublimation_Address"
@@ -41,25 +41,19 @@ public enum SublimationKey: Hashable {
 
 extension SublimationKey {
   internal var stringValue: String {
-    let value: (any CustomStringConvertible)? = switch self {
-    case let .address(index):
-      index
-    default:
-      nil
-    }
+    let value: (any CustomStringConvertible)? =
+      switch self { case let .address(index): index default: nil
+      }
     let prefix = SublimationKeyValues(key: self).rawValue
-    guard let value else {
-      return prefix
-    }
+    guard let value else { return prefix }
     return [prefix, value.description].joined(separator: "_")
   }
 
   internal static func isValid(_ string: String) -> Bool {
-    if SublimationKeyValues(rawValue: string) != nil {
-      return true
-    }
+    if SublimationKeyValues(rawValue: string) != nil { return true }
     if string.hasPrefix(SublimationKeyValues.address.rawValue),
-       string.count > SublimationKeyValues.address.rawValue.count + 1 {
+      string.count > SublimationKeyValues.address.rawValue.count + 1
+    {
       let indexString = string.suffix(
         from: string.index(
           string.startIndex,
@@ -75,23 +69,16 @@ extension SublimationKey {
 
 extension SublimationKeyValues {
   fileprivate init(key: SublimationKey) {
-    switch key {
-    case .address:
-      self = .address
-    case .port:
-      self = .port
-    case .tls:
-      self = .tls
+    switch key { case .address: self = .address case .port: self = .port case .tls: self = .tls
     }
   }
 }
 
 extension [String: String] {
   internal init(sublimationTxt: [SublimationKey: any CustomStringConvertible]) {
-    let pairs = sublimationTxt
-      .map { (key: SublimationKey, value: any CustomStringConvertible) in
-        (key.stringValue, value.description)
-      }
+    let pairs = sublimationTxt.map { (key: SublimationKey, value: any CustomStringConvertible) in
+      (key.stringValue, value.description)
+    }
     self.init(uniqueKeysWithValues: pairs)
   }
 }

@@ -1,6 +1,6 @@
 //
 //  BonjourConnection.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -28,8 +28,6 @@
 //
 
 #if canImport(Network)
-  // private import BitnessOpenAPITypes
-
   internal import Foundation
 
   internal import Network
@@ -55,60 +53,39 @@
       from client: BonjourClient
     ) {
       client.connection(withID: id, updatedTo: state)
-      switch state {
-      case .ready:
+      switch state { case .ready:
         connection.receiveMessage { content, contentContext, isComplete, error in
           let configuration: BindingConfiguration?
-          do {
-            configuration = try .init(content, contentContext, isComplete, error)
-          } catch {
+          do { configuration = try .init(content, contentContext, isComplete, error) }
+          catch {
             client.connection(withID: id, failedWithError: error)
             return
           }
 
-          guard let configuration else {
-            return
-          }
+          guard let configuration else { return }
           #warning("Defaults should be passed to connection")
           let urls = configuration.urls(defaultIsSecure: false, defaultPort: 8_080)
           client.connection(withID: id, received: urls)
         }
-      case let .waiting(error):
-        client.connection(withID: id, failedWithError: error)
-      case let .failed(error):
-        client.connection(withID: id, failedWithError: error)
-      case .cancelled:
-        client.cancelledConnection(withID: id)
-      default:
-        break
+        case let .waiting(error): client.connection(withID: id, failedWithError: error)
+        case let .failed(error): client.connection(withID: id, failedWithError: error)
+        case .cancelled: client.cancelledConnection(withID: id)
+        default: break
       }
     }
 
-    internal nonisolated func cancel() {
-      Task {
-        await self.completeCancel()
-      }
-    }
+    internal nonisolated func cancel() { Task { await self.completeCancel() } }
 
-    private func completeCancel() {
-      self.connection.cancel()
-    }
+    private func completeCancel() { self.connection.cancel() }
   }
 
   extension BonjourConnection {
     internal init?(result: NWBrowser.Result, client: BonjourClient) {
       guard
         case let .service(name: name, type: type, domain: domain, interface: _) = result.endpoint
-      else {
-        return nil
-      }
+      else { return nil }
       let connection = NWConnection(
-        to: .service(
-          name: name,
-          type: type,
-          domain: domain,
-          interface: nil
-        ),
+        to: .service(name: name, type: type, domain: domain, interface: nil),
         using: .tcp
       )
       self.init(id: .init(), connection: connection, client: client)

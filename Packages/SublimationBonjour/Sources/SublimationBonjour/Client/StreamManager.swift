@@ -1,6 +1,6 @@
 //
 //  StreamManager.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -40,22 +40,14 @@ internal actor StreamManager<Key: Hashable & Sendable, Value: Sendable> {
 
   private var newID: @Sendable () -> Key
 
-  internal var isEmpty: Bool {
-    streamContinuations.isEmpty
-  }
+  internal var isEmpty: Bool { streamContinuations.isEmpty }
 
-  internal init(newID: @escaping @Sendable () -> Key) {
-    self.newID = newID
-  }
+  internal init(newID: @escaping @Sendable () -> Key) { self.newID = newID }
 
   internal func yield(_ urls: [Value], logger: Logger?) {
-    if streamContinuations.isEmpty {
-      logger?.debug("Missing Continuations.")
-    }
+    if streamContinuations.isEmpty { logger?.debug("Missing Continuations.") }
     for streamContinuation in streamContinuations {
-      for url in urls {
-        streamContinuation.value.yield(url)
-      }
+      for url in urls { streamContinuation.value.yield(url) }
     }
   }
 
@@ -72,20 +64,11 @@ internal actor StreamManager<Key: Hashable & Sendable, Value: Sendable> {
     streamContinuations[id] = continuation
     continuation.onTermination = { _ in
       Task {
-        let shouldCancel =
-          await self.onTerminationOf(id)
-        if shouldCancel {
-          await onCancel()
-        }
+        let shouldCancel = await self.onTerminationOf(id)
+        if shouldCancel { await onCancel() }
       }
     }
   }
 }
 
-extension StreamManager {
-  internal init() where Key == UUID {
-    self.init {
-      UUID()
-    }
-  }
-}
+extension StreamManager { internal init() where Key == UUID { self.init { UUID() } } }

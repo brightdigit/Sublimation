@@ -1,6 +1,6 @@
 //
 //  NWListener.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -30,33 +30,26 @@
 #if canImport(Network)
   import Foundation
   public import Network
-
-  extension NWListener {
-    internal convenience init(
-      using parameters: NWParameters,
-      serviceType: String,
-      txtRecord: NWTXTRecord
-    ) throws {
-      try self.init(using: parameters)
-      self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
-    }
-  }
+  //
+  //  extension NWListener {
+  //    internal convenience init(
+  //      using parameters: NWParameters,
+  //      serviceType: String,
+  //      txtRecord: NWTXTRecord
+  //    ) throws {
+  //      try self.init(using: parameters)
+  //      self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
+  //    }
+  //  }
 
   extension NWListener.State: @retroactive CustomDebugStringConvertible {
     public var debugDescription: String {
-      switch self {
-      case .setup:
-        "setup"
-      case let .waiting(error):
+      switch self { case .setup: "setup" case let .waiting(error):
         "waiting: \(error.debugDescription)"
-      case .ready:
-        "ready"
-      case let .failed(error):
-        "failed: \(error.debugDescription)"
-      case .cancelled:
-        "cancelled"
-      @unknown default:
-        "unknown state"
+        case .ready: "ready"
+        case let .failed(error): "failed: \(error.debugDescription)"
+        case .cancelled: "cancelled"
+        @unknown default: "unknown state"
       }
     }
   }

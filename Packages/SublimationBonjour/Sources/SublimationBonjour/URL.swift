@@ -1,6 +1,6 @@
 //
 //  URL.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -35,9 +35,7 @@ extension URL {
     components.scheme = scheme
     components.host = host
     components.port = port
-    guard let url = components.url else {
-      return nil
-    }
+    guard let url = components.url else { return nil }
     self = url
   }
 }

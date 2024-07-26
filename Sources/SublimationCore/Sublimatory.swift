@@ -32,3 +32,7 @@ public protocol Sublimatory: Sendable {
   func run() async throws
   func shutdown()
 }
+
+extension Sublimatory {
+  public func shutdown() {}
+}
