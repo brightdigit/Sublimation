@@ -27,8 +27,8 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+/// Different methods for Sublimation.
 public protocol Sublimatory: Sendable {
   func run() async throws
-  func shutdown () 
+  func shutdown()
 }
-

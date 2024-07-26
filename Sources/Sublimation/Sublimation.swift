@@ -34,7 +34,5 @@ public import SublimationCore
 public final class Sublimation: Sendable {
   public let sublimatory: any Sublimatory
 
-  public init(sublimatory: any Sublimatory) {
-    self.sublimatory = sublimatory
-  }
+  public init(sublimatory: any Sublimatory) { self.sublimatory = sublimatory }
 }

@@ -62,7 +62,7 @@ header_template="//
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
-//  "
+//"
 
 # Loop through each Swift file in the specified directory and subdirectories
 find "$directory" -type f -name "*.swift" | while read -r file; do
@@ -70,15 +70,22 @@ find "$directory" -type f -name "*.swift" | while read -r file; do
   filename=$(basename "$file")
   header=$(printf "$header_template" "$filename" "$package" "$creator" "$year" "$company")
 
-  # Remove all consecutive lines at the beginning which start with "// " or contain only whitespace
-  awk '/^\/\/ / || /^$/ {if (NR == 1) next} {exit} 1' "$file" > temp_file
-  awk 'NR>FNR{print} FNR==NR{if(!/^(\/\/ |$)/) exit} 1' temp_file "$file" > cleaned_file
+  # Remove all consecutive lines at the beginning which start with "// ", contain only whitespace, or only "//"
+  awk '
+  BEGIN { skip = 1 }
+  {
+    if (skip && ($0 ~ /^\/\/ / || $0 ~ /^\/\/$/ || $0 ~ /^$/)) {
+      next
+    }
+    skip = 0
+    print
+  }' "$file" > temp_file
 
   # Add the header to the cleaned file
-  (echo "$header"; echo; cat cleaned_file) > "$file"
+  (echo "$header"; echo; cat temp_file) > "$file"
   
-  # Remove the temporary files
-  rm temp_file cleaned_file
+  # Remove the temporary file
+  rm temp_file
 done
 
 echo "Headers added to all Swift files in the directory and subdirectories."
