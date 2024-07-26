@@ -1,5 +1,15 @@
 #!/bin/sh
 
+if [ "$ACTION" == "install" ]; then 
+	if [ -n "$SRCROOT" ]; then
+		exit
+	fi
+fi
+
+export MINT_PATH="$PWD/.mint"
+MINT_ARGS="-n -m Mintfile --silent"
+MINT_RUN="/opt/homebrew/bin/mint run $MINT_ARGS"
+
 if [ -z "$SRCROOT" ]; then
 	SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 	PACKAGE_DIR="${SCRIPT_DIR}/.."
@@ -7,39 +17,26 @@ else
 	PACKAGE_DIR="${SRCROOT}" 	
 fi
 
-if [ -z "$GITHUB_ACTION" ]; then
-	MINT_CMD="/opt/homebrew/bin/mint"
-else
-	MINT_CMD="mint"
-fi
-
-export MINT_PATH="$PACKAGE_DIR/.mint"
-MINT_ARGS="-n -m $PACKAGE_DIR/Mintfile --silent"
-MINT_RUN="$MINT_CMD run $MINT_ARGS"
-
-pushd $PACKAGE_DIR
-
-$MINT_CMD bootstrap -m Mintfile
 
 if [ "$LINT_MODE" == "NONE" ]; then
 	exit
 elif [ "$LINT_MODE" == "STRICT" ]; then
-	SWIFTFORMAT_OPTIONS=""
-	SWIFTLINT_OPTIONS="--strict"
+	SWIFTFORMAT_OPTIONS="--strict"
 else 
 	SWIFTFORMAT_OPTIONS=""
-	SWIFTLINT_OPTIONS=""
 fi
 
-pushd $PACKAGE_DIR
+/opt/homebrew/bin/mint bootstrap
+
+#pushd $PACKAGE_DIR
+
+echo "LINT Mode is $LINT_MODE"
 
 if [ -z "$CI" ]; then
-	$MINT_RUN swiftformat .
-	$MINT_RUN swiftlint --fix
+	$MINT_RUN swift-format format --recursive --parallel --in-place $PACKAGE_DIR/Sources
+else 
+	set -e
 fi
+$MINT_RUN swift-format lint --recursive --parallel $SWIFTFORMAT_OPTIONS $PACKAGE_DIR/Sources
 
-$MINT_RUN periphery scan
-$MINT_RUN swiftformat --lint $SWIFTFORMAT_OPTIONS .
-$MINT_RUN swiftlint lint $SWIFTLINT_OPTIONS
-
-popd
+#popd
