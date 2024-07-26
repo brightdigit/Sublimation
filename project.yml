@@ -4,6 +4,8 @@ settings:
 packages:
   Sublimation:
     path: .
+  SublimationBonjour:
+    path: Packages/SublimationBonjour
   SublimationNgrok: 
     path: Packages/SublimationNgrok
   SublimationService: 

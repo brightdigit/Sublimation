@@ -34,6 +34,14 @@
   public import SublimationCore
 
   public actor LegacyBonjourSublimatory: Sublimatory {
+    public nonisolated func initialize(for _: @escaping @Sendable () -> any SublimationCore.Application) {
+      fatalError()
+    }
+
+    public func run() async throws {
+      fatalError()
+    }
+
     public static let httpTCPServiceType = "_http._tcp"
     private let serviceType: String
     private let maximumCount: Int?
@@ -128,7 +136,7 @@
     }
   }
 
-  extension BonjourSublimatory {
+  extension LegacyBonjourSublimatory {
     internal func start(
       isTLS: Bool,
       port: Int,

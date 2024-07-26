@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
+#if canImport(Network) && false
   internal import BitnessOpenAPITypes
 
   internal import Foundation

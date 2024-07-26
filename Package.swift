@@ -39,9 +39,9 @@ let package = Package(
   ],
   products: [
     .library(name: "Sublimation", targets: ["Sublimation"]),
-    .library(name: "SublimationCore", targets: ["SublimationCore"]),
-    .library(name: "SublimationTunnel", targets: ["SublimationTunnel"]),
-    .library(name: "SublimationKVdb", targets: ["SublimationKVdb"])
+    .library(name: "SublimationCore", targets: ["SublimationCore"])
+//    .library(name: "SublimationTunnel", targets: ["SublimationTunnel"]),
+//    .library(name: "SublimationKVdb", targets: ["SublimationKVdb"])
     // .library(name: "SublimationVapor", targets: ["SublimationVapor"]),
     // .library(name: "Ngrokit", targets: ["Ngrokit"])
   ],
@@ -84,8 +84,6 @@ let package = Package(
       name: "Sublimation",
       dependencies: [
         "SublimationCore",
-        "SublimationBonjour",
-        // "SublimationNgrok",
         .product(name: "Logging", package: "swift-log")
       ],
       swiftSettings: swiftSettings
@@ -96,31 +94,23 @@ let package = Package(
         .product(name: "Logging", package: "swift-log")
       ],
       swiftSettings: swiftSettings
-    ),
-    .target(
-      name: "SublimationTunnel",
-      dependencies: ["SublimationCore"],
-      swiftSettings: swiftSettings
-    ),
+    )
 //    .target(
-//      name: "SublimationNgrok",
-//      dependencies: ["SublimationTunnel", "Ngrokit"],
+//      name: "SublimationTunnel",
+//      dependencies: ["SublimationCore"],
 //      swiftSettings: swiftSettings
 //    ),
-    .target(
-      name: "SublimationKVdb",
-      dependencies: ["SublimationTunnel"],
-      swiftSettings: swiftSettings
-    ),
-    .target(
-      name: "SublimationBonjour",
-      dependencies: [
-        "SublimationCore",
+    ////    .target(
+    ////      name: "SublimationNgrok",
+    ////      dependencies: ["SublimationTunnel", "Ngrokit"],
+    ////      swiftSettings: swiftSettings
+    ////    ),
+//    .target(
+//      name: "SublimationKVdb",
+//      dependencies: ["SublimationTunnel"],
+//      swiftSettings: swiftSettings
+//    ),
 
-        .product(name: "SwiftProtobuf", package: "swift-protobuf")
-      ],
-      swiftSettings: swiftSettings
-    )
 //    .target(
 //      name: "SublimationVapor",
 //      dependencies: [

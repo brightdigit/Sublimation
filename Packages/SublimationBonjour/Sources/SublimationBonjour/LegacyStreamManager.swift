@@ -1,5 +1,5 @@
 //
-//  StreamManager.swift
+//  LegacyStreamManager.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -29,7 +29,7 @@
 
 import Foundation
 
-internal actor StreamManager<Key: Hashable & Sendable, Value: Sendable> {
+internal actor LegacyStreamManager<Key: Hashable & Sendable, Value: Sendable> {
   private var streamContinuations = [Key: AsyncStream<Value>.Continuation]()
 
   private var newID: @Sendable () -> Key
@@ -76,7 +76,7 @@ internal actor StreamManager<Key: Hashable & Sendable, Value: Sendable> {
   }
 }
 
-extension StreamManager {
+extension LegacyStreamManager {
   internal init() where Key == UUID {
     self.init {
       UUID()

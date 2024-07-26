@@ -125,7 +125,7 @@ let package = Package(
           package: "Sublimation"
         ),
         .product(
-          name: "SublimationKVdb",
+          name: "Sublimation",
           package: "Sublimation"
         ),
         .product(

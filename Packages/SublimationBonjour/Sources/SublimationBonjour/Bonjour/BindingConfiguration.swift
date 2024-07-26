@@ -1,5 +1,5 @@
 //
-//  String.swift
+//  BindingConfiguration.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,18 +27,40 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-extension String {
-  /// Filters strings which are only v4 and not refering the localhost.
-  /// - Parameter address: The host address string.
-  /// - Returns: True, if the address passes the filter.
-  @Sendable
-  public static func isIPv4NotLocalhost(_ address: String) -> Bool {
-    guard !(["127.0.0.1", "::1", "localhost"].contains(address)) else {
-      return false
+#if canImport(Network)
+
+  // private import BitnessOpenAPITypes
+
+  internal import Foundation
+
+  internal import Network
+
+  extension BindingConfiguration {
+    internal init?(_ content: Data?, _: NWConnection.ContentContext?, _: Bool, _ error: NWError?)
+      throws {
+      if let error {
+        throw error
+      } else if let content {
+        try self.init(serializedData: content)
+      } else {
+        return nil
+      }
     }
-    guard !address.contains(":") else {
-      return false
+
+    internal func urls(defaultIsSecure: Bool, defaultPort: Int) -> [URL] {
+      let isSecure = self.hasIsSecure ? self.isSecure : defaultIsSecure
+      let port = self.hasPort ? Int(self.port) : defaultPort
+      return self.hosts.compactMap { host in
+        if host.isLocalhost() {
+          return nil
+        }
+        if host.isValidIPv6Address() {
+          return nil
+        }
+        let url = URL(scheme: isSecure ? "https" : "http", host: host, port: port)
+        assert(url != nil)
+        return url
+      }
     }
-    return true
   }
-}
+#endif

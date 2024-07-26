@@ -93,24 +93,26 @@ let package = Package(
 //      ],
 //      swiftSettings: swiftSettings
 //    ),
-//    .target(
-//      name: "SublimationTunnel",
-//      dependencies: ["SublimationCore"],
-//      swiftSettings: swiftSettings
-//    ),
+    .target(
+      name: "SublimationTunnel",
+      dependencies: [
+        .product(name: "SublimationCore", package: "Sublimation")
+      ],
+      swiftSettings: swiftSettings
+    ),
     .target(
       name: "SublimationNgrok",
       dependencies: [
-        .product(name: "SublimationTunnel", package: "Sublimation"),
+        "SublimationTunnel",
         .product(name: "Ngrokit", package: "Ngrokit")
       ],
       swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "SublimationKVdb",
+      dependencies: ["SublimationTunnel"],
+      swiftSettings: swiftSettings
     )
-//    .target(
-//      name: "SublimationKVdb",
-//      dependencies: ["SublimationTunnel"],
-//      swiftSettings: swiftSettings
-//    ),
 //    .target(
 //      name: "SublimationBonjour",
 //      dependencies: ["SublimationCore"],

@@ -53,7 +53,7 @@
     private let browser: NetworkBrowser
     private let queue: DispatchQueue = .global()
     private let logger: LoggingActor?
-    private let streams = StreamManager<UUID, URL>()
+    private let streams = LegacyStreamManager<UUID, URL>()
 
     private let defaultPort: Int
     private let defaultTLS: Bool
