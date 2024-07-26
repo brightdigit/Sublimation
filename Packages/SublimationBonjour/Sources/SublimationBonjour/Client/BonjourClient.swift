@@ -129,7 +129,7 @@
         // self.logger?.error("Unable to decode Base64 TXT Record for \(result.endpoint.debugDescription)")
         throw TXTRecordError.base64Decoding
       }
-      return try .init(serializedBytes: data)
+      return try .init(serializedData: data)
     }
     public func addResults(_ results: Set<NWBrowser.Result>) {
       for result in results {
