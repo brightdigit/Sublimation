@@ -55,7 +55,7 @@
 
     public static let defaultName = "Sublimation"
     public static let defaultHttpTCPServiceType = "_sublimation._tcp"
-    public static let defaultParameters : NWParameters = .tcp
+    public static let defaultParameters: NWParameters = .tcp
 
     //    @available(*, unavailable, message: "Temporary Code for pulling ipaddresses.")
     //    static func getAllIPAddresses() -> [String: [String]] {

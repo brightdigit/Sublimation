@@ -39,11 +39,3 @@ extension URL {
     self = url
   }
 }
-
-extension URL {
-  internal struct Configuration {
-    internal let scheme: String
-    internal let port: Int
-    internal let count: Int
-  }
-}

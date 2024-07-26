@@ -30,17 +30,6 @@
 #if canImport(Network)
   import Foundation
   public import Network
-  //
-  //  extension NWListener {
-  //    internal convenience init(
-  //      using parameters: NWParameters,
-  //      serviceType: String,
-  //      txtRecord: NWTXTRecord
-  //    ) throws {
-  //      try self.init(using: parameters)
-  //      self.service = NWListener.Service(type: serviceType, txtRecord: txtRecord.data)
-  //    }
-  //  }
 
   extension NWListener.State: @retroactive CustomDebugStringConvertible {
     public var debugDescription: String {

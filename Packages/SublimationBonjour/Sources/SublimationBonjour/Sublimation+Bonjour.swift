@@ -46,7 +46,6 @@
       type: String = BonjourSublimatory.defaultHttpTCPServiceType,
       listenerParameters: NWParameters = .tcp
     ) {
-      
       let sublimatory = BonjourSublimatory(
         serverConfiguration: bindingConfiguration,
         name: name,

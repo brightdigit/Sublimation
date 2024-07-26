@@ -29,27 +29,11 @@
 
 #if canImport(Network)
 
-  // private import BitnessOpenAPITypes
-
   internal import Foundation
 
   internal import Network
 
   extension BindingConfiguration {
-    internal init?(_ content: Data?, _: NWConnection.ContentContext?, _: Bool, _ error: NWError?)
-      throws
-    {
-      if let error {
-        throw error
-      }
-      else if let content {
-        try self.init(serializedData: content)
-      }
-      else {
-        return nil
-      }
-    }
-
     internal func urls(defaultIsSecure: Bool, defaultPort: Int) -> [URL] {
       let isSecure = self.hasIsSecure ? self.isSecure : defaultIsSecure
       let port = self.hasPort ? Int(self.port) : defaultPort
