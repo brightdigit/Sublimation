@@ -1,12 +1,9 @@
-name: Sublimation
+name: SublimationVapor
 settings:
   LINT_MODE: ${LINT_MODE}
 packages:
-  Sublimation:
+  SublimationVapor:
     path: .
-projectReferences:
-    Demo:
-      path: ./Demo/SublimationDemoApp.xcodeproj
 aggregateTargets:
   Lint:
     buildScripts:

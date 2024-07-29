@@ -1,12 +1,9 @@
-name: Sublimation
+name: SublimationNgrok
 settings:
   LINT_MODE: ${LINT_MODE}
 packages:
   Sublimation:
     path: .
-projectReferences:
-    Demo:
-      path: ./Demo/SublimationDemoApp.xcodeproj
 aggregateTargets:
   Lint:
     buildScripts:

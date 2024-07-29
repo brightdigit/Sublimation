@@ -139,6 +139,5 @@ xcuserdata
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
-!Demo/SublimationDemoApp.xcodeproj
 .mint
 # End of https://www.toptal.com/developers/gitignore/api/swift,swiftpm,swiftpackagemanager,xcode,macos

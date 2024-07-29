@@ -1,10 +1,10 @@
-name: Sublimation
+name: SublimationVapor
 on:
   push:
     branches-ignore:
       - '*WIP'
 env:
-  PACKAGE_NAME: Sublimation      
+  PACKAGE_NAME: SublimationVapor      
 jobs:
   build-ubuntu:
     name: Build on Ubuntu

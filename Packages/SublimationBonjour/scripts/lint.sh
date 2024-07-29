@@ -13,8 +13,10 @@ MINT_RUN="/opt/homebrew/bin/mint run $MINT_ARGS"
 if [ -z "$SRCROOT" ]; then
 	SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 	PACKAGE_DIR="${SCRIPT_DIR}/.."
+	PERIPHERY_OPTIONS="--skip-build"
 else
 	PACKAGE_DIR="${SRCROOT}" 	
+	PERIPHERY_OPTIONS=""
 fi
 
 
@@ -28,8 +30,6 @@ fi
 
 /opt/homebrew/bin/mint bootstrap
 
-#pushd $PACKAGE_DIR
-
 echo "LINT Mode is $LINT_MODE"
 
 if [ -z "$CI" ]; then
@@ -42,5 +42,5 @@ $PACKAGE_DIR/scripts/header.sh -d  $PACKAGE_DIR/Sources -c "Leo Dion" -o "Bright
 $MINT_RUN swift-format lint --recursive --parallel $SWIFTFORMAT_OPTIONS $PACKAGE_DIR/Sources
 
 pushd $PACKAGE_DIR
-$MINT_RUN periphery scan --skip-build
+$MINT_RUN periphery scan $PERIPHERY_OPTIONS
 popd
