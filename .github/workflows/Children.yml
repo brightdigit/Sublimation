@@ -1,4 +1,5 @@
-name: Children
+# .github/workflows/main.yml
+name: Main Workflow
 
 on: push
 
@@ -6,25 +7,11 @@ jobs:
   trigger_sub_workflows:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger SubDirectory Workflows
-        uses: actions/github-script@v6
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Trigger Sub Workflows
+        uses: ./.github/actions/trigger-sub-workflows
         with:
-          script: |
-            const octokit = github.getOctokit(core.getInput('github_token'));
-            const workflows = [
-              'Packages/Ngrokit/.github/workflows/Ngrokit.yml',
-              'Packages/SublimationBonjour/.github/workflows/SublimationBonjour.yml',
-              'Packages/SublimationNgrok/.github/workflows/SublimationNgrok.yml',
-              'Packages/SublimationService/.github/workflows/SublimationService.yml',
-              'Packages/SublimationVapor/.github/workflows/SublimationVapor.yml'
-            ];
-            for (const workflow of workflows) {
-              await octokit.actions.createWorkflowDispatch({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                workflow_id: workflow,
-                ref: context.ref,
-              });
-            }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref }}

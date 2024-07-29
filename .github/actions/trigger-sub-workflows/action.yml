@@ -1,0 +1,52 @@
+# .github/actions/trigger-sub-workflows/action.yml
+name: 'Trigger Sub Workflows'
+description: 'Triggers workflows in subdirectories'
+inputs:
+  token:
+    description: 'GitHub token'
+    required: true
+  ref:
+    description: 'Git reference'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Trigger Ngrokit Workflow
+      shell: bash
+      run: |
+        curl -X POST -H "Accept: application/vnd.github.v3+json" \
+        -H "Authorization: token ${{ inputs.token }}" \
+        https://api.github.com/repos/${{ github.repository }}/actions/workflows/Packages/Ngrokit/.github/workflows/Ngrokit.yml/dispatches \
+        -d '{"ref":"${{ inputs.ref }}"}'
+
+    - name: Trigger SublimationBonjour Workflow
+      shell: bash
+      run: |
+        curl -X POST -H "Accept: application/vnd.github.v3+json" \
+        -H "Authorization: token ${{ inputs.token }}" \
+        https://api.github.com/repos/${{ github.repository }}/actions/workflows/Packages/SublimationBonjour/.github/workflows/SublimationBonjour.yml/dispatches \
+        -d '{"ref":"${{ inputs.ref }}"}'
+
+    - name: Trigger SublimationNgrok Workflow
+      shell: bash
+      run: |
+        curl -X POST -H "Accept: application/vnd.github.v3+json" \
+        -H "Authorization: token ${{ inputs.token }}" \
+        https://api.github.com/repos/${{ github.repository }}/actions/workflows/Packages/SublimationNgrok/.github/workflows/SublimationNgrok.yml/dispatches \
+        -d '{"ref":"${{ inputs.ref }}"}'
+
+    - name: Trigger SublimationService Workflow
+      shell: bash
+      run: |
+        curl -X POST -H "Accept: application/vnd.github.v3+json" \
+        -H "Authorization: token ${{ inputs.token }}" \
+        https://api.github.com/repos/${{ github.repository }}/actions/workflows/Packages/SublimationService/.github/workflows/SublimationService.yml/dispatches \
+        -d '{"ref":"${{ inputs.ref }}"}'
+
+    - name: Trigger SublimationVapor Workflow
+      shell: bash
+      run: |
+        curl -X POST -H "Accept: application/vnd.github.v3+json" \
+        -H "Authorization: token ${{ inputs.token }}" \
+        https://api.github.com/repos/${{ github.repository }}/actions/workflows/Packages/SublimationVapor/.github/workflows/SublimationVapor.yml/dispatches \
+        -d '{"ref":"${{ inputs.ref }}"}'
