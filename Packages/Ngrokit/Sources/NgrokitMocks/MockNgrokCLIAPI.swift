@@ -27,8 +27,8 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import Ngrokit
+package import Foundation
+package import Ngrokit
 
 package final class MockNgrokCLIAPI: NgrokCLIAPI {
   package let process: any NgrokProcess

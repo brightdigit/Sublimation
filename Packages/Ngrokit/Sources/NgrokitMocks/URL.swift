@@ -27,10 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
+package import Foundation
 
 #if canImport(FoundationNetworking)
-  import FoundationNetworking
+package import FoundationNetworking
 #endif
 
 extension URL {

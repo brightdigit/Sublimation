@@ -38,10 +38,21 @@
     public import Logging
   #endif
 
+public struct URLDefaultConfiguration {
+  public init(isSecure: Bool = false, port: Int = 8080) {
+    self.isSecure = isSecure
+    self.port = port
+  }
+  
+  public let isSecure: Bool
+  public let port: Int
+}
+
   public actor BonjourClient {
     private let browser: NWBrowser
     private let streams = StreamManager<UUID, URL>()
     private let logger: Logger?
+    private let defaultURLConfiguration: URLDefaultConfiguration
 
     public var urls: AsyncStream<URL> {
       get async {
@@ -63,15 +74,15 @@
       }
     }
 
-    public init(logger: Logger? = nil) {
+    public init(logger: Logger? = nil, defaultURLConfiguration : URLDefaultConfiguration = .init()) {
+      
       assert(logger != nil)
       let descriptor: NWBrowser.Descriptor
-      #if os(watchOS)
+      
         descriptor = .bonjourWithTXTRecord(type: "_sublimation._tcp", domain: nil)
-      #else
-        descriptor = .bonjour(type: "_sublimation._tcp", domain: nil)
-      #endif
+
       let browser = NWBrowser(for: descriptor, using: .tcp)
+      self.defaultURLConfiguration = defaultURLConfiguration
       self.browser = browser
       self.logger = logger
       browser.browseResultsChangedHandler = { results, _ in self.parseResults(results) }
@@ -100,6 +111,7 @@
       case indexMismatch(Int)
       case base64Decoding
     }
+    
     private static func bindingConfiguration(txtRecordDictionary: [String: String]) throws
       -> BindingConfiguration
     {
@@ -126,7 +138,6 @@
       }
       let values = pairs.map(\.1)
       guard let data: Data = .init(base64Encoded: values.joined()) else {
-        // self.logger?.error("Unable to decode Base64 TXT Record for \(result.endpoint.debugDescription)")
         throw TXTRecordError.base64Decoding
       }
       return try .init(serializedData: data)
@@ -146,7 +157,7 @@
           continue
         }
         #warning("Defaults should be passed to connection")
-        let urls = configuration.urls(defaultIsSecure: false, defaultPort: 8_080)
+        let urls = configuration.urls(defaults: self.defaultURLConfiguration)
         self.append(urls: urls)
       }
     }

@@ -27,10 +27,14 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import Ngrokit
+package import Foundation
+package import Ngrokit
 
 package final class MockProcess: Processable {
+  package func terminate() {
+    
+  }
+  
   package typealias PipeType = MockPipe
 
   package let executableFilePath: String

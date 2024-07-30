@@ -65,13 +65,18 @@ let package = Package(
       dependencies: ["SublimationTunnel"],
       swiftSettings: swiftSettings
     ),
+    .target(
+        name: "SublimationMocks",
+        dependencies: ["Sublimation"],
+        swiftSettings: swiftSettings
+    ),
     .testTarget(
       name: "SublimationKVdbTests",
-      dependencies: ["SublimationKVdb"]
+      dependencies: ["SublimationKVdb", "SublimationMocks"]
     ),
     .testTarget(
       name: "SublimationTunnelTests",
-      dependencies: ["SublimationTunnel"]
+      dependencies: ["SublimationTunnel", "SublimationMocks"]
     )
   ]
 )

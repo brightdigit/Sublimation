@@ -28,7 +28,7 @@
 //
 
 import Foundation
-import NgrokOpenAPIClient
+package import NgrokOpenAPIClient
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking

@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
+package import Foundation
 import Ngrokit
 
 package struct MockDataHandle: DataHandle {

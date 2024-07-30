@@ -1,5 +1,5 @@
 //
-//  Vapor.Application.swift
+//  MockError.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,26 +27,18 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import protocol SublimationCore.Application
-public import Vapor
+package enum MockError<T: Equatable & Sendable>: Error { case value(T) }
 
-extension Vapor.Application: @retroactive Application {
-  public var httpServerConfigurationPort: Int {
-    self.http.server.configuration.port
+extension Result {
+  package var error: (any Error)? {
+    guard case let .failure(failure) = self else { return nil }
+    return failure
   }
 
-  public var httpServerTLS: Bool {
-    self.http.server.configuration.tlsConfiguration != nil
-  }
+  package func mockErrorValue<T: Equatable & Sendable>() -> T? {
+    guard let mockError = error as? MockError<T> else { return nil }
 
-  public func post(to url: URL, body: Data?) async throws {
-    _ = try await client.post(.init(string: url.absoluteString)) { request in
-      request.body = body.map(ByteBuffer.init(data:))
+    switch mockError { case let .value(value): return value
     }
-  }
-
-  public func get(from url: URL) async throws -> Data? {
-    let response = try await client.get(.init(string: url.absoluteString))
-    return response.body.map { Data(buffer: $0) }
   }
 }

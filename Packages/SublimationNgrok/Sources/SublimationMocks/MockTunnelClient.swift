@@ -1,5 +1,5 @@
 //
-//  MockNgrokProcess.swift
+//  MockTunnelClient.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -28,18 +28,38 @@
 //
 
 package import Foundation
-import Ngrokit
+import SublimationTunnel
 
-package final class MockNgrokProcess: NgrokProcess {
-  func terminate() {
-    
-  }
-  
-  package let id: UUID
-
-  package init(id: UUID) {
-    self.id = id
+package actor MockTunnelClient<Key: Sendable>: TunnelClient {
+  package struct GetParameters {
+    package let key: Key
+    package let bucketName: String
   }
 
-  package func run(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
+  package struct SaveParameters {
+    package let value: URL
+    package let key: Key
+    package let bucketName: String
+  }
+
+  internal let getValueResult: Result<URL, any Error>?
+  internal let saveValueError: (any Error)?
+
+  package private(set) var getValuesPassed = [GetParameters]()
+  package private(set) var saveValuesPassed = [SaveParameters]()
+  package init(getValueResult: Result<URL, any Error>? = nil, saveValueError: (any Error)? = nil) {
+    self.getValueResult = getValueResult
+    self.saveValueError = saveValueError
+  }
+
+  package func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
+    getValuesPassed.append(.init(key: key, bucketName: bucketName))
+    // swiftlint:disable:next force_unwrapping
+    return try getValueResult!.get()
+  }
+
+  package func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
+    saveValuesPassed.append(.init(value: value, key: key, bucketName: bucketName))
+    if let saveValueError { throw saveValueError }
+  }
 }

@@ -1,6 +1,6 @@
 //
-//  Vapor.Application.swift
-//  Sublimation
+//  BindingConfiguration.swift
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,26 +27,23 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import protocol SublimationCore.Application
-public import Vapor
+#if canImport(Network)
 
-extension Vapor.Application: @retroactive Application {
-  public var httpServerConfigurationPort: Int {
-    self.http.server.configuration.port
-  }
+  internal import Foundation
 
-  public var httpServerTLS: Bool {
-    self.http.server.configuration.tlsConfiguration != nil
-  }
+  internal import Network
 
-  public func post(to url: URL, body: Data?) async throws {
-    _ = try await client.post(.init(string: url.absoluteString)) { request in
-      request.body = body.map(ByteBuffer.init(data:))
+  extension BindingConfiguration {
+    internal func urls(defaults : URLDefaultConfiguration) -> [URL] {
+      let isSecure = self.hasIsSecure ? self.isSecure : defaults.isSecure
+      let port = self.hasPort ? Int(self.port) : defaults.port
+      return self.hosts.compactMap { host in
+        if host.isLocalhost() { return nil }
+        if host.isValidIPv6Address() { return nil }
+        let url = URL(scheme: isSecure ? "https" : "http", host: host, port: port)
+        assert(url != nil)
+        return url
+      }
     }
   }
-
-  public func get(from url: URL) async throws -> Data? {
-    let response = try await client.get(.init(string: url.absoluteString))
-    return response.body.map { Data(buffer: $0) }
-  }
-}
+#endif
