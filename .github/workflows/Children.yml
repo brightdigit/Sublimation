@@ -13,5 +13,5 @@ jobs:
       - name: Trigger Sub Workflows
         uses: ./.github/actions/trigger-sub-workflows
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
           ref: ${{ github.ref }}
