@@ -1,10 +1,14 @@
-name: Sublimation
+name: Ngrokit
 on:
   push:
     branches-ignore:
       - '*WIP'
+
+defaults:
+  working-directory: Packages/Ngrokit
+  
 env:
-  PACKAGE_NAME: Sublimation      
+  PACKAGE_NAME: Ngrokit      
 jobs:
   build-ubuntu:
     name: Build on Ubuntu

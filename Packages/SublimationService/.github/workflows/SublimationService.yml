@@ -3,6 +3,10 @@ on:
   push:
     branches-ignore:
       - '*WIP'
+      
+defaults:
+      working-directory: Packages/SublimationService      
+      
 env:
   PACKAGE_NAME: SublimationService      
 jobs:
