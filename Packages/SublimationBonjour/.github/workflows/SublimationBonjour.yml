@@ -1,10 +1,14 @@
-name: Sublimation
+name: SublimationBonjour
 on:
   push:
     branches-ignore:
       - '*WIP'
+
+defaults:
+      working-directory: Packages/SublimationBonjour
+      
 env:
-  PACKAGE_NAME: Sublimation      
+  PACKAGE_NAME: SublimationBonjour      
 jobs:
   build-ubuntu:
     name: Build on Ubuntu

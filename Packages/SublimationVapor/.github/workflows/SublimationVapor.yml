@@ -3,6 +3,9 @@ on:
   push:
     branches-ignore:
       - '*WIP'
+      
+defaults:
+      working-directory: Packages/SublimationVapor      
 env:
   PACKAGE_NAME: SublimationVapor      
 jobs:
