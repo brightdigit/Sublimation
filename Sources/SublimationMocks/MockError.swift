@@ -27,26 +27,18 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-package enum MockError<T: Equatable & Sendable>: Error {
-  case value(T)
-}
+package enum MockError<T: Equatable & Sendable>: Error { case value(T) }
 
 extension Result {
   package var error: (any Error)? {
-    guard case let .failure(failure) = self else {
-      return nil
-    }
+    guard case let .failure(failure) = self else { return nil }
     return failure
   }
 
   package func mockErrorValue<T: Equatable & Sendable>() -> T? {
-    guard let mockError = error as? MockError<T> else {
-      return nil
-    }
+    guard let mockError = error as? MockError<T> else { return nil }
 
-    switch mockError {
-    case let .value(value):
-      return value
+    switch mockError { case let .value(value): return value
     }
   }
 }

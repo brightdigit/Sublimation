@@ -27,18 +27,12 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+/// Different methods for Sublimation.
 public protocol Sublimatory: Sendable {
-  func willBoot(from application: @escaping @Sendable () -> any Application) async
-  func didBoot(from application: @escaping @Sendable () -> any Application) async
-  func shutdown(from application: @escaping @Sendable () -> any Application) async
+  func run() async throws
+  func shutdown()
 }
 
 extension Sublimatory {
-  /// Empty implementation of ``didBoot(from:)-warq``
-  /// - Parameter _:  The Sever Application
-  public func didBoot(from _: @escaping @Sendable () -> any Application) async {}
-
-  /// Empty implementation of ``shutdown(from:)-warq``
-  /// - Parameter _:  The Sever Application
-  public func shutdown(from _: @escaping @Sendable () -> any Application) async {}
+  public func shutdown() {}
 }

@@ -29,31 +29,10 @@
 
 import Foundation
 import Logging
-import OpenAPIRuntime
-import SublimationCore
+public import SublimationCore
 
 public final class Sublimation: Sendable {
   public let sublimatory: any Sublimatory
 
-  public init(sublimatory: any Sublimatory) {
-    self.sublimatory = sublimatory
-  }
-
-  public func willBoot(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.willBoot(from: application)
-    }
-  }
-
-  public func didBoot(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.didBoot(from: application)
-    }
-  }
-
-  public func shutdown(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.shutdown(from: application)
-    }
-  }
+  public init(sublimatory: any Sublimatory) { self.sublimatory = sublimatory }
 }

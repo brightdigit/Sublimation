@@ -1,0 +1,13 @@
+name: SublimationNgrok
+settings:
+  LINT_MODE: ${LINT_MODE}
+packages:
+  Sublimation:
+    path: .
+aggregateTargets:
+  Lint:
+    buildScripts:
+      - path: Scripts/lint.sh
+        name: Lint
+        basedOnDependencyAnalysis: false
+    schemes: {}
