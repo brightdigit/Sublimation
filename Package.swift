@@ -60,6 +60,10 @@ let package = Package(
         .product(name: "Logging", package: "swift-log")
       ],
       swiftSettings: swiftSettings
+    ),
+    .testTarget(
+      name: "SublimationTests",
+      dependencies: ["Sublimation"]
     )
   ]
 )

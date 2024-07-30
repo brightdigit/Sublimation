@@ -52,6 +52,10 @@ let package = Package(
         .product(name: "ServiceLifecycle", package: "swift-service-lifecycle")
       ],
       swiftSettings: swiftSettings
+    ),
+    .testTarget(
+      name: "SublimationServiceTests",
+      dependencies: ["SublimationService"]
     )
   ]
 )

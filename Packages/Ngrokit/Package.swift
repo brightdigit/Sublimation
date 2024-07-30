@@ -60,6 +60,10 @@ let package = Package(
         .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")
       ],
       swiftSettings: swiftSettings
+    ),
+    .testTarget(
+      name: "NgrokitTests",
+      dependencies: ["Ngrokit"]
     )
   ]
 )

@@ -54,6 +54,10 @@ let package = Package(
         .product(name: "SwiftProtobuf", package: "swift-protobuf")
       ],
       swiftSettings: swiftSettings
+    ),
+    .testTarget(
+      name: "SublimationBonjourTests",
+      dependencies: ["SublimationBonjour"]
     )
   ]
 )
