@@ -5,7 +5,8 @@ on:
       - '*WIP'
 
 defaults:
-  working-directory: Packages/Ngrokit
+  run:
+    working-directory: Packages/Ngrokit
   
 env:
   PACKAGE_NAME: Ngrokit      

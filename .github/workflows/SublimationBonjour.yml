@@ -5,7 +5,8 @@ on:
       - '*WIP'
 
 defaults:
-      working-directory: Packages/SublimationBonjour
+  run:
+    working-directory: Packages/SublimationBonjour
       
 env:
   PACKAGE_NAME: SublimationBonjour      

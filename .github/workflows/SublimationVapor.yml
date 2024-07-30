@@ -5,7 +5,8 @@ on:
       - '*WIP'
       
 defaults:
-      working-directory: Packages/SublimationVapor      
+  run:
+    working-directory: Packages/SublimationVapor      
 env:
   PACKAGE_NAME: SublimationVapor      
 jobs:

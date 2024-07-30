@@ -5,7 +5,8 @@ on:
       - '*WIP'
 
 defaults:
-  working-directory: Packages/SublimationNgrok
+  run:
+    working-directory: Packages/SublimationNgrok
                   
 env:
   PACKAGE_NAME: SublimationNgrok      

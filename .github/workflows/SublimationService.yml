@@ -5,7 +5,8 @@ on:
       - '*WIP'
       
 defaults:
-      working-directory: Packages/SublimationService      
+  run:
+    working-directory: Packages/SublimationService      
       
 env:
   PACKAGE_NAME: SublimationService      
