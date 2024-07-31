@@ -27,14 +27,14 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-package import Foundation
+public import Foundation
 package import Ngrokit
 
-package final class MockNgrokCLIAPI: NgrokCLIAPI {
+public final class MockNgrokCLIAPI: NgrokCLIAPI {
   package let process: any NgrokProcess
   package private(set) var httpPorts = [Int]()
 
-  package convenience init(id: UUID) {
+  public convenience init(id: UUID) {
     self.init(process: MockNgrokProcess(id: id))
   }
 

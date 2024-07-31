@@ -77,7 +77,11 @@ let package = Package(
     .testTarget(
       name: "SublimationTunnelTests",
       dependencies: ["SublimationTunnel", "SublimationMocks"]
-    )
+    ),
+    .testTarget(
+      name: "SublimationNgrokTests",
+      dependencies: ["SublimationNgrok", "SublimationMocks", .product(name: "NgrokitMocks", package: "Ngrokit")]
+    ),
   ]
 )
 // swiftlint:enable explicit_acl explicit_top_level_acl

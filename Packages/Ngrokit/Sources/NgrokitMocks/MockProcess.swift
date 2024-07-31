@@ -30,7 +30,7 @@
 package import Foundation
 package import Ngrokit
 
-package final class MockProcess: Processable {
+public final class MockProcess: Processable {
   package func terminate() {
     
   }

@@ -38,7 +38,8 @@ let package = Package(
     .macCatalyst(.v17)
   ],
   products: [
-    .library(name: "Ngrokit", targets: ["Ngrokit"])
+    .library(name: "Ngrokit", targets: ["Ngrokit"]),
+    .library(name: "NgrokitMocks", targets: ["NgrokitMocks"])
   ],
   dependencies: [
     .package(

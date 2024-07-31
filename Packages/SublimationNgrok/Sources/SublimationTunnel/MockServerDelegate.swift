@@ -1,5 +1,5 @@
 //
-//  NgrokCLIAPIConfigurationTests.swift
+//  MockServerDelegate.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -26,20 +26,18 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
+package import Foundation
 
-@testable import SublimationNgrok
-import XCTest
+package final class MockServerDelegate: TunnelServerDelegate {
+  package let id: UUID
 
-internal class NgrokCLIAPIConfigurationTests: XCTestCase {
-  internal func testInit() {
-    let loggerLabel = UUID().uuidString
-    let application = MockServerApplication(
-      httpServerConfigurationPort: .random(in: 10 ... 10_000),
-      httpServerTLS: .random(),
-      logger: .init(label: loggerLabel)
-    )
-    let configuration = NgrokCLIAPIConfiguration(serverApplication: application)
-    XCTAssertEqual(configuration.logger.label, loggerLabel)
-    XCTAssertEqual(configuration.port, application.httpServerConfigurationPort)
+  package init(id: UUID) {
+    self.id = id
   }
+
+  package func server(
+    _: any TunnelServer, updatedTunnel _: any Tunnel
+  ) {}
+
+  package func server(_: any TunnelServer, errorDidOccur _: any Error) {}
 }

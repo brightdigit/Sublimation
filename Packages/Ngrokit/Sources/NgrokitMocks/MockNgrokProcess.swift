@@ -27,19 +27,19 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-package import Foundation
+public import Foundation
 import Ngrokit
 
-package final class MockNgrokProcess: NgrokProcess {
-  func terminate() {
+public final class MockNgrokProcess: NgrokProcess {
+  public func terminate() {
     
   }
   
-  package let id: UUID
+  public let id: UUID
 
-  package init(id: UUID) {
+  public init(id: UUID) {
     self.id = id
   }
 
-  package func run(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
+  public func run(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
 }

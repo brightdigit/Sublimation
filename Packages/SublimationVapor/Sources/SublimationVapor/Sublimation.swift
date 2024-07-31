@@ -33,7 +33,7 @@ import OpenAPIRuntime
 public import Sublimation
 public import Vapor
 
-extension Sublimation: LifecycleHandler {
+extension Sublimation: @retroactive LifecycleHandler {
   public func willBoot(_ application: Vapor.Application) throws {
     Task {
       try await self.sublimatory.run()

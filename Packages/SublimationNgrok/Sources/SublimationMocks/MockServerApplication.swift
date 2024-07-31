@@ -1,5 +1,5 @@
 //
-//  MockServerDelegate.swift
+//  MockServerApplication.swift
 //  Sublimation
 //
 //  Created by Leo Dion.
@@ -27,19 +27,33 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-@testable import SublimationTunnel
+package import Foundation
+package import Logging
+import SublimationCore
 import XCTest
 
-internal final class MockServerDelegate: TunnelServerDelegate {
-  internal let id: UUID
+package class MockServerApplication: Application {
+  package let httpServerConfigurationPort: Int
+  package let httpServerTLS: Bool
+  package let logger: Logger
 
-  internal init(id: UUID) {
-    self.id = id
+  package private(set) var postRequests = [(URL, Data?)]()
+  package private(set) var getRequests = [URL]()
+  package private(set) var queuedGetResponses = [Result<Data?, any Error>]()
+  package private(set) var queuedPostResponses = [Result<Void, any Error>]()
+  package init(httpServerConfigurationPort: Int, httpServerTLS: Bool, logger: Logger) {
+    self.httpServerConfigurationPort = httpServerConfigurationPort
+    self.httpServerTLS = httpServerTLS
+    self.logger = logger
   }
 
-  internal func server(
-    _: any TunnelServer, updatedTunnel _: any Tunnel
-  ) {}
+  package func post(to url: URL, body: Data?) async throws {
+    postRequests.append((url, body))
+    try queuedPostResponses.remove(at: 0).get()
+  }
 
-  internal func server(_: any TunnelServer, errorDidOccur _: any Error) {}
+  package func get(from url: URL) async throws -> Data? {
+    getRequests.append(url)
+    return try queuedGetResponses.remove(at: 0).get()
+  }
 }
