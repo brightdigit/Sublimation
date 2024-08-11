@@ -30,4 +30,4 @@
 import Ngrokit
 public import SublimationTunnel
 
-extension NgrokTunnel: @retroactive Tunnel {}
+extension NgrokTunnel: Tunnel {}
