@@ -1,6 +1,6 @@
 //
 //  NgrokClient.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -74,13 +74,8 @@ public struct NgrokClient: Sendable {
     self.init(underlyingClient: underlyingClient)
   }
 
-  internal init(underlyingClient: any APIProtocol) {
-    self.underlyingClient = underlyingClient
-  }
-  
-  public func status() async throws {
-    _ = try await self.underlyingClient.get_sol_api().ok
-  }
+  internal init(underlyingClient: any APIProtocol) { self.underlyingClient = underlyingClient }
+  public func status() async throws { _ = try await self.underlyingClient.get_sol_api().ok }
 
   ///   Starts a new tunnel.
   ///
@@ -92,11 +87,8 @@ public struct NgrokClient: Sendable {
   public func startTunnel(_ request: TunnelRequest) async throws -> NgrokTunnel {
     let tunnelRequest: Components.Schemas.TunnelRequest
     tunnelRequest = .init(request: request)
-    let response = try await underlyingClient.startTunnel(
-      .init(
-        body: .json(tunnelRequest)
-      )
-    ).created.body.json
+    let response = try await underlyingClient.startTunnel(.init(body: .json(tunnelRequest))).created
+      .body.json
     let tunnel: NgrokTunnel = try .init(response: response)
     return tunnel
   }
@@ -116,9 +108,6 @@ public struct NgrokClient: Sendable {
   ///
   ///   - Throws: An error if the tunnel listing fails.
   public func listTunnels() async throws -> [NgrokTunnel] {
-    try await underlyingClient
-      .listTunnels()
-      .ok.body.json.tunnels
-      .map(NgrokTunnel.init(response:))
+    try await underlyingClient.listTunnels().ok.body.json.tunnels.map(NgrokTunnel.init(response:))
   }
 }

@@ -1,6 +1,6 @@
 //
 //  ProcessableProcess.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -39,31 +39,22 @@ public import Foundation
   ///   property before executing the process.
   ///
   ///   - SeeAlso: `Processable`
-public final class ProcessableProcess: Processable {
+  public final class ProcessableProcess: Processable {
 
-  
     /// The type of pipe used for standard error.
     public typealias PipeType = Pipe
 
     private let process: Process
 
-    public var terminationReason: TerminationReason {
-      process.terminationReason
-    }
+    public var terminationReason: TerminationReason { process.terminationReason }
 
     /// The pipe used for standard error.
     public var standardError: Pipe? {
-      get {
-        process.standardError as? Pipe
-      }
-      set {
-        process.standardError = newValue
-      }
+      get { process.standardError as? Pipe }
+      set { process.standardError = newValue }
     }
 
-    private init(process: Process) {
-      self.process = process
-    }
+    private init(process: Process) { self.process = process }
 
     ///     Initializes a new `ProcessableProcess` instance.
     ///
@@ -84,9 +75,7 @@ public final class ProcessableProcess: Processable {
     ///     Sets the termination handler closure for the process.
     ///
     ///     - Parameter closure: The closure to be called when the process terminates.
-    public func setTerminationHandler(
-      _ closure: @escaping @Sendable (ProcessableProcess) -> Void
-    ) {
+    public func setTerminationHandler(_ closure: @escaping @Sendable (ProcessableProcess) -> Void) {
       process.terminationHandler = { process in
         assert(process == self.process)
         closure(self)
@@ -96,17 +85,10 @@ public final class ProcessableProcess: Processable {
     ///     Creates a new pipe.
     ///
     ///     - Returns: A new `Pipe` instance.
-    public func createPipe() -> Pipe {
-      Pipe()
-    }
+    public func createPipe() -> Pipe { Pipe() }
 
-    public func run() throws {
-      try process.run()
-    }
-  
-  public func terminate() {
-    process.terminate()
-  }
+    public func run() throws { try process.run() }
+    public func terminate() { process.terminate() }
   }
 
   extension Pipe: Pipable {}

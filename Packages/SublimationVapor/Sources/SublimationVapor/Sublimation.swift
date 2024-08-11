@@ -1,6 +1,6 @@
 //
 //  Sublimation.swift
-//  Sublimation
+//  SublimationVapor
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -35,15 +35,8 @@ public import Vapor
 
 extension Sublimation: @retroactive LifecycleHandler {
   public func willBoot(_ application: Vapor.Application) throws {
-    Task {
-      try await self.sublimatory.run()
-    }
+    Task { try await self.sublimatory.run() }
   }
 
-
-  public func shutdown(_ application: Vapor.Application) {
-    Task {
-      self.sublimatory.shutdown()
-    }
-  }
+  public func shutdown(_ application: Vapor.Application) { Task { self.sublimatory.shutdown() } }
 }

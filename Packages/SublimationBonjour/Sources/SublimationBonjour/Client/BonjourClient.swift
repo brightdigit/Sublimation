@@ -38,15 +38,14 @@
     public import Logging
   #endif
 
-public struct URLDefaultConfiguration {
-  public init(isSecure: Bool = false, port: Int = 8080) {
-    self.isSecure = isSecure
-    self.port = port
+  public struct URLDefaultConfiguration {
+    public init(isSecure: Bool = false, port: Int = 8080) {
+      self.isSecure = isSecure
+      self.port = port
+    }
+    public let isSecure: Bool
+    public let port: Int
   }
-  
-  public let isSecure: Bool
-  public let port: Int
-}
 
   public actor BonjourClient {
     private let browser: NWBrowser
@@ -74,12 +73,10 @@ public struct URLDefaultConfiguration {
       }
     }
 
-    public init(logger: Logger? = nil, defaultURLConfiguration : URLDefaultConfiguration = .init()) {
-      
+    public init(logger: Logger? = nil, defaultURLConfiguration: URLDefaultConfiguration = .init()) {
       assert(logger != nil)
       let descriptor: NWBrowser.Descriptor
-      
-        descriptor = .bonjourWithTXTRecord(type: "_sublimation._tcp", domain: nil)
+      descriptor = .bonjourWithTXTRecord(type: "_sublimation._tcp", domain: nil)
 
       let browser = NWBrowser(for: descriptor, using: .tcp)
       self.defaultURLConfiguration = defaultURLConfiguration
@@ -111,7 +108,6 @@ public struct URLDefaultConfiguration {
       case indexMismatch(Int)
       case base64Decoding
     }
-    
     private static func bindingConfiguration(txtRecordDictionary: [String: String]) throws
       -> BindingConfiguration
     {

@@ -1,6 +1,6 @@
 //
 //  TunnelBucketRepositoryFactory.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -35,8 +35,7 @@ import Foundation
 
 /// This factory is used to set up and configure a
 /// `KVdbTunnelRepository` with a specific bucket name.
-public struct TunnelBucketRepositoryFactory<Key: Sendable>:
-  WritableTunnelRepositoryFactory {
+public struct TunnelBucketRepositoryFactory<Key: Sendable>: WritableTunnelRepositoryFactory {
   /// The type of tunnel repository created by this factory.
   public typealias TunnelRepositoryType = TunnelClientRepository<Key>
 
@@ -46,18 +45,15 @@ public struct TunnelBucketRepositoryFactory<Key: Sendable>:
   ///   Initializes a new instance of the factory with the specified bucket name.
   ///
   ///   - Parameter bucketName: The name of the bucket to use.
-  public init(bucketName: String) {
-    self.bucketName = bucketName
-  }
+  public init(bucketName: String) { self.bucketName = bucketName }
 
   ///   Sets up a client and returns a new `KVdbTunnelRepository` instance.
   ///
   ///   - Parameter client: The tunnel client to use.
   ///   - Returns: A new `KVdbTunnelRepository` instance.
-  public func setupClient<TunnelClientType>(
-    _ client: TunnelClientType
-  ) -> TunnelClientRepository<Key>
-    where TunnelClientType: TunnelClient, TunnelClientType.Key == Key {
+  public func setupClient<TunnelClientType>(_ client: TunnelClientType) -> TunnelClientRepository<
+    Key
+  > where TunnelClientType: TunnelClient, TunnelClientType.Key == Key {
     .init(client: client, bucketName: bucketName)
   }
 }

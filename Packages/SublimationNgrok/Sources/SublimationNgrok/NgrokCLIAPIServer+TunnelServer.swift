@@ -1,6 +1,6 @@
 //
 //  NgrokCLIAPIServer+TunnelServer.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -28,19 +28,17 @@
 //
 
 import Foundation
+import Ngrokit
 public import OpenAPIRuntime
 import SublimationTunnel
-import Ngrokit
 
 extension NgrokCLIAPIServer {
   ///   Runs the server.
-  public func begin(
-    isConnectionRefused: @escaping (ClientError) -> Bool) async {
+  public func begin(isConnectionRefused: @escaping (ClientError) -> Bool) async {
     let start = Date()
     let newTunnel: any Tunnel
-    do {
-      newTunnel = try await self.newTunnel(isConnectionRefused: isConnectionRefused)
-    } catch {
+    do { newTunnel = try await self.newTunnel(isConnectionRefused: isConnectionRefused) }
+    catch {
       delegate.server(self, errorDidOccur: error)
       return
     }
@@ -51,33 +49,25 @@ extension NgrokCLIAPIServer {
   }
 
   ///   Starts the server.
-  public func start(
-    isConnectionRefused: @escaping @Sendable (ClientError) -> Bool) {
-    Task {
-      await begin(isConnectionRefused: isConnectionRefused)
-    }
+  public func start(isConnectionRefused: @escaping @Sendable (ClientError) -> Bool) {
+    Task { await begin(isConnectionRefused: isConnectionRefused) }
   }
   actor HasStarted {
     internal private(set) var isStarted = false
-    
-    func started() {
-      isStarted = true
-    }
+    func started() { isStarted = true }
   }
-  
-  public func shutdown() {
-    self.process.terminate()
-  }
+  public func shutdown() { self.process.terminate() }
   public func run(isConnectionRefused: @escaping @Sendable (ClientError) -> Bool) async throws {
-    try await withThrowingTaskGroup(of: Void.self, body: { group in
-      let started = HasStarted()
-      group.addTask{
-        try await withCheckedThrowingContinuation { continuation in
-          
-          let start = Date()
-          Task {
-            let newTunnel = try await self.newTunnel(
-              isConnectionRefused: isConnectionRefused) { error in
+    try await withThrowingTaskGroup(
+      of: Void.self,
+      body: { group in
+        let started = HasStarted()
+        group.addTask {
+          try await withCheckedThrowingContinuation { continuation in
+            let start = Date()
+            Task {
+              let newTunnel = try await self.newTunnel(isConnectionRefused: isConnectionRefused) {
+                error in
                 if let error = error as? RuntimeError {
                   if case let .unknownEarlyTermination(string) = error {
                     continuation.resume()
@@ -86,24 +76,22 @@ extension NgrokCLIAPIServer {
                 }
                 continuation.resume(throwing: error)
               }
-            let seconds = Int(-start.timeIntervalSinceNow)
-            logger.notice("New Tunnel Created in \(seconds) secs: \(newTunnel.publicURL)")
-            delegate.server(self, updatedTunnel: newTunnel)
-            await started.started()
+              let seconds = Int(-start.timeIntervalSinceNow)
+              logger.notice("New Tunnel Created in \(seconds) secs: \(newTunnel.publicURL)")
+              delegate.server(self, updatedTunnel: newTunnel)
+              await started.started()
+            }
           }
         }
-      }
-      group.addTask{
-        var isActive = true
-        
-        while isActive {
-          try await Task.sleep(for: .seconds(5.0), tolerance: .seconds(2.5))
-          if await started.isStarted {
-            try await self.status()
+        group.addTask {
+          var isActive = true
+          while isActive {
+            try await Task.sleep(for: .seconds(5.0), tolerance: .seconds(2.5))
+            if await started.isStarted { try await self.status() }
           }
         }
+        try await group.waitForAll()
       }
-      try await group.waitForAll()
-    })
+    )
   }
 }

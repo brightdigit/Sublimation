@@ -31,6 +31,7 @@ import Foundation
 import Logging
 public import SublimationCore
 
+/// Adds the ability to auto-discover development urls to your full stack applicaiton.
 public final class Sublimation: Sendable {
   public let sublimatory: any Sublimatory
 

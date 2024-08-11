@@ -1,6 +1,6 @@
 //
 //  MockNgrokCLIAPI.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -28,21 +28,15 @@
 //
 
 public import Foundation
-package import Ngrokit
+public import Ngrokit
 
-public final class MockNgrokCLIAPI: NgrokCLIAPI {
+public final actor MockNgrokCLIAPI: NgrokCLIAPI {
   package let process: any NgrokProcess
   package private(set) var httpPorts = [Int]()
 
-  public convenience init(id: UUID) {
-    self.init(process: MockNgrokProcess(id: id))
-  }
+  public init(id: UUID) { self.init(process: MockNgrokProcess(id: id)) }
 
-  internal init(process: any NgrokProcess) {
-    self.process = process
-  }
+  internal init(process: any NgrokProcess) { self.process = process }
 
-  package func process(forHTTPPort _: Int) -> any Ngrokit.NgrokProcess {
-    process
-  }
+  public nonisolated func process(forHTTPPort _: Int) -> any Ngrokit.NgrokProcess { process }
 }

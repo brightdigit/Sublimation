@@ -1,6 +1,6 @@
 //
 //  MockProcess.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,26 +27,23 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-package import Foundation
-package import Ngrokit
+public import Foundation
+public import Ngrokit
 
 public final class MockProcess: Processable {
-  package func terminate() {
-    
-  }
-  
-  package typealias PipeType = MockPipe
+  public func terminate() {}
+  public typealias PipeType = MockPipe
 
   package let executableFilePath: String
   package let scheme: String
   package let port: Int
   package let pipeDataResult: Result<Data?, any Error>
   package let runError: (any Error)?
-  package let terminationReason: Ngrokit.TerminationReason
-  package var standardError: MockPipe?
+  public let terminationReason: Ngrokit.TerminationReason
+  public nonisolated(unsafe) var standardError: MockPipe?
 
-  package private(set) var isTerminationHandlerSet = false
-  package private(set) var isRunCalled = false
+  package private(set) nonisolated(unsafe) var isTerminationHandlerSet = false
+  package private(set) nonisolated(unsafe) var isRunCalled = false
 
   internal init(
     executableFilePath: String,
@@ -66,11 +63,7 @@ public final class MockProcess: Processable {
     self.runError = runError
   }
 
-  package convenience init(
-    executableFilePath: String,
-    scheme: String,
-    port: Int
-  ) {
+  public convenience init(executableFilePath: String, scheme: String, port: Int) {
     self.init(
       executableFilePath: executableFilePath,
       scheme: scheme,
@@ -79,18 +72,16 @@ public final class MockProcess: Processable {
     )
   }
 
-  package nonisolated func createPipe() -> MockPipe {
+  public nonisolated func createPipe() -> MockPipe {
     .init(fileHandleForReading: .init(pipeDataResult))
   }
 
-  package func setTerminationHandler(_: @escaping @Sendable (MockProcess) -> Void) {
+  public func setTerminationHandler(_: @escaping @Sendable (MockProcess) -> Void) {
     isTerminationHandlerSet = true
   }
 
-  package func run() throws {
+  public func run() throws {
     isRunCalled = true
-    if let error = runError {
-      throw error
-    }
+    if let error = runError { throw error }
   }
 }

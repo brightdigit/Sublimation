@@ -1,6 +1,6 @@
 //
 //  KVdbTunnelClient.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -65,19 +65,12 @@ public struct KVdbTunnelClient<Key: Sendable>: Sendable {
   ///   - Throws: `NgrokServerError.invalidURL` if the retrieved URL is invalid.
   ///
   ///   - Returns: The URL associated with the key in the specified bucket.
-  public func getValue(
-    ofKey key: Key,
-    fromBucket bucketName: String
-  ) async throws -> URL {
+  public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
     let uri = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
     let url: URL?
-    url = try await get(uri)
-      .map { String(decoding: $0, as: UTF8.self) }
-      .flatMap(URL.init(string:))
+    url = try await get(uri).map { String(decoding: $0, as: UTF8.self) }.flatMap(URL.init(string:))
 
-    guard let url else {
-      throw KVdbServerError.invalidURL
-    }
+    guard let url else { throw KVdbServerError.invalidURL }
     return url
   }
 
@@ -88,16 +81,9 @@ public struct KVdbTunnelClient<Key: Sendable>: Sendable {
   ///   - Parameter bucketName: The name of the bucket where the value will be stored.
   ///
   ///   - Throws: `NgrokServerError.cantSaveTunnel` if the tunnel cannot be saved.
-  public func saveValue(
-    _ value: URL,
-    withKey key: Key,
-    inBucket bucketName: String
-  ) async throws {
+  public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
     let uri = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
-    do {
-      try await self.post(uri, value.absoluteString.data(using: .utf8))
-    } catch {
-      throw KVdbServerError.cantSaveTunnelError(error)
-    }
+    do { try await self.post(uri, value.absoluteString.data(using: .utf8)) }
+    catch { throw KVdbServerError.cantSaveTunnelError(error) }
   }
 }

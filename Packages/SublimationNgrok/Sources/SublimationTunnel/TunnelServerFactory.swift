@@ -1,6 +1,6 @@
 //
 //  TunnelServerFactory.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -39,8 +39,6 @@ public protocol TunnelServerFactory: Sendable {
   ///     - handler: The delegate object that handles server events.
   ///
   ///   - Returns: A server instance based on the provided configuration.
-  func server(
-    from configuration: Configuration,
-    handler: any TunnelServerDelegate
-  ) -> Configuration.Server
+  func server(from configuration: Configuration, handler: any TunnelServerDelegate)
+    -> Configuration.Server
 }

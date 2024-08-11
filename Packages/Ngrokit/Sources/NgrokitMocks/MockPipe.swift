@@ -1,6 +1,6 @@
 //
 //  MockPipe.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -28,12 +28,12 @@
 //
 
 import Foundation
-import Ngrokit
+public import Ngrokit
 
-package final class MockPipe: Pipable {
-  package typealias DataHandleType = MockDataHandle
+public final class MockPipe: Pipable {
+  public typealias DataHandleType = MockDataHandle
 
-  package let fileHandleForReading: MockDataHandle
+  public let fileHandleForReading: MockDataHandle
 
   internal init(fileHandleForReading: MockDataHandle) {
     self.fileHandleForReading = fileHandleForReading

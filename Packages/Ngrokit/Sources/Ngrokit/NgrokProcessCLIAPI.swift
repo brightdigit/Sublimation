@@ -1,6 +1,6 @@
 //
 //  NgrokProcessCLIAPI.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -46,9 +46,7 @@ public struct NgrokProcessCLIAPI<ProcessType: Processable> {
   ///   Initializes a new instance of `NgrokProcessCLIAPI`.
   ///
   ///   - Parameter ngrokPath: The path to the Ngrok executable.
-  public init(ngrokPath: String) {
-    self.ngrokPath = ngrokPath
-  }
+  public init(ngrokPath: String) { self.ngrokPath = ngrokPath }
 }
 
 extension NgrokProcessCLIAPI: NgrokCLIAPI {
@@ -58,10 +56,6 @@ extension NgrokProcessCLIAPI: NgrokCLIAPI {
   ///
   ///   - Returns: An instance of `NgrokProcess` for the specified HTTP port.
   public func process(forHTTPPort httpPort: Int) -> any NgrokProcess {
-    NgrokMacProcess(
-      ngrokPath: ngrokPath,
-      httpPort: httpPort,
-      processType: ProcessType.self
-    )
+    NgrokMacProcess(ngrokPath: ngrokPath, httpPort: httpPort, processType: ProcessType.self)
   }
 }

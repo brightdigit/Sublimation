@@ -1,6 +1,6 @@
 //
 //  NgrokTunnel.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -97,10 +97,7 @@ extension NgrokTunnel {
     self.init(
       name: response.name,
       publicURL: publicURL,
-      config: .init(
-        addr: addr,
-        inspect: response.config.inspect
-      )
+      config: .init(addr: addr, inspect: response.config.inspect)
     )
   }
 }

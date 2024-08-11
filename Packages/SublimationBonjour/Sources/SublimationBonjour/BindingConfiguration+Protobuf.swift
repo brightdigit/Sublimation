@@ -1,5 +1,5 @@
 //
-//  ServerConfiguration.pb.swift
+//  BindingConfiguration+Protobuf.swift
 //  SublimationBonjour
 //
 //  Created by Leo Dion.

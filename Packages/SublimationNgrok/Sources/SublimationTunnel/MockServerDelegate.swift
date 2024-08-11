@@ -1,6 +1,6 @@
 //
 //  MockServerDelegate.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -26,18 +26,15 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
+
 package import Foundation
 
 package final class MockServerDelegate: TunnelServerDelegate {
   package let id: UUID
 
-  package init(id: UUID) {
-    self.id = id
-  }
+  package init(id: UUID) { self.id = id }
 
-  package func server(
-    _: any TunnelServer, updatedTunnel _: any Tunnel
-  ) {}
+  package func server(_: any TunnelServer, updatedTunnel _: any Tunnel) {}
 
   package func server(_: any TunnelServer, errorDidOccur _: any Error) {}
 }

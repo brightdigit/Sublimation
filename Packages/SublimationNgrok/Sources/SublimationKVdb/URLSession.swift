@@ -1,6 +1,6 @@
 //
 //  URLSession.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -38,9 +38,7 @@ extension URLSession {
   ///   Creates a new ephemeral `URLSession` instance.
   ///
   ///   - Returns: A new ephemeral `URLSession` instance.
-  public static func ephemeral() -> URLSession {
-    URLSession(configuration: .ephemeral)
-  }
+  public static func ephemeral() -> URLSession { URLSession(configuration: .ephemeral) }
 
   ///   Fetches data asynchronously for the given request.
   ///
@@ -58,12 +56,7 @@ extension URLSession {
 
     return try await withCheckedThrowingContinuation { continuation in
       let task = self.dataTask(with: request) { data, response, error in
-        continuation.resume(
-          with: .init(
-            success: data.flatTuple(response),
-            failure: error
-          )
-        )
+        continuation.resume(with: .init(success: data.flatTuple(response), failure: error))
       }
       task.resume()
     }
