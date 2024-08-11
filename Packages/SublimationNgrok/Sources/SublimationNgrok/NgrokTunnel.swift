@@ -28,6 +28,6 @@
 //
 
 import Ngrokit
-import SublimationTunnel
+public import SublimationTunnel
 
-extension NgrokTunnel: Tunnel {}
+extension NgrokTunnel: @retroactive Tunnel {}

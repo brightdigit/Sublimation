@@ -1,5 +1,5 @@
 //
-//  KVdbTunnelClient 2.swift
+//  KVdbTunnelClient+TunnelClient.swift
 //  SublimationNgrok
 //
 //  Created by Leo Dion.
@@ -28,6 +28,6 @@
 //
 
 import Foundation
-import SublimationTunnel
+public import SublimationTunnel
 
 extension KVdbTunnelClient: TunnelClient {}

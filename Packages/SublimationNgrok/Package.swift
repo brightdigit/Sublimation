@@ -41,7 +41,7 @@ let package = Package(
     .library(name: "SublimationNgrok", targets: ["SublimationNgrok"])
   ],
   dependencies: [
-    .package(path: "../.."),
+    .package(name: "Sublimation", path: "../.."),
     .package(path: "../Ngrokit")
   ],
   targets: [

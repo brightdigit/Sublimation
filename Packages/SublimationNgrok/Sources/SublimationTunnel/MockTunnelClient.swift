@@ -27,8 +27,12 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-package import Foundation
-import SublimationTunnel
+#if canImport(FoundationNetworking)
+  @preconcurrency package import Foundation
+  extension URL: @unchecked Sendable {}
+#else
+  package import Foundation
+#endif
 
 package actor MockTunnelClient<Key: Sendable>: TunnelClient {
   package struct GetParameters {

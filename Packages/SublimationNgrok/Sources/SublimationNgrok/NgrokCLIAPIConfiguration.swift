@@ -29,7 +29,7 @@
 
 public import Logging
 public import SublimationCore
-import SublimationTunnel
+public import SublimationTunnel
 
 /// Configuration for the Ngrok CLI API server.
 ///

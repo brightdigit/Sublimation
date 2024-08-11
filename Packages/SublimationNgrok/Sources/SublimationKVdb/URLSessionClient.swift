@@ -28,10 +28,10 @@
 //
 
 public import Foundation
-import SublimationTunnel
+public import SublimationTunnel
 
 #if canImport(FoundationNetworking)
-  public import FoundationNetworking
+  @preconcurrency public import FoundationNetworking
 #endif
 
 /// A client for interacting with a KVdb tunnel using URLSession.
@@ -65,7 +65,7 @@ public struct URLSessionClient<Key: Sendable>: TunnelClient {
   public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
 
-    let data = try await session.dataAsync(from: url).0
+    let data = try await session.data(from: url).0
 
     let urlString = String(decoding: data, as: UTF8.self)
     guard let url = URL(string: urlString) else { throw KVdbServerError.invalidURL }
@@ -85,7 +85,7 @@ public struct URLSessionClient<Key: Sendable>: TunnelClient {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
     var request = URLRequest(url: url)
     request.httpBody = value.absoluteString.data(using: .utf8)
-    let (data, response) = try await session.dataAsync(for: request)
+    let (data, response) = try await session.data(for: request)
     guard let httpResponse = response as? HTTPURLResponse else {
       throw KVdbServerError.cantSaveTunnel(nil, nil)
     }
