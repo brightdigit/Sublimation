@@ -27,9 +27,6 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
-
-// swiftlint:disable file_types_order
 #if os(macOS)
   public import Foundation
   ///   Represents the reason for the termination of a process.
