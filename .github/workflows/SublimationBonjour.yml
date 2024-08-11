@@ -101,6 +101,7 @@ jobs:
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files-spm
         with:
+          search-paths: ./Packages/SublimationBonjour/.build
           fail-on-empty-output: true
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4        
@@ -133,6 +134,7 @@ jobs:
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files-watchOS
         with:
+          search-paths: ./Packages/SublimationBonjour/.build
           fail-on-empty-output: true
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4       
