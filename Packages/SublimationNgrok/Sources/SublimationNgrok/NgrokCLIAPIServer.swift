@@ -154,7 +154,6 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
     }
     return nil
   }
-  
 
   internal func newTunnel(
     isConnectionRefused: @Sendable @escaping (ClientError) -> Bool,

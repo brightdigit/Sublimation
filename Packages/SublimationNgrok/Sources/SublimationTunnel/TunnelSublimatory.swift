@@ -162,60 +162,6 @@ public actor TunnelSublimatory<
   public nonisolated func server(_: any TunnelServer, errorDidOccur error: any Error) {
     Task { await self.onError(error) }
   }
-
-  ///   Begins the Sublimation application from the given application.
-  ///
-  ///   - Parameters:
-  ///     - application: The Vapor application.
-  ///
-  ///   - Note: This method is private and asynchronous.
-  ///
-  ///   - SeeAlso: `Application`
-  //  private func beginFromApplication(_ application: @Sendable @escaping () -> any Application) async {
-  //    let server = factory.server(
-  //      from: TunnelServerFactoryType.Configuration(application: application()),
-  //      handler: self
-  //    )
-  //    logger = application().logger
-  //    tunnelRepo = repoFactory.setupClient(
-  //      repoClientFactory(application)
-  //    )
-  //    self.server = server
-  //    server.start(isConnectionRefused: isConnectionRefused)
-  //  }
-
-  ///   Called when the application is about to boot.
-  ///
-  ///   - Parameters:
-  ///     - application: The Vapor application.
-  ///
-  ///   - Throws: An error if the application fails to begin.
-  ///
-  ///   - Note: This method is nonisolated.
-  ///
-  ///   - SeeAlso: `Application`
-  //  public func willBoot(from application: @escaping @Sendable () -> any Application) async {
-  //    await self.beginFromApplication(application)
-  //  }
-  //
-  //  func setupForApplication(_ application: @escaping @Sendable () -> any Application) {
-  //    let server = factory.server(
-  //      from: TunnelServerFactoryType.Configuration(application: application()),
-  //      handler: self
-  //    )
-  //    logger = application().logger
-  //    tunnelRepo = repoFactory.setupClient(
-  //      repoClientFactory(application)
-  //    )
-  //    self.server = server
-  //  }
-  //
-  //  public nonisolated func initialize(for application: @escaping @Sendable  () -> any Application) {
-  //    Task {
-  //      await self.setupForApplication(application)
-  //    }
-  //  }
-  //
   func shutdownServer() { server.shutdown() }
   public nonisolated func shutdown() { Task { await self.shutdownServer() } }
   public func run() async throws {
