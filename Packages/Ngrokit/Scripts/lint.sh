@@ -10,7 +10,7 @@ export MINT_PATH="$PWD/.mint"
 MINT_ARGS="-n -m Mintfile --silent"
 MINT_RUN="/opt/homebrew/bin/mint run $MINT_ARGS"
 
-if [ -z "$SRCROOT" ]; then
+if [ -z "$SRCROOT" ] || [ -n "$CHILD_PACKAGE" ]; then
 	SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 	PACKAGE_DIR="${SCRIPT_DIR}/.."
 	PERIPHERY_OPTIONS=""
