@@ -1,10 +1,14 @@
 #!/bin/bash
 
+<<<<<<< Updated upstream
 if [ -z "$SRCROOT" ]; then
     script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 else
     script_dir="${SRCROOT}/Scripts" 
 fi
+=======
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+>>>>>>> Stashed changes
 
 directories=(
     "Packages/Ngrokit"
@@ -17,14 +21,32 @@ directories=(
 
 cd "$script_dir/.." || exit 1
 
+filter_output() {
+    local dir="$1"
+    while IFS= read -r line; do
+        if [[ $line == Sources* ]]; then
+            echo "$dir/$line"
+        else
+            echo "$line"
+        fi
+    done
+}
+
 for i in "${!directories[@]}"; do
     dir="${directories[$i]}"
     if [ -f "$dir/Scripts/lint.sh" ]; then
         echo "Running lint.sh in $dir"
+<<<<<<< Updated upstream
         (cd "$dir" && LINT_MODE="$LINT_MODE" ./Scripts/lint.sh)
+=======
+        (
+            cd "$dir" && \
+            LINT_MODE="$LINT_MODE" CHILD_PACKAGE=1 ./Scripts/lint.sh | filter_output "$dir"
+        )
+>>>>>>> Stashed changes
         
         # Check if the script failed
-        if [ $? -ne 0 ]; then
+        if [ ${PIPESTATUS[0]} -ne 0 ]; then
             echo "Lint script failed in $dir"
             exit 1
         fi
