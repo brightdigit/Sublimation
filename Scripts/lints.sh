@@ -1,14 +1,10 @@
 #!/bin/bash
 
-<<<<<<< Updated upstream
 if [ -z "$SRCROOT" ]; then
-    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+   script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 else
     script_dir="${SRCROOT}/Scripts" 
 fi
-=======
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
->>>>>>> Stashed changes
 
 directories=(
     "Packages/Ngrokit"
@@ -36,14 +32,10 @@ for i in "${!directories[@]}"; do
     dir="${directories[$i]}"
     if [ -f "$dir/Scripts/lint.sh" ]; then
         echo "Running lint.sh in $dir"
-<<<<<<< Updated upstream
-        (cd "$dir" && LINT_MODE="$LINT_MODE" ./Scripts/lint.sh)
-=======
         (
             cd "$dir" && \
-            LINT_MODE="$LINT_MODE" CHILD_PACKAGE=1 ./Scripts/lint.sh | filter_output "$dir"
+            LINT_MODE="$LINT_MODE" CHILD_PACKAGE=1 ./Scripts/lint.sh 2>&1 1>/dev/null | filter_output "$dir" 1>&2
         )
->>>>>>> Stashed changes
         
         # Check if the script failed
         if [ ${PIPESTATUS[0]} -ne 0 ]; then
@@ -62,7 +54,7 @@ for i in "${!directories[@]}"; do
             fi
         fi
     else
-        echo "lint.sh not found in $dir"
+        echo "$dir/Scripts/lint.sh not found."
     fi
 done
 
