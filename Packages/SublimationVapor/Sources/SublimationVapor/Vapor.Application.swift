@@ -1,6 +1,6 @@
 //
 //  Vapor.Application.swift
-//  Sublimation
+//  SublimationVapor
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,17 +27,14 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import protocol SublimationCore.Application
 public import Vapor
 
-extension Vapor.Application: Application {
-  public var httpServerConfigurationPort: Int {
-    self.http.server.configuration.port
-  }
+public import protocol SublimationCore.Application
 
-  public var httpServerTLS: Bool {
-    self.http.server.configuration.tlsConfiguration != nil
-  }
+extension Vapor.Application: @retroactive Application {
+  public var httpServerConfigurationPort: Int { self.http.server.configuration.port }
+
+  public var httpServerTLS: Bool { self.http.server.configuration.tlsConfiguration != nil }
 
   public func post(to url: URL, body: Data?) async throws {
     _ = try await client.post(.init(string: url.absoluteString)) { request in

@@ -54,7 +54,7 @@ package actor MockTunnelClient<Key: Sendable>: TunnelClient {
 
   package func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
     getValuesPassed.append(.init(key: key, bucketName: bucketName))
-    // swiftlint:disable:next force_unwrapping
+    // swift-format-ignore: NeverForceUnwrap
     return try getValueResult!.get()
   }
 

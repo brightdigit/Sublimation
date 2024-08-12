@@ -1,6 +1,6 @@
 //
 //  FileHandle.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -30,7 +30,7 @@
 public import Foundation
 
 // swiftlint:disable:next force_try
-private let ngrokCLIErrorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
+fileprivate let ngrokCLIErrorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
 
 /// A protocol for handling data.
 public protocol DataHandle {
@@ -49,24 +49,20 @@ extension DataHandle {
   /// - Returns: The parsed ngrok error code.
   /// - Throws: An error if there was a problem parsing the error code.
   internal func parseNgrokErrorCode() throws -> NgrokError {
-    guard let data = try readToEnd() else {
-      throw RuntimeError.unknownError
-    }
+    guard let data = try readToEnd() else { throw RuntimeError.unknownError }
     let text = String(decoding: data, as: UTF8.self)
 
-    guard let match = ngrokCLIErrorRegex.firstMatch(
-      in: text,
-      range: .init(location: 0, length: text.count)
-    ), match.numberOfRanges > 0 else {
-      throw RuntimeError.unknownEarlyTermination(text)
-    }
+    guard
+      let match = ngrokCLIErrorRegex.firstMatch(
+        in: text,
+        range: .init(location: 0, length: text.count)
+      ), match.numberOfRanges > 0
+    else { throw RuntimeError.unknownEarlyTermination(text) }
 
     guard let range = Range(match.range(at: 1), in: text) else {
       throw RuntimeError.unknownEarlyTermination(text)
     }
-    guard let code = Int(text[range]) else {
-      throw RuntimeError.unknownEarlyTermination(text)
-    }
+    guard let code = Int(text[range]) else { throw RuntimeError.unknownEarlyTermination(text) }
     guard let error = NgrokError(rawValue: code) else {
       throw RuntimeError.unknownNgrokErrorCode(code)
     }

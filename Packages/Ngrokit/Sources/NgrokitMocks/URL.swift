@@ -1,6 +1,6 @@
 //
 //  URL.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,14 +27,12 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
+package import Foundation
 
 #if canImport(FoundationNetworking)
-  import FoundationNetworking
+  package import FoundationNetworking
 #endif
 
 extension URL {
-  package static func temporaryDirectory() -> URL {
-    URL(fileURLWithPath: NSTemporaryDirectory())
-  }
+  package static func temporaryDirectory() -> URL { URL(fileURLWithPath: NSTemporaryDirectory()) }
 }

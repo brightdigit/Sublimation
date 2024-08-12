@@ -1,6 +1,6 @@
 //
 //  NgrokClient.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -34,18 +34,16 @@ import OpenAPIRuntime
 import SublimationTunnel
 
 extension NgrokClient {
-  internal func attemptTunnel(
-    isConnectionRefused: @escaping (ClientError) -> Bool
-  ) async -> TunnelAttemptResult {
-    let networkResult = await AnyTunnelNetworkResult({
-      try await self.listTunnels().first
-    }, isConnectionRefused: isConnectionRefused)
-    switch networkResult {
-    case let .connectionRefused(error):
-      return .error(error)
+  internal func attemptTunnel(isConnectionRefused: @escaping (ClientError) -> Bool) async
+    -> TunnelAttemptResult
+  {
+    let networkResult = await AnyTunnelNetworkResult(
+      { try await self.listTunnels().first },
+      isConnectionRefused: isConnectionRefused
+    )
+    switch networkResult { case let .connectionRefused(error): return .error(error)
 
-    default:
-      return .network(networkResult)
+      default: return .network(networkResult)
     }
   }
 
@@ -63,12 +61,9 @@ extension NgrokClient {
       try await Task.sleep(for: .seconds(5), tolerance: .seconds(5))
       let result = await self.attemptTunnel(isConnectionRefused: isConnectionRefused)
       attempts += 1
-      switch result {
-      case let .network(newNetworkResult):
-        networkResult = newNetworkResult
+      switch result { case let .network(newNetworkResult): networkResult = newNetworkResult
 
-      case let .error(error):
-        lastError = error
+        case let .error(error): lastError = error
       }
     }
 

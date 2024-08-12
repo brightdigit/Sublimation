@@ -34,5 +34,6 @@ public protocol Sublimatory: Sendable {
 }
 
 extension Sublimatory {
+  /// Shutdown any active services.
   public func shutdown() {}
 }

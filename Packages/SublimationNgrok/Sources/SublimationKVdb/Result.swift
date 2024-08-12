@@ -1,6 +1,6 @@
 //
 //  Result.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -33,9 +33,11 @@ extension Result {
   internal init(success: Success?, failure: Failure?) where Failure == any Error {
     if let failure {
       self = .failure(failure)
-    } else if let success {
+    }
+    else if let success {
       self = .success(success)
-    } else {
+    }
+    else {
       self = .failure(EmptyError())
     }
   }

@@ -1,6 +1,6 @@
 //
-//  NgrokCLIAPIConfigurationTests.swift
-//  Sublimation
+//  MockServerApplication.swift
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,19 +27,33 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-@testable import SublimationNgrok
+package import Foundation
+package import Logging
+import SublimationCore
 import XCTest
 
-internal class NgrokCLIAPIConfigurationTests: XCTestCase {
-  internal func testInit() {
-    let loggerLabel = UUID().uuidString
-    let application = MockServerApplication(
-      httpServerConfigurationPort: .random(in: 10 ... 10_000),
-      httpServerTLS: .random(),
-      logger: .init(label: loggerLabel)
-    )
-    let configuration = NgrokCLIAPIConfiguration(serverApplication: application)
-    XCTAssertEqual(configuration.logger.label, loggerLabel)
-    XCTAssertEqual(configuration.port, application.httpServerConfigurationPort)
+package class MockServerApplication: Application {
+  package let httpServerConfigurationPort: Int
+  package let httpServerTLS: Bool
+  package let logger: Logger
+
+  package private(set) var postRequests = [(URL, Data?)]()
+  package private(set) var getRequests = [URL]()
+  package private(set) var queuedGetResponses = [Result<Data?, any Error>]()
+  package private(set) var queuedPostResponses = [Result<Void, any Error>]()
+  package init(httpServerConfigurationPort: Int, httpServerTLS: Bool, logger: Logger) {
+    self.httpServerConfigurationPort = httpServerConfigurationPort
+    self.httpServerTLS = httpServerTLS
+    self.logger = logger
+  }
+
+  package func post(to url: URL, body: Data?) async throws {
+    postRequests.append((url, body))
+    try queuedPostResponses.remove(at: 0).get()
+  }
+
+  package func get(from url: URL) async throws -> Data? {
+    getRequests.append(url)
+    return try queuedGetResponses.remove(at: 0).get()
   }
 }

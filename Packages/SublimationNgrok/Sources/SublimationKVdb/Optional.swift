@@ -1,6 +1,6 @@
 //
 //  Optional.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -36,8 +36,6 @@ extension Optional {
   ///   - Returns: A tuple containing the wrapped value of the optional and `other`,
   ///   or `nil` if either the optional or `other` is `nil`.
   internal func flatTuple<OtherType>(_ other: OtherType?) -> (Wrapped, OtherType)? {
-    flatMap { wrapped in
-      other.map { (wrapped, $0) }
-    }
+    flatMap { wrapped in other.map { (wrapped, $0) } }
   }
 }

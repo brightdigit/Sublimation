@@ -1,6 +1,6 @@
 //
 //  NgrokMacProcess.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -43,7 +43,6 @@ import Foundation
 /// - SeeAlso: `NgrokProcess`
 public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
 
-  
   private var terminationHandler: (@Sendable (any Error) -> Void)?
   internal let process: ProcessType
   private let pipe: ProcessType.PipeType
@@ -56,18 +55,8 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
   ///     - processType: The type of process to use.
   ///
   ///   - Returns: A new instance of `NgrokMacProcess`.
-  public init(
-    ngrokPath: String,
-    httpPort: Int,
-    processType _: ProcessType.Type
-  ) {
-    self.init(
-      process: .init(
-        executableFilePath: ngrokPath,
-        scheme: "http",
-        port: httpPort
-      )
-    )
+  public init(ngrokPath: String, httpPort: Int, processType _: ProcessType.Type) {
+    self.init(process: .init(executableFilePath: ngrokPath, scheme: "http", port: httpPort))
   }
 
   private init(
@@ -79,7 +68,8 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
     self.process = process
     if let pipe {
       self.pipe = pipe
-    } else {
+    }
+    else {
       let newPipe: ProcessType.PipeType = process.createPipe()
       self.process.standardError = newPipe
       self.pipe = newPipe
@@ -90,15 +80,11 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
   ///
   ///   - Parameters:
   ///     - forProcess: The process that has terminated.
-  @Sendable
-  private nonisolated func terminationHandler(forProcess _: any Processable) {
+  @Sendable private nonisolated func terminationHandler(forProcess _: any Processable) {
     Task {
       let error: any Error
-      do {
-        error = try self.pipe.fileHandleForReading.parseNgrokErrorCode()
-      } catch let runtimeError as RuntimeError {
-        error = runtimeError
-      }
+      do { error = try self.pipe.fileHandleForReading.parseNgrokErrorCode() }
+      catch let runtimeError as RuntimeError { error = runtimeError }
       await self.terminationHandler?(error)
     }
   }
@@ -114,8 +100,5 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
     terminationHandler = onError
     try process.run()
   }
-  
-  nonisolated public func terminate() {
-    self.process.terminate()
-  }
+  nonisolated public func terminate() { self.process.terminate() }
 }

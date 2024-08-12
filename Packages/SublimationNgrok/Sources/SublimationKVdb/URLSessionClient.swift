@@ -1,6 +1,6 @@
 //
 //  URLSessionClient.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -28,10 +28,10 @@
 //
 
 public import Foundation
-import SublimationTunnel
+public import SublimationTunnel
 
 #if canImport(FoundationNetworking)
-  public import FoundationNetworking
+  @preconcurrency public import FoundationNetworking
 #endif
 
 /// A client for interacting with a KVdb tunnel using URLSession.
@@ -51,9 +51,7 @@ public struct URLSessionClient<Key: Sendable>: TunnelClient {
   ///
   ///   - Parameter session: The URLSession to use for network requests.
   ///   Defaults to an ephemeral session.
-  public init(session: URLSession = .ephemeral()) {
-    self.session = session
-  }
+  public init(session: URLSession = .ephemeral()) { self.session = session }
 
   ///   Retrieves the value associated with a key from a specific bucket.
   ///
@@ -64,18 +62,13 @@ public struct URLSessionClient<Key: Sendable>: TunnelClient {
   ///   - Returns: The URL value associated with the key.
   ///
   ///   - Throws: A `NgrokServerError` if the retrieval operation fails.
-  public func getValue(
-    ofKey key: Key,
-    fromBucket bucketName: String
-  ) async throws -> URL {
+  public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
 
-    let data = try await session.dataAsync(from: url).0
+    let data = try await session.data(from: url).0
 
     let urlString = String(decoding: data, as: UTF8.self)
-    guard let url = URL(string: urlString) else {
-      throw KVdbServerError.invalidURL
-    }
+    guard let url = URL(string: urlString) else { throw KVdbServerError.invalidURL }
 
     return url
   }
@@ -88,15 +81,11 @@ public struct URLSessionClient<Key: Sendable>: TunnelClient {
   ///     - bucketName: The name of the bucket to save the value in.
   ///
   ///   - Throws: A `NgrokServerError` if the save operation fails.
-  public func saveValue(
-    _ value: URL,
-    withKey key: Key,
-    inBucket bucketName: String
-  ) async throws {
+  public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
     var request = URLRequest(url: url)
     request.httpBody = value.absoluteString.data(using: .utf8)
-    let (data, response) = try await session.dataAsync(for: request)
+    let (data, response) = try await session.data(for: request)
     guard let httpResponse = response as? HTTPURLResponse else {
       throw KVdbServerError.cantSaveTunnel(nil, nil)
     }

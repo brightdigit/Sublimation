@@ -1,6 +1,6 @@
 //
 //  Service.swift
-//  Sublimation
+//  SublimationVapor
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,14 +27,8 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-//
-//  Service.swift
-//  SublimationService
-//
-//  Created by Leo Dion on 7/22/24.
-//
-
 public import ServiceLifecycle
+
 @_exported public import class Sublimation.Sublimation
 
 extension Sublimation: @retroactive Service {

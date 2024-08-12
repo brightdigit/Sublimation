@@ -41,7 +41,7 @@ let package = Package(
     .library(name: "SublimationVapor", targets: ["SublimationVapor"])
   ],
   dependencies: [
-    .package(path: "../.."),
+    .package(name: "Sublimation", path: "../.."),
     .package(
       url: "https://github.com/vapor/vapor.git",
       from: "4.92.0"
@@ -77,6 +77,10 @@ let package = Package(
         )
       ],
       swiftSettings: swiftSettings
+    ),
+    .testTarget(
+      name: "SublimationVaporTests",
+      dependencies: ["SublimationVapor"]
     )
   ]
 )

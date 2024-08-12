@@ -38,7 +38,8 @@ let package = Package(
     .macCatalyst(.v17)
   ],
   products: [
-    .library(name: "Ngrokit", targets: ["Ngrokit"])
+    .library(name: "Ngrokit", targets: ["Ngrokit"]),
+    .library(name: "NgrokitMocks", targets: ["NgrokitMocks"])
   ],
   dependencies: [
     .package(
@@ -60,6 +61,15 @@ let package = Package(
         .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")
       ],
       swiftSettings: swiftSettings
+    ),
+    .target(
+      name: "NgrokitMocks",
+      dependencies: ["Ngrokit"],
+      swiftSettings: swiftSettings
+    ),
+    .testTarget(
+      name: "NgrokitTests",
+      dependencies: ["Ngrokit", "NgrokitMocks"]
     )
   ]
 )

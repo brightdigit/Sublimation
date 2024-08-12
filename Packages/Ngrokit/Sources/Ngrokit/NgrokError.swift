@@ -1,6 +1,6 @@
 //
 //  NgrokError.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
+public import Foundation
 
 // swiftlint:disable line_length
 
@@ -69,40 +69,32 @@ public enum NgrokError: Int, LocalizedError {
   case tunnelConnectionFailed = 8_012
 
   public var errorDescription: String? {
-    switch self {
-    case .invalidMetadataLength:
-      "Invalid metadata length"
-    case .accountLimitExceeded:
+    switch self { case .invalidMetadataLength: "Invalid metadata length" case .accountLimitExceeded:
       "You've hit your account limit for simultaneous ngrok agent sessions. Try stopping an existing agent or upgrading your account."
-    case .unsupportedAgentVersion:
-      "Your ngrok agent version is no longer supported. Only the most recent version of the ngrok agent is supported without an account. Update to a newer version with ngrok update or by downloading from https://ngrok.com/download. Sign up for an account to avoid forced version upgrades: https://ngrok.com/signup."
-    case .captchaFailed:
-      "You failed to solve the captcha, please try again."
-    case .accountViolation:
-      "You are disallowed from creating an ngrok account due to violation of the terms of service."
-    case .gatewayError:
-      "Ngrok gateway error. The server returned an invalid or incomplete HTTP response. Try starting ngrok with the full upstream service URL (e.g. ngrok http https://localhost:8081)"
-    case .tunnelNotFound:
-      "Tunnel not found. This could be because your agent is not online or your tunnel has been flagged by our automated moderation system."
-    case .accountBanned:
-      "The account associated with this hostname has been banned. We've determined this account to be in violation of ngrok's terms of service. If you are the account owner and believe this is a mistake, please contact support@ngrok.com."
-    case .passwordTooShort:
-      "Your password must be at least 10 characters."
-    case .accountCreationNotAllowed:
-      "You may not create a new account because you are already a member of a free account. Upgrade or delete that account first before creating a new account."
-    case .invalidCredentials:
-      "The email or password you entered is not valid."
-    case .userAlreadyExists:
-      "A user with the email address already exists."
-    case .disallowedEmailProvider:
-      "Sign-ups are disallowed for the email provider. Please sign up with a different email provider."
-    case .htmlContentSignupRequired:
-      "Before you can serve HTML content, you must sign up for an ngrok account and install your authtoken."
-    case .websiteVisitWarning:
-      "You are about to visit HOSTPORT, served by SERVINGIP. This website is served for free through ngrok.com. You should only visit this website if you trust whoever sent the link to you."
-    case .tunnelConnectionFailed:
-      "Traffic was successfully tunneled to the ngrok agent, but the agent failed to establish a connection to the upstream web service"
+      case .unsupportedAgentVersion:
+        "Your ngrok agent version is no longer supported. Only the most recent version of the ngrok agent is supported without an account. Update to a newer version with ngrok update or by downloading from https://ngrok.com/download. Sign up for an account to avoid forced version upgrades: https://ngrok.com/signup."
+      case .captchaFailed: "You failed to solve the captcha, please try again."
+      case .accountViolation:
+        "You are disallowed from creating an ngrok account due to violation of the terms of service."
+      case .gatewayError:
+        "Ngrok gateway error. The server returned an invalid or incomplete HTTP response. Try starting ngrok with the full upstream service URL (e.g. ngrok http https://localhost:8081)"
+      case .tunnelNotFound:
+        "Tunnel not found. This could be because your agent is not online or your tunnel has been flagged by our automated moderation system."
+      case .accountBanned:
+        "The account associated with this hostname has been banned. We've determined this account to be in violation of ngrok's terms of service. If you are the account owner and believe this is a mistake, please contact support@ngrok.com."
+      case .passwordTooShort: "Your password must be at least 10 characters."
+      case .accountCreationNotAllowed:
+        "You may not create a new account because you are already a member of a free account. Upgrade or delete that account first before creating a new account."
+      case .invalidCredentials: "The email or password you entered is not valid."
+      case .userAlreadyExists: "A user with the email address already exists."
+      case .disallowedEmailProvider:
+        "Sign-ups are disallowed for the email provider. Please sign up with a different email provider."
+      case .htmlContentSignupRequired:
+        "Before you can serve HTML content, you must sign up for an ngrok account and install your authtoken."
+      case .websiteVisitWarning:
+        "You are about to visit HOSTPORT, served by SERVINGIP. This website is served for free through ngrok.com. You should only visit this website if you trust whoever sent the link to you."
+      case .tunnelConnectionFailed:
+        "Traffic was successfully tunneled to the ngrok agent, but the agent failed to establish a connection to the upstream web service"
     }
-  }
-  // swiftlint:enable line_length
+  }  // swiftlint:enable line_length
 }
