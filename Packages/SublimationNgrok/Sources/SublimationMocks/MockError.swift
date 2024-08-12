@@ -1,6 +1,6 @@
 //
-//  MockServerApplication.swift
-//  Sublimation
+//  MockError.swift
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,32 +27,18 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Logging
-import SublimationCore
-import XCTest
+package enum MockError<T: Equatable & Sendable>: Error { case value(T) }
 
-internal class MockServerApplication: Application {
-  internal let httpServerConfigurationPort: Int
-  internal let httpServerTLS: Bool
-  internal let logger: Logger
-
-  internal private(set) var postRequests = [(URL, Data?)]()
-  internal private(set) var getRequests = [URL]()
-  internal private(set) var queuedGetResponses = [Result<Data?, any Error>]()
-  internal private(set) var queuedPostResponses = [Result<Void, any Error>]()
-  internal init(httpServerConfigurationPort: Int, httpServerTLS: Bool, logger: Logger) {
-    self.httpServerConfigurationPort = httpServerConfigurationPort
-    self.httpServerTLS = httpServerTLS
-    self.logger = logger
+extension Result {
+  package var error: (any Error)? {
+    guard case let .failure(failure) = self else { return nil }
+    return failure
   }
 
-  internal func post(to url: URL, body: Data?) async throws {
-    postRequests.append((url, body))
-    try queuedPostResponses.remove(at: 0).get()
-  }
+  package func mockErrorValue<T: Equatable & Sendable>() -> T? {
+    guard let mockError = error as? MockError<T> else { return nil }
 
-  internal func get(from url: URL) async throws -> Data? {
-    getRequests.append(url)
-    return try queuedGetResponses.remove(at: 0).get()
+    switch mockError { case let .value(value): return value
+    }
   }
 }

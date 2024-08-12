@@ -1,6 +1,6 @@
 //
 //  TunnelSublimatory.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -32,17 +32,17 @@ import Logging
 public import SublimationCore
 
 /// Closure which returns a ``TunnelClient`` from the ``Application``.
-public typealias RepositoryClientFactory<Key> =
-  (@Sendable @escaping () -> any Application) -> any TunnelClient<Key>
+public typealias RepositoryClientFactory<Key> = (@Sendable @escaping () -> any Application) ->
+  any TunnelClient<Key>
 
 public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   TunnelServerFactoryType: TunnelServerFactory
 >: Sublimatory, TunnelServerDelegate {
 
-  
   public typealias Key = WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
-  public typealias ConnectionErrorType = TunnelServerFactoryType.Configuration.Server.ConnectionErrorType
+  public typealias ConnectionErrorType = TunnelServerFactoryType.Configuration.Server
+    .ConnectionErrorType
   private let factory: TunnelServerFactoryType
   private let repoFactory: WritableTunnelRepositoryFactoryType
   private let key: Key
@@ -68,9 +68,7 @@ public actor TunnelSublimatory<
     isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool
   ) async {
     let logger = application().logger
-    let tunnelRepo = repoFactory.setupClient(
-      repoClientFactory(application)
-    )
+    let tunnelRepo = repoFactory.setupClient(repoClientFactory(application))
     await self.init(
       factory: factory,
       repoFactory: repoFactory,
@@ -95,7 +93,9 @@ public actor TunnelSublimatory<
     logger: Logger,
     repoClientFactory: @escaping RepositoryClientFactory<Key>,
     isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool,
-    server: @escaping @Sendable (TunnelSublimatory<WritableTunnelRepositoryFactoryType, TunnelServerFactoryType>) -> TunnelServerFactoryType.Configuration.Server
+    server: @escaping @Sendable (
+      TunnelSublimatory<WritableTunnelRepositoryFactoryType, TunnelServerFactoryType>
+    ) -> TunnelServerFactoryType.Configuration.Server
   ) async {
     self.factory = factory
     self.repoFactory = repoFactory
@@ -116,17 +116,14 @@ public actor TunnelSublimatory<
   ///
   ///   - SeeAlso: `Tunnel`
   private func saveTunnel(_ tunnel: any Tunnel) async {
-    do {
-      try await tunnelRepo.saveURL(tunnel.publicURL, withKey: key)
-    } catch {
-      logger.error(
-        "Unable to save url to repository: \(error.localizedDescription)"
-      )
+    do { try await tunnelRepo.saveURL(tunnel.publicURL, withKey: key) }
+    catch {
+      logger.error("Unable to save url to repository: \(error.localizedDescription)")
       return
     }
-//    logger?.notice(
-//      "Saved url \(tunnel.publicURL) to repository with key \(key)"
-//    )
+    //    logger?.notice(
+    //      "Saved url \(tunnel.publicURL) to repository with key \(key)"
+    //    )
   }
 
   ///   Handles an error that occurred during tunnel operation.
@@ -150,9 +147,7 @@ public actor TunnelSublimatory<
   ///   - SeeAlso: `NgrokServer`
   ///   - SeeAlso: `Tunnel`
   public nonisolated func server(_: any TunnelServer, updatedTunnel tunnel: any Tunnel) {
-    Task {
-      await self.saveTunnel(tunnel)
-    }
+    Task { await self.saveTunnel(tunnel) }
   }
 
   ///   Called when an error occurs in the Ngrok server.
@@ -165,77 +160,13 @@ public actor TunnelSublimatory<
   ///
   ///   - SeeAlso: `NgrokServer`
   public nonisolated func server(_: any TunnelServer, errorDidOccur error: any Error) {
-    Task {
-      await self.onError(error)
-    }
+    Task { await self.onError(error) }
   }
-
-  ///   Begins the Sublimation application from the given application.
-  ///
-  ///   - Parameters:
-  ///     - application: The Vapor application.
-  ///
-  ///   - Note: This method is private and asynchronous.
-  ///
-  ///   - SeeAlso: `Application`
-//  private func beginFromApplication(_ application: @Sendable @escaping () -> any Application) async {
-//    let server = factory.server(
-//      from: TunnelServerFactoryType.Configuration(application: application()),
-//      handler: self
-//    )
-//    logger = application().logger
-//    tunnelRepo = repoFactory.setupClient(
-//      repoClientFactory(application)
-//    )
-//    self.server = server
-//    server.start(isConnectionRefused: isConnectionRefused)
-//  }
-
-  ///   Called when the application is about to boot.
-  ///
-  ///   - Parameters:
-  ///     - application: The Vapor application.
-  ///
-  ///   - Throws: An error if the application fails to begin.
-  ///
-  ///   - Note: This method is nonisolated.
-  ///
-  ///   - SeeAlso: `Application`
-//  public func willBoot(from application: @escaping @Sendable () -> any Application) async {
-//    await self.beginFromApplication(application)
-//  }
-//  
-//  func setupForApplication(_ application: @escaping @Sendable () -> any Application) {
-//    let server = factory.server(
-//      from: TunnelServerFactoryType.Configuration(application: application()),
-//      handler: self
-//    )
-//    logger = application().logger
-//    tunnelRepo = repoFactory.setupClient(
-//      repoClientFactory(application)
-//    )
-//    self.server = server
-//  }
-//  
-//  public nonisolated func initialize(for application: @escaping @Sendable  () -> any Application) {
-//    Task {
-//      await self.setupForApplication(application)
-//    }
-//  }
-//
-  func shutdownServer () {
-    server.shutdown()
-  }
-  public nonisolated func shutdown() {
-    Task {
-      await self.shutdownServer()
-    }
-  }
+  func shutdownServer() { server.shutdown() }
+  public nonisolated func shutdown() { Task { await self.shutdownServer() } }
   public func run() async throws {
-    
 
     let isConnectionRefused = self.isConnectionRefused
-    
     try await server.run(isConnectionRefused: isConnectionRefused)
   }
 }

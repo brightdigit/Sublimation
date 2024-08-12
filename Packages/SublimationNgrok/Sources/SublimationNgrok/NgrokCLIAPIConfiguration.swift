@@ -1,6 +1,6 @@
 //
 //  NgrokCLIAPIConfiguration.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -29,7 +29,7 @@
 
 public import Logging
 public import SublimationCore
-import SublimationTunnel
+public import SublimationTunnel
 
 /// Configuration for the Ngrok CLI API server.
 ///
@@ -55,10 +55,7 @@ extension NgrokCLIAPIConfiguration {
   ///
   ///   - Parameter serverApplication: The server application to use for configuration.
   internal init(serverApplication: any Application) {
-    self.init(
-      port: serverApplication.httpServerConfigurationPort,
-      logger: serverApplication.logger
-    )
+    self.init(port: serverApplication.httpServerConfigurationPort, logger: serverApplication.logger)
   }
 
   ///   Initializes a new instance of `NgrokCLIAPIConfiguration`
@@ -66,7 +63,5 @@ extension NgrokCLIAPIConfiguration {
   ///
   ///   - Parameter application: The Vapor application to use for configuration.
 
-  public init(application: any Application) {
-    self.init(serverApplication: application)
-  }
+  public init(application: any Application) { self.init(serverApplication: application) }
 }

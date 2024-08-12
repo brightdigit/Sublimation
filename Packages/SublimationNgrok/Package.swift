@@ -41,7 +41,7 @@ let package = Package(
     .library(name: "SublimationNgrok", targets: ["SublimationNgrok"])
   ],
   dependencies: [
-    .package(path: "../.."),
+    .package(name: "Sublimation", path: "../.."),
     .package(path: "../Ngrokit")
   ],
   targets: [
@@ -64,7 +64,24 @@ let package = Package(
       name: "SublimationKVdb",
       dependencies: ["SublimationTunnel"],
       swiftSettings: swiftSettings
-    )
+    ),
+    .target(
+        name: "SublimationMocks",
+        dependencies: ["Sublimation"],
+        swiftSettings: swiftSettings
+    ),
+    .testTarget(
+      name: "SublimationKVdbTests",
+      dependencies: ["SublimationKVdb", "SublimationMocks"]
+    ),
+    .testTarget(
+      name: "SublimationTunnelTests",
+      dependencies: ["SublimationTunnel", "SublimationMocks"]
+    ),
+    .testTarget(
+      name: "SublimationNgrokTests",
+      dependencies: ["SublimationNgrok", "SublimationMocks", .product(name: "NgrokitMocks", package: "Ngrokit")]
+    ),
   ]
 )
 // swiftlint:enable explicit_acl explicit_top_level_acl

@@ -13,10 +13,10 @@ MINT_RUN="/opt/homebrew/bin/mint run $MINT_ARGS"
 if [ -z "$SRCROOT" ]; then
 	SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 	PACKAGE_DIR="${SCRIPT_DIR}/.."
-	PERIPHERY_OPTIONS="--skip-build"
-else
-	PACKAGE_DIR="${SRCROOT}" 	
 	PERIPHERY_OPTIONS=""
+else
+	PACKAGE_DIR="${SRCROOT}" 
+	PERIPHERY_OPTIONS="--skip-build"
 fi
 
 
@@ -31,6 +31,10 @@ fi
 /opt/homebrew/bin/mint bootstrap
 
 echo "LINT Mode is $LINT_MODE"
+
+if [ "$LINT_MODE" == "INSTALL" ]; then
+	exit
+fi
 
 if [ -z "$CI" ]; then
 	$MINT_RUN swift-format format --recursive --parallel --in-place $PACKAGE_DIR/Sources

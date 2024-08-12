@@ -1,6 +1,6 @@
 //
 //  KVdbServerError.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -37,8 +37,6 @@ public import Foundation
 /// - invalidURL: The URL is invalid.
 /// - cantSaveTunnel: Unable to save the tunnel with the given ID and data.
 public enum KVdbServerError: Error {
-//  case clientNotSetup
-//  case noTunnelFound
   case invalidURL
   case cantSaveTunnel(Int?, Data?)
   case cantSaveTunnelError(any Error)

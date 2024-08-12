@@ -1,6 +1,6 @@
 //
-//  KVdbTunnelClient 2.swift
-//  Sublimation
+//  URL.swift
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,7 +27,12 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import SublimationTunnel
+package import Foundation
 
-extension KVdbTunnelClient: TunnelClient {}
+#if canImport(FoundationNetworking)
+  package import FoundationNetworking
+#endif
+
+extension URL {
+  package static func random() -> URL { URL(fileURLWithPath: NSTemporaryDirectory()) }
+}

@@ -1,6 +1,6 @@
 //
 //  NetworkResult.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -29,8 +29,9 @@
 
 import Foundation
 
-package typealias AnyTunnelNetworkResult<ConnectionErrorType: Error> =
-  NetworkResult<(any Tunnel)?, ConnectionErrorType>
+package typealias AnyTunnelNetworkResult<ConnectionErrorType: Error> = NetworkResult<
+  (any Tunnel)?, ConnectionErrorType
+>
 
 /// Represents the result of a network operation.
 ///
@@ -64,23 +65,16 @@ extension NetworkResult {
     _ closure: @escaping () async throws -> T,
     isConnectionRefused: @escaping (ConnectionErrorType) -> Bool
   ) async {
-    do {
-      self = try await .success(closure())
-    } catch {
-      self = .init(error: error, isConnectionRefused: isConnectionRefused)
-    }
+    do { self = try await .success(closure()) }
+    catch { self = .init(error: error, isConnectionRefused: isConnectionRefused) }
   }
 
   public func get() throws -> T? {
-    switch self {
-    case .connectionRefused:
-      return nil
+    switch self { case .connectionRefused: return nil
 
-    case let .failure(error):
-      throw error
+      case let .failure(error): throw error
 
-    case let .success(item):
-      return item
+      case let .success(item): return item
     }
   }
 }

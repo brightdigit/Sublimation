@@ -1,6 +1,6 @@
 //
 //  Processable.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -100,6 +100,5 @@ public protocol Processable: Sendable, AnyObject {
   ///
   ///   - Requires: This method must be implemented.
   func run() throws
-  
-  func terminate ()
+  func terminate()
 }

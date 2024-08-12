@@ -1,6 +1,6 @@
 //
 //  MockNgrokProcess.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,15 +27,14 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import Ngrokit
+public import Foundation
+public import Ngrokit
 
-package final class MockNgrokProcess: NgrokProcess {
-  package let id: UUID
+public final class MockNgrokProcess: NgrokProcess {
+  public func terminate() {}
+  public let id: UUID
 
-  package init(id: UUID) {
-    self.id = id
-  }
+  public init(id: UUID) { self.id = id }
 
-  package func run(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
+  public func run(onError _: @escaping @Sendable (any Error) -> Void) async throws {}
 }

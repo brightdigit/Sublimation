@@ -1,6 +1,6 @@
 //
-//  MockServerDelegate.swift
-//  Sublimation
+//  MockURL.swift
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,19 +27,11 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-@testable import SublimationTunnel
-import XCTest
-
-internal final class MockServerDelegate: TunnelServerDelegate {
-  internal let id: UUID
-
-  internal init(id: UUID) {
-    self.id = id
+package struct MockURL {
+  package let kvDBBase: String
+  package let keyBucketPath: String
+  package init(kvDBBase: String, keyBucketPath: String) {
+    self.kvDBBase = kvDBBase
+    self.keyBucketPath = keyBucketPath
   }
-
-  internal func server(
-    _: any TunnelServer, updatedTunnel _: any Tunnel
-  ) {}
-
-  internal func server(_: any TunnelServer, errorDidOccur _: any Error) {}
 }

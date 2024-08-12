@@ -1,6 +1,6 @@
 //
 //  MockAPI.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -28,7 +28,7 @@
 //
 
 import Foundation
-import NgrokOpenAPIClient
+package import NgrokOpenAPIClient
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -55,37 +55,32 @@ package final actor MockAPI: APIProtocol {
   }
 
   // swiftlint:disable unavailable_function force_unwrapping
-  package func getTunnel(
-    _: NgrokOpenAPIClient.Operations.getTunnel.Input
-  ) async throws -> NgrokOpenAPIClient.Operations.getTunnel.Output {
-    fatalError("not implemented")
-  }
+  package func getTunnel(_: NgrokOpenAPIClient.Operations.getTunnel.Input) async throws
+    -> NgrokOpenAPIClient.Operations.getTunnel.Output
+  { fatalError("not implemented") }
 
-  package func stopTunnel(
-    _ input: Operations.stopTunnel.Input
-  ) async throws -> Operations.stopTunnel.Output {
+  package func stopTunnel(_ input: Operations.stopTunnel.Input) async throws
+    -> Operations.stopTunnel.Output
+  {
     stopTunnelPassed.append(input)
     return try actualStopTunnelResult!.get()
   }
 
-  package func startTunnel(
-    _ input: Operations.startTunnel.Input
-  ) async throws -> Operations.startTunnel.Output {
+  package func startTunnel(_ input: Operations.startTunnel.Input) async throws
+    -> Operations.startTunnel.Output
+  {
     startTunnelPassed.append(input)
     return try actualStartTunnelResult!.get()
   }
 
-  package func listTunnels(
-    _ input: NgrokOpenAPIClient.Operations.listTunnels.Input
-  ) async throws -> NgrokOpenAPIClient.Operations.listTunnels.Output {
+  package func listTunnels(_ input: NgrokOpenAPIClient.Operations.listTunnels.Input) async throws
+    -> NgrokOpenAPIClient.Operations.listTunnels.Output
+  {
     listTunnelPassed.append(input)
     return try actualListTunnelResult!.get()
   }
 
-  package func get_sol_api(
-    _: NgrokOpenAPIClient.Operations.get_sol_api.Input
-  ) async throws -> NgrokOpenAPIClient.Operations.get_sol_api.Output {
-    fatalError("not implemented")
-  }
-  // swiftlint:enable unavailable_function force_unwrapping
+  package func get_sol_api(_: NgrokOpenAPIClient.Operations.get_sol_api.Input) async throws
+    -> NgrokOpenAPIClient.Operations.get_sol_api.Output
+  { fatalError("not implemented") }  // swiftlint:enable unavailable_function force_unwrapping
 }

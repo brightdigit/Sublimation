@@ -1,6 +1,6 @@
 //
 //  NgrokProcess.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -44,6 +44,5 @@ public protocol NgrokProcess: Sendable {
   ///
   ///   - Parameter onError: A closure to handle any errors that occur during the process.
   func run(onError: @Sendable @escaping (any Error) -> Void) async throws
-  
-  func terminate () 
+  func terminate()
 }

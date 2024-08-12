@@ -1,6 +1,6 @@
 //
-//  BindingConfiguration.swift
-//  SublimationBonjour
+//  NgrokCLIAPIConfigurationTests.swift
+//  Sublimation
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,23 +27,20 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
+import SublimationMocks
+@testable import SublimationNgrok
+import XCTest
 
-  internal import Foundation
-
-  internal import Network
-
-  extension BindingConfiguration {
-    internal func urls(defaultIsSecure: Bool, defaultPort: Int) -> [URL] {
-      let isSecure = self.hasIsSecure ? self.isSecure : defaultIsSecure
-      let port = self.hasPort ? Int(self.port) : defaultPort
-      return self.hosts.compactMap { host in
-        if host.isLocalhost() { return nil }
-        if host.isValidIPv6Address() { return nil }
-        let url = URL(scheme: isSecure ? "https" : "http", host: host, port: port)
-        assert(url != nil)
-        return url
-      }
-    }
+internal class NgrokCLIAPIConfigurationTests: XCTestCase {
+  internal func testInit() {
+    let loggerLabel = UUID().uuidString
+    let application = MockServerApplication(
+      httpServerConfigurationPort: .random(in: 10 ... 10_000),
+      httpServerTLS: .random(),
+      logger: .init(label: loggerLabel)
+    )
+    let configuration = NgrokCLIAPIConfiguration(serverApplication: application)
+    XCTAssertEqual(configuration.logger.label, loggerLabel)
+    XCTAssertEqual(configuration.port, application.httpServerConfigurationPort)
   }
-#endif
+}

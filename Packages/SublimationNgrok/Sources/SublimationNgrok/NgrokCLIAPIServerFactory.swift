@@ -1,6 +1,6 @@
 //
 //  NgrokCLIAPIServerFactory.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -47,18 +47,12 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: TunnelServerFa
 
   private let ngrokClient: @Sendable () -> NgrokClient
 
-  public init(
-    cliAPI: any NgrokCLIAPI,
-    ngrokClient: @escaping @Sendable () -> NgrokClient
-  ) {
+  public init(cliAPI: any NgrokCLIAPI, ngrokClient: @escaping @Sendable () -> NgrokClient) {
     self.cliAPI = cliAPI
     self.ngrokClient = ngrokClient
   }
 
-  public init(
-    ngrokPath: String,
-    ngrokClient: @escaping @Sendable () -> NgrokClient
-  ) {
+  public init(ngrokPath: String, ngrokClient: @escaping @Sendable () -> NgrokClient) {
     self.init(
       cliAPI: NgrokProcessCLIAPI<ProcessType>(ngrokPath: ngrokPath),
       ngrokClient: ngrokClient
@@ -73,10 +67,9 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: TunnelServerFa
   ///
   ///   - Returns: A new `NgrokCLIAPIServer` instance.
 
-  public func server(
-    from configuration: Configuration,
-    handler: any TunnelServerDelegate
-  ) -> NgrokCLIAPIServer {
+  public func server(from configuration: Configuration, handler: any TunnelServerDelegate)
+    -> NgrokCLIAPIServer
+  {
     let process = cliAPI.process(forHTTPPort: configuration.port)
     return .init(
       delegate: handler,

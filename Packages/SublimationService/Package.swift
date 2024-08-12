@@ -41,7 +41,7 @@ let package = Package(
     .library(name: "SublimationService", targets: ["SublimationService"])
   ],
   dependencies: [
-    .package(path: "../.."),
+    .package(name: "Sublimation", path: "../.."),
     .package(url: "https://github.com/swift-server/swift-service-lifecycle.git", from: "2.6.0")
   ],
   targets: [
@@ -52,6 +52,10 @@ let package = Package(
         .product(name: "ServiceLifecycle", package: "swift-service-lifecycle")
       ],
       swiftSettings: swiftSettings
+    ),
+    .testTarget(
+      name: "SublimationServiceTests",
+      dependencies: ["SublimationService"]
     )
   ]
 )

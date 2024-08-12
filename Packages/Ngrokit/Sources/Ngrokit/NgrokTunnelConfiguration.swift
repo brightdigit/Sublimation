@@ -1,6 +1,6 @@
 //
 //  NgrokTunnelConfiguration.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.

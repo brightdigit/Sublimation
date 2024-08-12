@@ -1,6 +1,6 @@
 //
 //  TerminationReason.swift
-//  Sublimation
+//  Ngrokit
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,14 +27,11 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import Foundation
-
-// swiftlint:disable file_types_order
 #if os(macOS)
+  public import Foundation
   ///   Represents the reason for the termination of a process.
   public typealias TerminationReason = Process.TerminationReason
 #else
-
   ///   Represents the reason for the termination of a process.
   ///
   ///   - exit: The process exited normally.
@@ -43,5 +40,4 @@ public import Foundation
     case exit = 1
     case uncaughtSignal = 2
   }
-#endif
-// swiftlint:enable file_types_order
+#endif  // swiftlint:enable file_types_order

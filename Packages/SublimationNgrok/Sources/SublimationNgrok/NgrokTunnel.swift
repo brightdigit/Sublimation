@@ -1,6 +1,6 @@
 //
 //  NgrokTunnel.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -28,6 +28,6 @@
 //
 
 import Ngrokit
-import SublimationTunnel
+public import SublimationTunnel
 
 extension NgrokTunnel: Tunnel {}

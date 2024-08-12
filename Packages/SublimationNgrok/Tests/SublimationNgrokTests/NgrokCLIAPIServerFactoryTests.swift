@@ -29,10 +29,12 @@
 
 import HTTPTypes
 import Ngrokit
-import NgrokitMocks
 import OpenAPIRuntime
-@testable import SublimationNgrok
+import SublimationMocks
+import SublimationTunnel
 import XCTest
+@testable import SublimationNgrok
+import NgrokitMocks
 
 internal final class MockTransport: ClientTransport {
   // swiftlint:disable:next unavailable_function
@@ -57,7 +59,7 @@ internal class NgrokCLIAPIServerFactoryTests: XCTestCase {
     )
     let delegateID = UUID()
     let processID = UUID()
-    let configuration = NgrokCLIAPIConfiguration(serverApplication: application)
+    let configuration = NgrokCLIAPIConfiguration(application: application)
     let factory = NgrokCLIAPIServerFactory<MockProcess>(
       cliAPI: MockNgrokCLIAPI(id: processID), ngrokClient: {
         NgrokClient(transport: MockTransport())

@@ -1,6 +1,6 @@
 //
 //  WritableTunnelRepositoryFactory.swift
-//  Sublimation
+//  SublimationNgrok
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,11 +27,6 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-// #if os(macOS)
-//  @_exported import class Ngrokit.ProcessableProcess
-// #endif
-// @_exported import struct Ngrokit.NgrokClient
-
 import Foundation
 
 #if canImport(FoundationNetworking)
@@ -49,4 +44,4 @@ import Foundation
 /// - SeeAlso: `TunnelRepositoryFactory`
 /// - SeeAlso: `WritableTunnelRepository`
 public protocol WritableTunnelRepositoryFactory: TunnelRepositoryFactory
-  where TunnelRepositoryType: WritableTunnelRepository {}
+where TunnelRepositoryType: WritableTunnelRepository {}
