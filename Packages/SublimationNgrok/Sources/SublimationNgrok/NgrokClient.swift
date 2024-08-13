@@ -61,9 +61,9 @@ extension NgrokClient {
       try await Task.sleep(for: .seconds(5), tolerance: .seconds(5))
       let result = await self.attemptTunnel(isConnectionRefused: isConnectionRefused)
       attempts += 1
-      switch result { case let .network(newNetworkResult): networkResult = newNetworkResult
+      switch result { case .network(let newNetworkResult): networkResult = newNetworkResult
 
-        case let .error(error): lastError = error
+        case .error(let error): lastError = error
       }
     }
 

@@ -66,6 +66,13 @@ header_template="//
 
 # Loop through each Swift file in the specified directory and subdirectories
 find "$directory" -type f -name "*.swift" | while read -r file; do
+  # Check if the first line is the swift-format-ignore indicator
+  first_line=$(head -n 1 "$file")
+  if [[ "$first_line" == "// swift-format-ignore-file" ]]; then
+    echo "Skipping $file due to swift-format-ignore directive."
+    continue
+  fi
+
   # Create the header with the current filename
   filename=$(basename "$file")
   header=$(printf "$header_template" "$filename" "$package" "$creator" "$year" "$company")
@@ -88,4 +95,4 @@ find "$directory" -type f -name "*.swift" | while read -r file; do
   rm temp_file
 done
 
-echo "Headers added to all Swift files in the directory and subdirectories."
+echo "Headers added or files skipped appropriately across all Swift files in the directory and subdirectories."

@@ -114,7 +114,7 @@
 
       listener.newConnectionHandler = { connection in
         connection.stateUpdateHandler = { state in
-          switch state { case let .waiting(error):
+          switch state { case .waiting(let error):
 
             print("Connection Waiting error: \(error)")
 
@@ -129,7 +129,7 @@
                   connection.cancel()
                 }
               )
-            case let .failed(error): print("Connection Failure: \(error)")
+            case .failed(let error): print("Connection Failure: \(error)")
 
             default: print("Connection state updated: \(state)")
           }
@@ -141,12 +141,12 @@
 
       return try await withCheckedThrowingContinuation { continuation in
         listener.stateUpdateHandler = { state in
-          switch state { case let .waiting(error):
+          switch state { case .waiting(let error):
 
             print("Listener Waiting error: \(error)")
             continuation.resume(throwing: error)
 
-            case let .failed(error):
+            case .failed(let error):
               print("Listener Failure: \(error)")
               continuation.resume(throwing: error)
             case .cancelled: continuation.resume()

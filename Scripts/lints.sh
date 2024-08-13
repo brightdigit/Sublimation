@@ -3,7 +3,7 @@
 if [ -z "$SRCROOT" ]; then
    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 else
-    script_dir="${SRCROOT}/Scripts" 
+   script_dir="${SRCROOT}/Scripts" 
 fi
 
 directories=(

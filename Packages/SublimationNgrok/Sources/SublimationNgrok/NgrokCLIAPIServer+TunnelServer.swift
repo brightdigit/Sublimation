@@ -69,7 +69,7 @@ extension NgrokCLIAPIServer {
               let newTunnel = try await self.newTunnel(isConnectionRefused: isConnectionRefused) {
                 error in
                 if let error = error as? RuntimeError {
-                  if case let .unknownEarlyTermination(string) = error {
+                  if case .unknownEarlyTermination(let string) = error {
                     continuation.resume()
                     return
                   }

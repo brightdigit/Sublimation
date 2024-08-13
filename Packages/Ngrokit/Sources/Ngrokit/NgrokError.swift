@@ -29,8 +29,6 @@
 
 public import Foundation
 
-// swiftlint:disable line_length
-
 /// An enumeration representing possible errors that can occur with Ngrok.
 ///
 /// - invalidMetadataLength: The metadata length is invalid.
@@ -96,5 +94,5 @@ public enum NgrokError: Int, LocalizedError {
       case .tunnelConnectionFailed:
         "Traffic was successfully tunneled to the ngrok agent, but the agent failed to establish a connection to the upstream web service"
     }
-  }  // swiftlint:enable line_length
+  }
 }

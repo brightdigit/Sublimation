@@ -33,10 +33,10 @@
 
   extension NWListener.State: @retroactive CustomDebugStringConvertible {
     public var debugDescription: String {
-      switch self { case .setup: "setup" case let .waiting(error):
+      switch self { case .setup: "setup" case .waiting(let error):
         "waiting: \(error.debugDescription)"
         case .ready: "ready"
-        case let .failed(error): "failed: \(error.debugDescription)"
+        case .failed(let error): "failed: \(error.debugDescription)"
         case .cancelled: "cancelled"
         @unknown default: "unknown state"
       }

@@ -140,7 +140,7 @@
     }
     public func addResults(_ results: Set<NWBrowser.Result>) {
       for result in results {
-        guard case let .bonjour(txtRecord) = result.metadata else {
+        guard case .bonjour(let txtRecord) = result.metadata else {
           self.logger?.error("No TXT Record for \(result.endpoint.debugDescription)")
           continue
         }

@@ -34,6 +34,7 @@
   package import Foundation
 #endif
 
+// swift-format-ignore: NeverForceUnwrap
 package actor MockTunnelClient<Key: Sendable>: TunnelClient {
   package struct GetParameters {
     package let key: Key
@@ -58,7 +59,6 @@ package actor MockTunnelClient<Key: Sendable>: TunnelClient {
 
   package func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
     getValuesPassed.append(.init(key: key, bucketName: bucketName))
-    // swiftlint:disable:next force_unwrapping
     return try getValueResult!.get()
   }
 

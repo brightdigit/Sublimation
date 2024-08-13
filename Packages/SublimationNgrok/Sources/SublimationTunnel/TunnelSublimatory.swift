@@ -50,6 +50,7 @@ public actor TunnelSublimatory<
 
   private let tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType
   private let logger: Logger
+  // swift-format-ignore: NeverUseImplicitlyUnwrappedOptionals
   private var server: TunnelServerFactoryType.Configuration.Server!
 
   private nonisolated let isConnectionRefused: @Sendable (ConnectionErrorType) -> Bool

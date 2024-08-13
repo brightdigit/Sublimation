@@ -72,9 +72,9 @@ extension NetworkResult {
   public func get() throws -> T? {
     switch self { case .connectionRefused: return nil
 
-      case let .failure(error): throw error
+      case .failure(let error): throw error
 
-      case let .success(item): return item
+      case .success(let item): return item
     }
   }
 }
