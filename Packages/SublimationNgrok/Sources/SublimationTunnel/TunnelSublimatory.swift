@@ -54,12 +54,15 @@ public actor TunnelSublimatory<
   private var server: TunnelServerFactoryType.Configuration.Server!
 
   private nonisolated let isConnectionRefused: @Sendable (ConnectionErrorType) -> Bool
-  ///   Initializes the Sublimation lifecycle handler.
+  /// Initializes the Sublimation lifecycle handler.
   ///
-  ///   - Parameters:
-  ///     - factory: The factory for creating an Ngrok server.
-  ///     - repoFactory: The factory for creating a writable tunnel repository.
-  ///     - key: The key for the tunnel repository.
+  /// - Parameters:
+  ///   - factory: The factory for creating an Ngrok server.
+  ///   - repoFactory: The factory for creating a writable tunnel repository.
+  ///   - key: The key for the tunnel repository.
+  ///   - application: Returns the Application to use.
+  ///   - repoClientFactory: Takes an Application and returns a client for the tunnel.
+  ///   - isConnectionRefused: Whether the error is just connection refused because it's not active.
   public init(
     factory: TunnelServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
@@ -110,8 +113,7 @@ public actor TunnelSublimatory<
 
   ///   Saves the tunnel URL to the tunnel repository.
   ///
-  ///   - Parameters:
-  ///     - tunnel: The tunnel to save.
+  ///   - Parameter tunnel: The tunnel to save.
   ///
   ///   - Note: This method is asynchronous.
   ///
@@ -129,8 +131,7 @@ public actor TunnelSublimatory<
 
   ///   Handles an error that occurred during tunnel operation.
   ///
-  ///   - Parameters:
-  ///     - error: The error that occurred.
+  ///   - Parameter error: The error that occurred.
   ///
   ///   - Note: This method is asynchronous.
   private func onError(_ error: any Error) async {
@@ -140,7 +141,7 @@ public actor TunnelSublimatory<
   ///   Called when an Ngrok server updates a tunnel.
   ///
   ///   - Parameters:
-  ///     - server: The Ngrok server.
+  ///     - _: The Ngrok server.
   ///     - tunnel: The updated tunnel.
   ///
   ///   - Note: This method is nonisolated.
@@ -154,7 +155,7 @@ public actor TunnelSublimatory<
   ///   Called when an error occurs in the Ngrok server.
   ///
   ///   - Parameters:
-  ///     - server: The Ngrok server.
+  ///     - _: The Ngrok server.
   ///     - error: The error that occurred.
   ///
   ///   - Note: This method is nonisolated.

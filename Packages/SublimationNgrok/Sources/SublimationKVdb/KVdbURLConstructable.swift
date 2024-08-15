@@ -50,7 +50,5 @@ public protocol KVdbURLConstructable {
   ///   - Parameters:
   ///     - kvDBBase: The base URL of the key-value database.
   ///     - keyBucketPath: The path to the key bucket.
-  ///
-  ///   - Returns: An instance of the conforming type.
   init(kvDBBase: String, keyBucketPath: String)
 }

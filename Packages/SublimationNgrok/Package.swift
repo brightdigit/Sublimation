@@ -56,6 +56,7 @@ let package = Package(
       name: "SublimationNgrok",
       dependencies: [
         "SublimationTunnel",
+        "SublimationKVdb",
         .product(name: "Ngrokit", package: "Ngrokit")
       ],
       swiftSettings: swiftSettings

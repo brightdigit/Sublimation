@@ -59,8 +59,6 @@ public protocol TunnelRepositoryFactory: Sendable {
   ///
   ///   - Returns: A tunnel repository.
   ///
-  ///   - Throws: An error if the setup fails.
-  ///
   ///   - Note: The `TunnelClientType` must have a `Key` type
   ///   that matches the `Key` type of the `TunnelRepositoryType`.
   func setupClient<TunnelClientType: TunnelClient>(_ client: TunnelClientType)

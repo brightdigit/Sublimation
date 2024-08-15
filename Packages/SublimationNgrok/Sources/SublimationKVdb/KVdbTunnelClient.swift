@@ -59,8 +59,9 @@ public struct KVdbTunnelClient<Key: Sendable>: Sendable {
 
   ///   Retrieves the value associated with a key from a specific bucket.
   ///
-  ///   - Parameter key: The key used to access the value.
-  ///   - Parameter bucketName: The name of the bucket where the value is stored.
+  ///   - Parameters:
+  ///     - key: The key used to access the value.
+  ///     - bucketName: The name of the bucket where the value is stored.
   ///
   ///   - Throws: `NgrokServerError.invalidURL` if the retrieved URL is invalid.
   ///
@@ -76,9 +77,10 @@ public struct KVdbTunnelClient<Key: Sendable>: Sendable {
 
   ///   Saves a value with a key in a specific bucket.
   ///
-  ///   - Parameter value: The URL value to save.
-  ///   - Parameter key: The key used to associate the value.
-  ///   - Parameter bucketName: The name of the bucket where the value will be stored.
+  ///   - Parameters:
+  ///     - value: The URL value to save.
+  ///     - key: The key used to associate the value.
+  ///     - bucketName: The name of the bucket where the value will be stored.
   ///
   ///   - Throws: `NgrokServerError.cantSaveTunnel` if the tunnel cannot be saved.
   public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {

@@ -66,6 +66,7 @@ public enum NgrokError: Int, LocalizedError {
   case websiteVisitWarning = 6_024
   case tunnelConnectionFailed = 8_012
 
+  /// A localized message describing what error occurred.
   public var errorDescription: String? {
     switch self { case .invalidMetadataLength: "Invalid metadata length" case .accountLimitExceeded:
       "You've hit your account limit for simultaneous ngrok agent sessions. Try stopping an existing agent or upgrading your account."

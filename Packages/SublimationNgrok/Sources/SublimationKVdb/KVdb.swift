@@ -61,14 +61,15 @@ public enum KVdb {
     "/\(bucketName)/\(key)"
   }
 
-  ///   Constructs a URL for a given key in a bucket.
+  /// Constructs a URL for a given key in a bucket.
   ///
-  ///   - Parameters:
-  ///     - URLType: The type of URL to construct.
-  ///     - key: The key for the value.
-  ///     - bucketName: The name of the bucket.
+  /// - Parameters:
+  ///   - _: The type of URL to construct.
+  ///   - key: The key for the value.
+  ///   - bucketName: The name of the bucket.
   ///
-  ///   - Returns: The constructed URL.
+  /// - Returns: The constructed URL.
+  ///
   public static func construct<URLType: KVdbURLConstructable>(
     _: URLType.Type,
     forKey key: some Any,
