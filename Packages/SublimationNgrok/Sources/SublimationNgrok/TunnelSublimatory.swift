@@ -36,17 +36,21 @@ public import SublimationTunnel
 
 #if os(macOS)
   extension TunnelSublimatory {
-    ///     Initializes the Sublimation lifecycle handler with default values for macOS.
+    /// Initializes the Sublimation lifecycle handler with default values for macOS.
     ///
-    ///     - Parameters:
-    ///       - ngrokPath: The path to the Ngrok executable.
-    ///       - bucketName: The name of the bucket for the tunnel repository.
-    ///       - key: The key for the tunnel repository.
+    /// - Parameters:
+    ///   - ngrokPath: The path to the Ngrok executable.
+    ///   - bucketName: The name of the bucket for the tunnel repository.
+    ///   - key: The key for the tunnel repository.
+    ///   - application: Server Application for setup.
+    ///   - isConnectionRefused: Whether the `ClientError` is connection refused.
+    ///   - ngrokClient: Returns a new `NgrokClient`.
     ///
-    ///     - Note: This initializer is only available on macOS.
+    /// - Note: This initializer is only available on macOS.
     ///
-    ///     - SeeAlso: `KVdbTunnelRepositoryFactory`
-    ///     - SeeAlso: `NgrokCLIAPIServerFactory`
+    /// - SeeAlso: `KVdbTunnelRepositoryFactory`
+    /// - SeeAlso: `NgrokCLIAPIServerFactory`
+    ///
     public init<Key>(
       ngrokPath: String,
       bucketName: String,
@@ -76,17 +80,22 @@ public import SublimationTunnel
       )
     }
 
-    ///     Initializes the Sublimation lifecycle handler with default values for macOS.
+    /// Initializes the Sublimation lifecycle handler with default values for macOS.
     ///
-    ///     - Parameters:
-    ///       - ngrokPath: The path to the Ngrok executable.
-    ///       - bucketName: The name of the bucket for the tunnel repository.
-    ///       - key: The key for the tunnel repository.
+    /// - Parameters:
+    ///   - ngrokPath: The path to the Ngrok executable.
+    ///   - bucketName: The name of the bucket for the tunnel repository.
+    ///   - key: The key for the tunnel repository.
+    ///   - application: Server Application for setup.
+    ///   - isConnectionRefused: Whether the `ClientError` is connection refused.
+    ///   - transport: `ClientTransport` to use for the `NgrokClient`
+    ///   - serverURL: `URL` to `NgrokClient`.
     ///
-    ///     - Note: This initializer is only available on macOS.
+    /// - Note: This initializer is only available on macOS.
     ///
-    ///     - SeeAlso: `KVdbTunnelRepositoryFactory`
-    ///     - SeeAlso: `NgrokCLIAPIServerFactory`
+    /// - SeeAlso: `KVdbTunnelRepositoryFactory`
+    /// - SeeAlso: `NgrokCLIAPIServerFactory`
+    ///
     public init<Key>(
       ngrokPath: String,
       bucketName: String,
