@@ -30,6 +30,10 @@
 public import Foundation
 import SublimationTunnel
 
+#if canImport(FoundationNetworking)
+  public import FoundationNetworking
+#endif
+
 extension KVdb {
   ///   Retrieves the URL for a given key in a bucket.
   ///
