@@ -2,7 +2,7 @@ name: SublimationNgrok
 settings:
   LINT_MODE: ${LINT_MODE}
 packages:
-  Sublimation:
+  SublimationNgrok:
     path: .
 aggregateTargets:
   Lint:

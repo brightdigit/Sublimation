@@ -1,5 +1,5 @@
 //
-//  KVdb.swift
+//  KVdb+URL.swift
 //  SublimationNgrok
 //
 //  Created by Leo Dion.
@@ -28,7 +28,6 @@
 //
 
 public import Foundation
-public import SublimationKVdb
 import SublimationTunnel
 
 extension KVdb {
