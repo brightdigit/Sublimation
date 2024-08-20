@@ -62,6 +62,8 @@ jobs:
             iPhoneName: "iPhone 15 Pro Max"
     steps:
       - uses: actions/checkout@v4
+      - name: Xcodes
+        run: ls /Applications/Xcode*
       - name: Cache swift package modules
         id: cache-spm-macos
         uses: actions/cache@v4
