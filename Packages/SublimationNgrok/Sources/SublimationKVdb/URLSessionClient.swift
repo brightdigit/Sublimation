@@ -44,14 +44,14 @@ public import SublimationTunnel
 /// a `NgrokServerError` if the save operation fails.
 ///
 /// - SeeAlso: `KVdbTunnelClient`
-public struct URLSessionClient<Key: Sendable>: TunnelClient {
+internal struct URLSessionClient<Key: Sendable>: TunnelClient {
   private let session: URLSession
 
   ///   Initializes a new `URLSessionClient` with the specified session.
   ///
   ///   - Parameter session: The URLSession to use for network requests.
   ///   Defaults to an ephemeral session.
-  public init(session: URLSession = .ephemeral()) { self.session = session }
+  internal init(session: URLSession = .ephemeral()) { self.session = session }
 
   ///   Retrieves the value associated with a key from a specific bucket.
   ///
@@ -62,7 +62,7 @@ public struct URLSessionClient<Key: Sendable>: TunnelClient {
   ///   - Returns: The URL value associated with the key.
   ///
   ///   - Throws: A `NgrokServerError` if the retrieval operation fails.
-  public func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
+  internal func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
 
     let data = try await session.data(from: url).0
@@ -81,7 +81,8 @@ public struct URLSessionClient<Key: Sendable>: TunnelClient {
   ///     - bucketName: The name of the bucket to save the value in.
   ///
   ///   - Throws: A `NgrokServerError` if the save operation fails.
-  public func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
+  internal func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws
+  {
     let url = KVdb.construct(URL.self, forKey: key, atBucket: bucketName)
     var request = URLRequest(url: url)
     request.httpBody = value.absoluteString.data(using: .utf8)

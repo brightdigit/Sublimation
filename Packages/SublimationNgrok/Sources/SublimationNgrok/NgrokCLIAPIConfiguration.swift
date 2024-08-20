@@ -62,6 +62,5 @@ extension NgrokCLIAPIConfiguration {
   ///   using a `Vapor.Application`.
   ///
   ///   - Parameter application: The Vapor application to use for configuration.
-
   public init(application: any Application) { self.init(serverApplication: application) }
 }

@@ -41,7 +41,7 @@ extension NgrokClient {
       { try await self.listTunnels().first },
       isConnectionRefused: isConnectionRefused
     )
-    switch networkResult { case let .connectionRefused(error): return .error(error)
+    switch networkResult { case .connectionRefused(let error): return .error(error)
 
       default: return .network(networkResult)
     }

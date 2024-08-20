@@ -51,6 +51,5 @@ public protocol TunnelRepository<Key>: Sendable {
   ///   - Throws: An error if the tunnel cannot be retrieved.
   ///
   ///   - Returns: The URL of the retrieved tunnel, if available.
-
   func tunnel(forKey key: Key) async throws -> URL?
 }

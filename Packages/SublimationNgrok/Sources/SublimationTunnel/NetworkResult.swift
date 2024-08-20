@@ -47,7 +47,7 @@ public enum NetworkResult<T, ConnectionErrorType: Error> {
 }
 
 extension NetworkResult {
-  public init(error: any Error, isConnectionRefused: @escaping (ConnectionErrorType) -> Bool) {
+  package init(error: any Error, isConnectionRefused: @escaping (ConnectionErrorType) -> Bool) {
     guard let error = error as? ConnectionErrorType else {
       self = .failure(error)
       return
@@ -61,7 +61,7 @@ extension NetworkResult {
     self = .failure(error)
   }
 
-  public init(
+  package init(
     _ closure: @escaping () async throws -> T,
     isConnectionRefused: @escaping (ConnectionErrorType) -> Bool
   ) async {
@@ -69,7 +69,7 @@ extension NetworkResult {
     catch { self = .init(error: error, isConnectionRefused: isConnectionRefused) }
   }
 
-  public func get() throws -> T? {
+  package func get() throws -> T? {
     switch self { case .connectionRefused: return nil
 
       case .failure(let error): throw error

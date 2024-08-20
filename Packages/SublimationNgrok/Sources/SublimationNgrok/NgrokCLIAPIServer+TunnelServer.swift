@@ -34,7 +34,7 @@ import SublimationTunnel
 
 extension NgrokCLIAPIServer {
   ///   Runs the server.
-  public func begin(isConnectionRefused: @escaping (ClientError) -> Bool) async {
+  private func begin(isConnectionRefused: @escaping (ClientError) -> Bool) async {
     let start = Date()
     let newTunnel: any Tunnel
     do { newTunnel = try await self.newTunnel(isConnectionRefused: isConnectionRefused) }
@@ -56,7 +56,11 @@ extension NgrokCLIAPIServer {
     internal private(set) var isStarted = false
     func started() { isStarted = true }
   }
+  /// Terminate  the `NgrokProcess`.
   public func shutdown() { self.process.terminate() }
+  /// Starts the process for Ngrok if nessecary and creates a new tunnel.
+  /// - Parameter isConnectionRefused: Closure to test whether the ``ClientError`` is because the server still needs to be started.
+  /// - Throws: If there's an issue starting the server.
   public func run(isConnectionRefused: @escaping @Sendable (ClientError) -> Bool) async throws {
     try await withThrowingTaskGroup(
       of: Void.self,

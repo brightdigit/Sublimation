@@ -29,7 +29,7 @@
 
 public import Foundation
 
-/// A repository for managing writable tunnels.
+/// A repository for managing writable ``Tunnel`` objects.
 ///
 /// This protocol extends the `TunnelRepository` protocol
 /// and adds the ability to save a URL with a key.

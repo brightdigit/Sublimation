@@ -35,12 +35,15 @@ public import SublimationCore
 public typealias RepositoryClientFactory<Key> = (@Sendable @escaping () -> any Application) ->
   any TunnelClient<Key>
 
+/// A `Sublimatory` which uses creates and saves a``Tunnel``.
 public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   TunnelServerFactoryType: TunnelServerFactory
 >: Sublimatory, TunnelServerDelegate {
 
+  /// `Key type
   public typealias Key = WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
+  /// Type of Error which can be thrown by the Network Client.
   public typealias ConnectionErrorType = TunnelServerFactoryType.Configuration.Server
     .ConnectionErrorType
   private let factory: TunnelServerFactoryType
@@ -164,7 +167,7 @@ public actor TunnelSublimatory<
   public nonisolated func server(_: any TunnelServer, errorDidOccur error: any Error) {
     Task { await self.onError(error) }
   }
-  func shutdownServer() { server.shutdown() }
+  private func shutdownServer() { server.shutdown() }
   public nonisolated func shutdown() { Task { await self.shutdownServer() } }
   public func run() async throws {
 
