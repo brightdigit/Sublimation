@@ -52,9 +52,7 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
   ///   - Parameters:
   ///     - ngrokPath: The path to the Ngrok executable.
   ///     - httpPort: The port to use for the HTTP connection.
-  ///     - processType: The type of process to use.
-  ///
-  ///   - Returns: A new instance of `NgrokMacProcess`.
+  ///     - _: The type of process to use.
   public init(ngrokPath: String, httpPort: Int, processType _: ProcessType.Type) {
     self.init(process: .init(executableFilePath: ngrokPath, scheme: "http", port: httpPort))
   }
@@ -78,8 +76,7 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
 
   ///   A private method that handles the termination of the process.
   ///
-  ///   - Parameters:
-  ///     - forProcess: The process that has terminated.
+  ///   - Parameter _: The process that has terminated.
   @Sendable private nonisolated func terminationHandler(forProcess _: any Processable) {
     Task {
       let error: any Error
@@ -91,8 +88,7 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
 
   ///   Runs the Ngrok process.
   ///
-  ///   - Parameters:
-  ///     - onError: A closure that handles any errors that occur during the process.
+  ///   - Parameter onError: A closure that handles any errors that occur during the process.
   ///
   ///   - Throws: An error if the process fails to run.
   public func run(onError: @Sendable @escaping (any Error) -> Void) async throws {
@@ -100,5 +96,6 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
     terminationHandler = onError
     try process.run()
   }
+  /// Terminates the current process.
   nonisolated public func terminate() { self.process.terminate() }
 }

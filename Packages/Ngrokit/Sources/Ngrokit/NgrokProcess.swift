@@ -43,6 +43,7 @@ public protocol NgrokProcess: Sendable {
   ///   Runs the Ngrok process.
   ///
   ///   - Parameter onError: A closure to handle any errors that occur during the process.
+  ///   - Throws: If there's an issue with running the process.
   func run(onError: @Sendable @escaping (any Error) -> Void) async throws
   func terminate()
 }

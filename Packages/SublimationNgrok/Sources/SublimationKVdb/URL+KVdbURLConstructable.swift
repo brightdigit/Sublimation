@@ -52,7 +52,7 @@ extension URL: KVdbURLConstructable {
   ///   - Postcondition: The resulting `URL` instance is constructed
   ///   by appending `keyBucketPath` to `kvDBBase`.
   public init(kvDBBase: String, keyBucketPath: String) {
-    // swiftlint:disable:next force_unwrapping
+    // swift-format-ignore: NeverForceUnwrap
     self = URL(string: kvDBBase)!.appendingPathComponent(keyBucketPath)
   }
 }

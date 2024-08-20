@@ -79,12 +79,12 @@ public protocol Processable: Sendable, AnyObject {
   ///   - Requires: This initializer must be implemented.
   init(executableFilePath: String, scheme: String, port: Int)
 
-  ///   Sets a closure to be called when the process terminates.
+  /// Sets a closure to be called when the process terminates.
   ///
-  ///   - Parameters:
-  ///     - closure: The closure to be called.
+  /// - Requires: This method must be implemented.
   ///
-  ///   - Requires: This method must be implemented.
+  /// - Parameter closure: The closure to be called.
+
   func setTerminationHandler(_ closure: @escaping @Sendable (Self) -> Void)
 
   ///   Creates a new pipe.

@@ -33,18 +33,39 @@ public import Foundation
   public import FoundationNetworking
 #endif
 
+/// A repository for managing writable ``Tunnel`` objects using a ``TunnelClient``.
 public final class TunnelClientRepository<Key: Sendable>: WritableTunnelRepository {
   private let client: any TunnelClient<Key>
   private let bucketName: String
+  /// Create a ``TunnelClientRepository`` using the ``TunnelClient`` and the name of the bucket for the key value pair.
+  /// - Parameters:
+  ///   - client: The ``TunnelClient`` to communicate with.
+  ///   - bucketName: The bucket name for the key value pair.
   public init(client: any TunnelClient<Key>, bucketName: String) {
     self.client = client
     self.bucketName = bucketName
   }
 
+  ///   Retrieves a tunnel for the specified key.
+  ///
+  ///   - Parameter key: The key used to retrieve the tunnel.
+  ///
+  ///   - Throws: An error if the tunnel cannot be retrieved.
+  ///
+  ///   - Returns: The URL of the retrieved tunnel, if available.
   public func tunnel(forKey key: Key) async throws -> URL? {
     try await client.getValue(ofKey: key, fromBucket: bucketName)
   }
 
+  ///   Saves a URL with a key.
+  ///
+  ///   - Parameters:
+  ///     - url: The URL to save.
+  ///     - key: The key to associate with the URL.
+  ///
+  ///   - Throws: An error if the save operation fails.
+  ///
+  ///   - Note: This method is asynchronous.
   public func saveURL(_ url: URL, withKey key: Key) async throws {
     try await client.saveValue(url, withKey: key, inBucket: bucketName)
   }

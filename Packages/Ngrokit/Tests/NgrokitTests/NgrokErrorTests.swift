@@ -31,7 +31,7 @@ import Ngrokit
 import XCTest
 
 internal class NgrokErrorTests: XCTestCase {
-  // swiftlint:disable line_length
+  
   internal func testErrorDescriptions() {
     XCTAssertEqual(NgrokError.invalidMetadataLength.errorDescription, "Invalid metadata length")
     XCTAssertEqual(NgrokError.accountLimitExceeded.errorDescription, "You've hit your account limit for simultaneous ngrok agent sessions. Try stopping an existing agent or upgrading your account.")
@@ -51,7 +51,7 @@ internal class NgrokErrorTests: XCTestCase {
     XCTAssertEqual(NgrokError.tunnelConnectionFailed.errorDescription, "Traffic was successfully tunneled to the ngrok agent, but the agent failed to establish a connection to the upstream web service")
   }
 
-  // swiftlint:disable nslocalizedstring_require_bundle
+  
   internal func testLocalizedDescriptions() {
     XCTAssertEqual(NgrokError.invalidMetadataLength.localizedDescription, NSLocalizedString("Invalid metadata length", comment: ""))
     XCTAssertEqual(NgrokError.accountLimitExceeded.localizedDescription, NSLocalizedString("You've hit your account limit for simultaneous ngrok agent sessions. Try stopping an existing agent or upgrading your account.", comment: ""))
@@ -71,8 +71,8 @@ internal class NgrokErrorTests: XCTestCase {
     XCTAssertEqual(NgrokError.tunnelConnectionFailed.localizedDescription, NSLocalizedString("Traffic was successfully tunneled to the ngrok agent, but the agent failed to establish a connection to the upstream web service", comment: ""))
   }
 
-  // swiftlint:enable nslocalizedstring_require_bundle
-  // swiftlint:enable line_length
+  
+  
 
   internal func testRawValues() {
     XCTAssertEqual(NgrokError.invalidMetadataLength.rawValue, 100)

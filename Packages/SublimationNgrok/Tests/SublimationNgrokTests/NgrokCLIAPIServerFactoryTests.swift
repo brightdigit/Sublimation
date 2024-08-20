@@ -37,7 +37,7 @@ import XCTest
 import NgrokitMocks
 
 internal final class MockTransport: ClientTransport {
-  // swiftlint:disable:next unavailable_function
+  
   internal func send(
     _: HTTPTypes.HTTPRequest,
     body _: OpenAPIRuntime.HTTPBody?,
@@ -49,7 +49,7 @@ internal final class MockTransport: ClientTransport {
 }
 
 internal class NgrokCLIAPIServerFactoryTests: XCTestCase {
-  // swiftlint:disable:next function_body_length
+  
   internal func testServer() {
     let loggerLabel = UUID().uuidString
     let application = MockServerApplication(

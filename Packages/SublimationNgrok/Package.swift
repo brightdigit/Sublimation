@@ -1,5 +1,5 @@
 // swift-tools-version: 6.0
-// swiftlint:disable explicit_acl explicit_top_level_acl
+
 import PackageDescription
 
 let swiftSettings: [SwiftSetting] = [
@@ -56,6 +56,7 @@ let package = Package(
       name: "SublimationNgrok",
       dependencies: [
         "SublimationTunnel",
+        "SublimationKVdb",
         .product(name: "Ngrokit", package: "Ngrokit")
       ],
       swiftSettings: swiftSettings
@@ -84,4 +85,4 @@ let package = Package(
     ),
   ]
 )
-// swiftlint:enable explicit_acl explicit_top_level_acl
+

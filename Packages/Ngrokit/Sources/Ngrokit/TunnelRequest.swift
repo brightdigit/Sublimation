@@ -66,8 +66,7 @@ public struct TunnelRequest: Sendable {
 extension Components.Schemas.TunnelRequest {
   ///   Initializes a new `Components.Schemas.TunnelRequest` instance.
   ///
-  ///   - Parameters:
-  ///      - request: The `TunnelRequest` instance to initialize from.
+  ///   - Parameter request: The `TunnelRequest` instance to initialize from.
   internal init(request: TunnelRequest) {
     self.init(addr: request.addr, proto: request.proto, name: request.name)
   }

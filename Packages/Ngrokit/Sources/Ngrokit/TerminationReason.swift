@@ -40,4 +40,4 @@
     case exit = 1
     case uncaughtSignal = 2
   }
-#endif  // swiftlint:enable file_types_order
+#endif

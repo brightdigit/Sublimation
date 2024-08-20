@@ -35,12 +35,15 @@ public import SublimationCore
 public typealias RepositoryClientFactory<Key> = (@Sendable @escaping () -> any Application) ->
   any TunnelClient<Key>
 
+/// A `Sublimatory` which uses creates and saves a``Tunnel``.
 public actor TunnelSublimatory<
   WritableTunnelRepositoryFactoryType: WritableTunnelRepositoryFactory,
   TunnelServerFactoryType: TunnelServerFactory
 >: Sublimatory, TunnelServerDelegate {
 
+  /// `Key type
   public typealias Key = WritableTunnelRepositoryFactoryType.TunnelRepositoryType.Key
+  /// Type of Error which can be thrown by the Network Client.
   public typealias ConnectionErrorType = TunnelServerFactoryType.Configuration.Server
     .ConnectionErrorType
   private let factory: TunnelServerFactoryType
@@ -50,15 +53,19 @@ public actor TunnelSublimatory<
 
   private let tunnelRepo: WritableTunnelRepositoryFactoryType.TunnelRepositoryType
   private let logger: Logger
+  // swift-format-ignore: NeverUseImplicitlyUnwrappedOptionals
   private var server: TunnelServerFactoryType.Configuration.Server!
 
   private nonisolated let isConnectionRefused: @Sendable (ConnectionErrorType) -> Bool
-  ///   Initializes the Sublimation lifecycle handler.
+  /// Initializes the Sublimation lifecycle handler.
   ///
-  ///   - Parameters:
-  ///     - factory: The factory for creating an Ngrok server.
-  ///     - repoFactory: The factory for creating a writable tunnel repository.
-  ///     - key: The key for the tunnel repository.
+  /// - Parameters:
+  ///   - factory: The factory for creating an Ngrok server.
+  ///   - repoFactory: The factory for creating a writable tunnel repository.
+  ///   - key: The key for the tunnel repository.
+  ///   - application: Returns the Application to use.
+  ///   - repoClientFactory: Takes an Application and returns a client for the tunnel.
+  ///   - isConnectionRefused: Whether the error is just connection refused because it's not active.
   public init(
     factory: TunnelServerFactoryType,
     repoFactory: WritableTunnelRepositoryFactoryType,
@@ -109,8 +116,7 @@ public actor TunnelSublimatory<
 
   ///   Saves the tunnel URL to the tunnel repository.
   ///
-  ///   - Parameters:
-  ///     - tunnel: The tunnel to save.
+  ///   - Parameter tunnel: The tunnel to save.
   ///
   ///   - Note: This method is asynchronous.
   ///
@@ -128,8 +134,7 @@ public actor TunnelSublimatory<
 
   ///   Handles an error that occurred during tunnel operation.
   ///
-  ///   - Parameters:
-  ///     - error: The error that occurred.
+  ///   - Parameter error: The error that occurred.
   ///
   ///   - Note: This method is asynchronous.
   private func onError(_ error: any Error) async {
@@ -139,7 +144,7 @@ public actor TunnelSublimatory<
   ///   Called when an Ngrok server updates a tunnel.
   ///
   ///   - Parameters:
-  ///     - server: The Ngrok server.
+  ///     - _: The Ngrok server.
   ///     - tunnel: The updated tunnel.
   ///
   ///   - Note: This method is nonisolated.
@@ -153,7 +158,7 @@ public actor TunnelSublimatory<
   ///   Called when an error occurs in the Ngrok server.
   ///
   ///   - Parameters:
-  ///     - server: The Ngrok server.
+  ///     - _: The Ngrok server.
   ///     - error: The error that occurred.
   ///
   ///   - Note: This method is nonisolated.
@@ -162,7 +167,7 @@ public actor TunnelSublimatory<
   public nonisolated func server(_: any TunnelServer, errorDidOccur error: any Error) {
     Task { await self.onError(error) }
   }
-  func shutdownServer() { server.shutdown() }
+  private func shutdownServer() { server.shutdown() }
   public nonisolated func shutdown() { Task { await self.shutdownServer() } }
   public func run() async throws {
 

@@ -44,6 +44,10 @@ public protocol TunnelServer: Sendable {
   @available(*, deprecated) func start(
     isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool
   )
+  /// Runs TunnelServeer.
+  /// - Parameter isConnectionRefused: Closure to test whether the ``ConnectionErrorType`` is because the server still needs to be started.
+  /// - Throws: If there's an issue starting the server.
   func run(isConnectionRefused: @escaping @Sendable (ConnectionErrorType) -> Bool) async throws
+  /// Shutdown the ``TunnelServer``.
   func shutdown()
 }

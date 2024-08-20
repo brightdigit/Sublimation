@@ -1,5 +1,5 @@
 //
-//  KVdbURLConstructable.swift
+//  KVdb+URL.swift
 //  SublimationNgrok
 //
 //  Created by Leo Dion.
@@ -27,28 +27,32 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
+public import Foundation
+import SublimationTunnel
 
-/// A protocol for constructing URLs for interacting with a key-value database.
-///
-/// Conforming types should provide an initializer
-/// that takes a base URL and a key bucket path.
-///
-/// Example usage:
-/// ```
-/// struct MyKVdbURLConstructor: KVdbURLConstructable {
-///   init(kvDBBase: String, keyBucketPath: String) {
-///     // Implementation details
-///   }
-/// }
-/// ```
-///
-/// - SeeAlso: `KVdbURLConstructor`
-public protocol KVdbURLConstructable {
-  ///   Initializes a URL constructor with the given base URL and key bucket path.
+#if canImport(FoundationNetworking)
+  public import FoundationNetworking
+#endif
+
+extension KVdb {
+  ///   Retrieves the URL for a given key in a bucket.
   ///
   ///   - Parameters:
-  ///     - kvDBBase: The base URL of the key-value database.
-  ///     - keyBucketPath: The path to the key bucket.
-  init(kvDBBase: String, keyBucketPath: String)
+  ///     - key: The key for the value.
+  ///     - bucketName: The name of the bucket.
+  ///     - session: The URLSession to use for the request. Defaults to `.ephemeral`.
+  ///
+  ///   - Returns: The URL for the key, or `nil` if it doesn't exist.
+  ///
+  ///   - Throws: An error if the request fails.
+  public static func url<Key: Sendable>(
+    withKey key: Key,
+    atBucket bucketName: String,
+    using session: URLSession = .ephemeral()
+  ) async throws -> URL? {
+    let client = URLSessionClient<Key>(session: session)
+    let repository = TunnelClientRepository(client: client, bucketName: bucketName)
+
+    return try await repository.tunnel(forKey: key)
+  }
 }

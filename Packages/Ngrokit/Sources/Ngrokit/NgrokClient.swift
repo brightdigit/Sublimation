@@ -53,10 +53,9 @@ public import OpenAPIRuntime
 /// - SeeAlso: `TunnelRequest`
 /// - SeeAlso: `Tunnel`
 public struct NgrokClient: Sendable {
-  // swiftlint:disable force_try
+  // swift-format-ignore: NeverUseForceTry
   /// The default server URL.
   public static let defaultServerURL = try! Servers.server1()
-  // swiftlint:enable force_try
 
   private let underlyingClient: any APIProtocol
 

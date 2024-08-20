@@ -47,7 +47,7 @@ internal class NgrokClientTests: XCTestCase {
     XCTAssertEqual(actualOutput.config.inspect, expectedOutput.config.inspect)
   }
 
-  // swiftlint:disable:next function_body_length
+  
   internal func testStartTunnel() async throws {
     let publicURL = URL.temporaryDirectory()
     let expectedInput = TunnelRequest(

@@ -29,6 +29,7 @@
 
 public import Foundation
 
+/// A tunnel with a name and public url for the server.
 public protocol Tunnel: Sendable {
   var name: String { get }
   var publicURL: URL { get }

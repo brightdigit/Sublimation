@@ -29,7 +29,7 @@
 
 public import Foundation
 
-// swiftlint:disable:next force_try
+// swift-format-ignore: NeverUseForceTry
 fileprivate let ngrokCLIErrorRegex = try! NSRegularExpression(pattern: "ERR_NGROK_([0-9]+)")
 
 /// A protocol for handling data.

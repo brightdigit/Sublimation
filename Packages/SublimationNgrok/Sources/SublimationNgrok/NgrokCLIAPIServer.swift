@@ -146,11 +146,11 @@ public struct NgrokCLIAPIServer: TunnelServer, Sendable {
       logger.notice("Ngrok not running. Waiting for Process and New Tunnel... (about 30 secs)")
       try await process.run(onError: onTerminationError)
 
-      case let .success(tunnel):
+      case .success(let tunnel):
         logger.debug("Process Already Running.")
         return TunnelResult??.some(tunnel.map { .init(isOld: true, tunnel: $0) })
 
-      case let .failure(error): throw error
+      case .failure(let error): throw error
     }
     return nil
   }

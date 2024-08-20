@@ -3,7 +3,7 @@
 if [ -z "$SRCROOT" ]; then
    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 else
-    script_dir="${SRCROOT}/Scripts" 
+   script_dir="${SRCROOT}/Scripts" 
 fi
 
 directories=(
@@ -34,7 +34,7 @@ for i in "${!directories[@]}"; do
         echo "Running lint.sh in $dir"
         (
             cd "$dir" && \
-            LINT_MODE="$LINT_MODE" CHILD_PACKAGE=1 ./Scripts/lint.sh 2>&1 1>/dev/null | filter_output "$dir" 1>&2
+            { LINT_MODE="$LINT_MODE" CHILD_PACKAGE=1 ./Scripts/lint.sh 2>&1 1>&3 | filter_output "$dir"; } 3>&1
         )
         
         # Check if the script failed
