@@ -35,6 +35,7 @@ import SublimationKVdb
 public import SublimationTunnel
 
 #if os(macOS)
+  // periphery:ignore
   extension TunnelSublimatory {
     /// Initializes the Sublimation lifecycle handler with default values for macOS.
     ///
