@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:brightdigit/Ngrokit.git
 	branch = v1.0.0
-	commit = 20ed4377d5bd8baa7819e183c113be7dbe4950a2
+	commit = fc0c8a92f2947d8701ea00141bcf72651f4ae7f3
 	method = merge
 	cmdver = 0.4.6
-	parent = f86a6209c88c96a2bc95b66cc5d9f38fd3675bc8
+	parent = 9152351daa8056a3ef4a3e09839d5b4ed7e49033
