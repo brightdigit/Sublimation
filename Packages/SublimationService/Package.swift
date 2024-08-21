@@ -41,7 +41,7 @@ let package = Package(
     .library(name: "SublimationService", targets: ["SublimationService"])
   ],
   dependencies: [
-    .package(name: "Sublimation", path: "../.."),
+    .package(url: "https://github.com/brightdigit/Sublimation", branch: "32-swift-service-lifecycle-ci"),
     .package(url: "https://github.com/swift-server/swift-service-lifecycle.git", from: "2.6.0")
   ],
   targets: [
