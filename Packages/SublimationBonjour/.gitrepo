@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:brightdigit/SublimationBonjour.git
 	branch = v1.0.0
-	commit = c73c96459f84f074c8e8e74ab5774a2d400bc586
+	commit = b92b7fb45e84d59edaa58e08054bf69b3eccc370
 	method = merge
 	cmdver = 0.4.6
-	parent = e85b55b07a3e29bb1bb4946fcad0789356d26084
+	parent = bfd606a6aee3c89c49497c062bfaa35fa1557c99
