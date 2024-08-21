@@ -82,7 +82,7 @@ jobs:
       - name: Set Xcode Name
         run: echo "XCODE_NAME=$(basename -- ${{ matrix.xcode }} | sed 's/\.[^.]*$//' | cut -d'_' -f2)" >> $GITHUB_ENV
       - name: Setup Xcode
-        run: sudo xcode-select -s ${{ matrix.xcode }}/Contents/Developer
+        run: sudo xcode-select -s ${{ matrix.xcode }}/Contents/Developer || (sudo ls -1 /Applications | grep "Xcode")
       - name: Install mint
         if: startsWith(matrix.xcode,'/Applications/Xcode_16_beta_5')
         run: |
