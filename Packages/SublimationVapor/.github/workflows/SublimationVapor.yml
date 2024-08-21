@@ -33,8 +33,7 @@ jobs:
         run: swift test --enable-code-coverage 
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files
-        with:
-          search-paths: ./Packages/SublimationVapor/.build
+        with:          
           fail-on-empty-output: true
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4       
@@ -98,7 +97,6 @@ jobs:
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files-spm
         with:
-          search-paths: ./Packages/SublimationVapor/.build
           fail-on-empty-output: true
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4        
@@ -115,7 +113,7 @@ jobs:
         run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }} -sdk "iphonesimulator" -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files-iOS
-        with:
+        with:          
           fail-on-empty-output: true
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4       
@@ -129,7 +127,7 @@ jobs:
         run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }} -sdk "watchsimulator" -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}' -enableCodeCoverage YES build test
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files-watchOS
-        with:
+        with:          
           fail-on-empty-output: true
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4       
