@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:brightdigit/SublimationNgrok.git
 	branch = v1.0.0
-	commit = 9023da928a3fc098ebe65285f9abaa08f5c6b0f0
+	commit = d20dc5568e8bffe84822ff81233dc96f9f5cedd6
 	method = merge
 	cmdver = 0.4.9
-	parent = 5388caa88139b7b3df71f842f1b1d9f2d5500360
+	parent = 0d9f9f6350d7b069ecba62682037a033c2f37b4c
