@@ -85,15 +85,6 @@
       browser.browseResultsChangedHandler = { results, _ in self.parseResults(results) }
     }
 
-    //    private static func descriptionFor(state: NWConnection.State) -> String {
-    //      switch state { case .setup: "setup" case .waiting: "waiting" case .preparing: "preparing"
-    //        case .ready: "ready"
-    //        case .failed: "failed"
-    //        case .cancelled: "cancelled"
-    //        default: "unknown"
-    //      }
-    //    }
-
     private func append(urls: [URL]) async { await self.streams.yield(urls, logger: self.logger) }
 
     private nonisolated func append(urls: [URL]) { Task { await self.append(urls: urls) } }
@@ -152,7 +143,6 @@
             .error("Failed to parse TXT Record for \(result.endpoint.debugDescription): \(error)")
           continue
         }
-        #warning("Defaults should be passed to connection")
         let urls = configuration.urls(defaults: self.defaultURLConfiguration)
         self.append(urls: urls)
       }

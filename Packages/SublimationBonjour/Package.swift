@@ -51,7 +51,8 @@ let package = Package(
       dependencies: [
         .product(name: "Sublimation", package: "Sublimation"),
         .product(name: "SublimationCore", package: "Sublimation"),
-        .product(name: "SwiftProtobuf", package: "swift-protobuf")
+        .product(name: "SwiftProtobuf", package: "swift-protobuf"),
+        .product(name: "Logging", package: "swift-log")
       ],
       swiftSettings: swiftSettings
     ),

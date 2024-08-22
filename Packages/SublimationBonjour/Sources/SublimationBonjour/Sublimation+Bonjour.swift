@@ -30,27 +30,58 @@
 #if canImport(Network)
   public import Network
   public import Sublimation
+  public import Logging
 
   extension Sublimation {
     /// Initializes a `Sublimation` instance with the provided parameters.
-    ///
+    /// 
     /// - Parameters:
     ///   - bindingConfiguration: A configuration with addresses, port and tls configuration.
     ///   - name: Service name.
     ///   - type: Service type.
     ///   - listenerParameters: The network parameters to use for the listener. Default is `.tcp`.
+    ///   - logger: <#logger description#>
+    ///   - listenerQueue: <#listenerQueue description#>
+    ///   - connectionQueue: <#connectionQueue description#>
     ///
     public convenience init(
       bindingConfiguration: BindingConfiguration,
+      logger: Logger,
       name: String = BonjourSublimatory.defaultName,
       type: String = BonjourSublimatory.defaultHttpTCPServiceType,
-      listenerParameters: NWParameters = .tcp
-    ) {
-      let sublimatory = BonjourSublimatory(
-        serverConfiguration: bindingConfiguration,
+      listenerParameters: NWParameters = .tcp,
+      listenerQueue: DispatchQueue = .global(),
+      connectionQueue: DispatchQueue = .global()
+    ) throws {
+      let sublimatory = try BonjourSublimatory(
+        bindingConfiguration: bindingConfiguration,
+        logger: logger,
+        parameters: listenerParameters,
         name: name,
         type: type,
-        parameters: listenerParameters
+        listenerQueue: listenerQueue,
+        connectionQueue: connectionQueue
+      )
+      self.init(sublimatory: sublimatory)
+    }
+    
+    public convenience init(
+      bindingConfiguration: BindingConfiguration,
+      logger: Logger,
+      listener: NWListener,
+      name: String = BonjourSublimatory.defaultName,
+      type: String = BonjourSublimatory.defaultHttpTCPServiceType,
+      listenerQueue: DispatchQueue = .global(),
+      connectionQueue: DispatchQueue = .global()
+    ) throws {
+      let sublimatory = BonjourSublimatory(
+        bindingConfiguration: bindingConfiguration,
+        logger: logger,
+        listener: listener,
+        name: name,
+        type: type,
+        listenerQueue: listenerQueue,
+        connectionQueue: connectionQueue
       )
       self.init(sublimatory: sublimatory)
     }

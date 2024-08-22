@@ -36,6 +36,7 @@ public import SublimationTunnel
 
 #if os(macOS)
   // periphery:ignore
+  /// Adds support for **ngrok** and **kvDB**
   extension TunnelSublimatory {
     /// Initializes the Sublimation lifecycle handler with default values for macOS.
     ///

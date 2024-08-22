@@ -82,6 +82,8 @@ let sublimation = Sublimation(sublimatory: tunnelSublimatory)
 For the client, you'll need to import the `SublimationKVdb` module and retrieve the url via:
 
 ```swift
+import SublimationKVdb
+
 let hostURL = try await KVdb.url(
   withKey: SublimationConfiguration.key, 
   atBucket: SublimationConfiguration.bucketName

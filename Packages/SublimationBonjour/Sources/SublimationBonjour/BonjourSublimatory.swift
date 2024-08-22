@@ -35,24 +35,57 @@
 
   public import SublimationCore
 
-  public struct BonjourSublimatory: Sublimatory {
+  public import Logging
+
+public struct BonjourSublimatory: Sublimatory {
+  public init(
+    bindingConfiguration: BindingConfiguration,
+    logger: Logger,
+    listener: NWListener,
+    name: String = Self.defaultName,
+    type: String = Self.defaultHttpTCPServiceType,
+    listenerQueue: DispatchQueue = .global(),
+    connectionQueue: DispatchQueue = .global()
+  ) {
+    self.bindingConfiguration = bindingConfiguration
+    self.logger = logger
+    self.listener = listener
+    self.name = name
+    self.type = type
+    self.listenerQueue = listenerQueue
+    self.connectionQueue = connectionQueue
+  }
+  
+
+  
     public init(
-      serverConfiguration: BindingConfiguration,
+      bindingConfiguration: BindingConfiguration,
+      logger: Logger,
+      parameters: NWParameters = Self.defaultParameters,
       name: String = Self.defaultName,
       type: String = Self.defaultHttpTCPServiceType,
-      parameters: NWParameters = Self.defaultParameters
-    ) {
-      self.name = name
-      self.type = type
-      self.serverConfiguration = serverConfiguration
-      self.parameters = parameters
+      listenerQueue: DispatchQueue = .global(),
+      connectionQueue: DispatchQueue = .global()
+    ) throws {
+      let listener = try NWListener(using: parameters)
+      self.init(
+        bindingConfiguration: bindingConfiguration,
+        logger: logger,
+        listener: listener,
+        name: name,
+        type: type,
+        listenerQueue: listenerQueue,
+        connectionQueue: connectionQueue
+      )
     }
-
+  
+  let bindingConfiguration: BindingConfiguration
+  let logger: Logger
+  let listener: NWListener
     let name: String
     let type: String
-    let serverConfiguration: BindingConfiguration
-    let parameters: NWParameters
-
+    let listenerQueue: DispatchQueue
+    let connectionQueue: DispatchQueue
     public static let defaultName = "Sublimation"
     public static let defaultHttpTCPServiceType = "_sublimation._tcp"
     public static let defaultParameters: NWParameters = .tcp
@@ -99,58 +132,56 @@
     //    }
 
     public func shutdown() {
-      // listener cancel
+      listener.cancel()
     }
     public func run() async throws {
-      let data = try self.serverConfiguration.serializedData()
-      let listener = try NWListener(using: self.parameters)
+      let data = try self.bindingConfiguration.serializedData()
       let txtRecordValues = data.base64EncodedString().splitByMaxLength(199)
       let dictionary = txtRecordValues.enumerated()
         .reduce(into: [String: String]()) { result, value in
           result["Sublimation_\(value.offset)"] = String(value.element)
         }
       let txtRecord = NWTXTRecord(dictionary)
+      assert(listener.service == nil)
       listener.service = .init(name: name, type: type, txtRecord: txtRecord)
 
       listener.newConnectionHandler = { connection in
         connection.stateUpdateHandler = { state in
           switch state { case .waiting(let error):
 
-            print("Connection Waiting error: \(error)")
+            self.logger.warning("Connection Waiting error: \(error)")
 
             case .ready:
-              print("Connection Ready ")
-              print("Sending \(data.count) bytes")
+              self.logger.debug("Connection Ready")
+              self.logger.debug("Sending data \(data.count) bytes")
               connection.send(
                 content: data,
                 completion: .contentProcessed { error in
-                  print("content sent")
-                  dump(error)
+                  if let error { self.logger.warning("Connection Send error: \(error)") }
                   connection.cancel()
                 }
               )
-            case .failed(let error): print("Connection Failure: \(error)")
+            case .failed(let error): self.logger.error("Connection Failure: \(error)")
 
-            default: print("Connection state updated: \(state)")
+            default: self.logger.debug("Connection state updated: \(state)")
           }
         }
-        connection.start(queue: .global())
+        connection.start(queue: connectionQueue)
       }
 
-      listener.start(queue: .global())
+      listener.start(queue: listenerQueue)
 
       return try await withCheckedThrowingContinuation { continuation in
         listener.stateUpdateHandler = { state in
           switch state { case .waiting(let error):
-
-            print("Listener Waiting error: \(error)")
+            self.logger.warning("Listener Waiting error: \(error)")
             continuation.resume(throwing: error)
 
             case .failed(let error):
-              print("Listener Failure: \(error)")
+              self.logger.error("Listener Failure: \(error)")
               continuation.resume(throwing: error)
             case .cancelled: continuation.resume()
-            default: print("Listener state updated: \(state)")
+            default: self.logger.debug("Listener state updated: \(state)")
           }
         }
       }
