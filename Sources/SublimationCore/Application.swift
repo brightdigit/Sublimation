@@ -31,6 +31,7 @@ public import Foundation
 public import Logging
 
 /// Server Application
+@available(*, deprecated, message: "Only used by SublimationNgrok.")
 public protocol Application {
   /// The port number for the HTTP server configuration.
   var httpServerConfigurationPort: Int { get }

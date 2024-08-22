@@ -31,13 +31,7 @@ import Foundation
 public import Ngrokit
 public import SublimationTunnel
 
-/// A factory for creating Ngrok CLI API servers.
-///
-/// This factory conforms to the `NgrokServerFactory` protocol.
-///
-/// - Note: This factory requires the `NgrokCLIAPI` type to be `Processable`.
-///
-/// - SeeAlso: `NgrokServerFactory`
+/// A factory for creating ``NgrokCLIAPIServer``.
 public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: TunnelServerFactory {
   /// The configuration type for the Ngrok CLI API server.
   public typealias Configuration = NgrokCLIAPIConfiguration
@@ -46,12 +40,17 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: TunnelServerFa
   private let cliAPI: any NgrokCLIAPI
 
   private let ngrokClient: @Sendable () -> NgrokClient
-
-  public init(cliAPI: any NgrokCLIAPI, ngrokClient: @escaping @Sendable () -> NgrokClient) {
+  
+  private init(cliAPI: any NgrokCLIAPI, ngrokClient: @escaping @Sendable () -> NgrokClient) {
     self.cliAPI = cliAPI
     self.ngrokClient = ngrokClient
   }
 
+  
+  /// Sets up a factory to create ``NgrokCLIAPIServer``
+  /// - Parameters:
+  ///   - ngrokPath: Path to the `ngrok` executable.
+  ///   - ngrokClient: Creates a client to consume the local `ngrok` REST API.
   public init(ngrokPath: String, ngrokClient: @escaping @Sendable () -> NgrokClient) {
     self.init(
       cliAPI: NgrokProcessCLIAPI<ProcessType>(ngrokPath: ngrokPath),
