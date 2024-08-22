@@ -40,13 +40,11 @@ public struct NgrokCLIAPIServerFactory<ProcessType: Processable>: TunnelServerFa
   private let cliAPI: any NgrokCLIAPI
 
   private let ngrokClient: @Sendable () -> NgrokClient
-  
-  private init(cliAPI: any NgrokCLIAPI, ngrokClient: @escaping @Sendable () -> NgrokClient) {
+  internal init(cliAPI: any NgrokCLIAPI, ngrokClient: @escaping @Sendable () -> NgrokClient) {
     self.cliAPI = cliAPI
     self.ngrokClient = ngrokClient
   }
 
-  
   /// Sets up a factory to create ``NgrokCLIAPIServer``
   /// - Parameters:
   ///   - ngrokPath: Path to the `ngrok` executable.

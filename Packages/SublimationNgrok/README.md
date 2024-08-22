@@ -1,8 +1,27 @@
-# ``SublimationNgrok``
+# SublimationNgrok
 
 Share your local development server easily with your Apple devices via Ngrok.
 
-![SublimationNgrok Diagram](SublimationNgrok.svg)
+```mermaid
+sequenceDiagram
+    participant DevServer as Development Server
+    participant Sub as Sublimation (Server)
+    participant Ngrok as Ngrok (https://ngrok.com)
+    participant KVdb as KVdb (https://kvdb.io)
+    participant SubClient as Sublimation (Client)
+    participant App as iOS/watchOS App
+    
+    DevServer->>Sub: Start development server
+    Sub->>Ngrok: Request public URL
+    Ngrok-->>Sub: Provide public URL<br/>(https://abc123.ngrok.io)
+    Sub->>KVdb: Store URL with bucket and key<br/>(bucket: "fdjf9012k20cv", key: "dev-server",<br/>url: https://abc123.ngrok.io)
+    App->>SubClient: Request server URL<br/>(bucket: "fdjf9012k20cv", key: "dev-server")
+    SubClient->>KVdb: Request URL<br/>(bucket: "fdjf9012k20cv", key: "dev-server")
+    KVdb-->>SubClient: Provide stored URL<br/>(https://abc123.ngrok.io)
+    SubClient-->>App: Return server URL<br/>(https://abc123.ngrok.io)
+    App->>Ngrok: Connect to development server<br/>(https://abc123.ngrok.io)
+    Ngrok->>DevServer: Forward request to local server
+```
 
 ## Overview
 
@@ -43,7 +62,7 @@ public enum SublimationConfiguration {
 
 ### Server Setup
 
-When creating your `Sublimation` object you'll want to use the provided convenience initializers ``SublimationTunnel/TunnelSublimatory/init(ngrokPath:bucketName:key:application:isConnectionRefused:ngrokClient:)`` to make it easier for **ngrok** integration with the ``SublimationTunnel/TunnelSublimatory``:
+When creating your `Sublimation` object you'll want to use the provided convenience initializers `TunnelSublimatory.init(ngrokPath:bucketName:key:application:isConnectionRefused:ngrokClient:)` to make it easier for **ngrok** integration with the `TunnelSublimatory`:
 
 ```swift
 let tunnelSublimatory = TunnelSublimatory(
@@ -60,7 +79,7 @@ let sublimation = Sublimation(sublimatory: tunnelSublimatory)
 
 ### Client Setup
 
-For the client, you'll need to import the ``SublimationKVdb`` module and retrieve the url via:
+For the client, you'll need to import the `SublimationKVdb` module and retrieve the url via:
 
 ```swift
 let hostURL = try await KVdb.url(
@@ -68,9 +87,3 @@ let hostURL = try await KVdb.url(
   atBucket: SublimationConfiguration.bucketName
 ) 
 ```
-
-## Topics
-
-### Creating a Sublimatory
-
-- ``SublimationTunnel/TunnelSublimatory``
