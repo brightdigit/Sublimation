@@ -3,7 +3,7 @@
 </p>
 <h1 align="center"> Sublimation </h1>
 
-Share your local development server easily with your Apple devices.
+Enable automatic discovery of your local development server on the fly by turning your server-side swift app from a mysterious vapor to a tangible solid server to connect to.
 
 [![SwiftPM](https://img.shields.io/badge/SPM-Linux%20%7C%20iOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-success?logo=swift)](https://swift.org)
 [![Twitter](https://img.shields.io/badge/twitter-@brightdigit-blue.svg?style=flat)](http://twitter.com/brightdigit)
@@ -39,20 +39,20 @@ Share your local development server easily with your Apple devices.
 
 # Introduction
 
-When you are developing a full stack Swift application, you want to easily test and debug your application on both the device (iPhone, Apple Watch, iPad, etc...) as well as your development server. If you are using simulator then setting your host server to `localhost` will work but often we need to test on an actual device. You can either be an IT expert on your local network's DNS or you can use Sublimation to easily connect your local server to your device.
+When you are developing a full stack Swift application, you want to easily test and debug your application on both the device (iPhone, Apple Watch, iPad, etc...) as well as your development server. If you are using simulator then setting your host server to `localhost` will work but often we need to test on an actual device. 
 
 ## Requirements 
 
 **Apple Platforms**
 
-- Xcode 15.0 or later
-- Swift 5.9 or later
+- Xcode 16.0 or later
+- Swift 6.0 or later
 - iOS 17 / watchOS 10.0 / tvOS 17 / macOS 14 or later deployment targets
 
 **Linux**
 
 - Ubuntu 20.04 or later
-- Swift 5.9 or later
+- Swift 6.0 or later
 
 # Installation
 

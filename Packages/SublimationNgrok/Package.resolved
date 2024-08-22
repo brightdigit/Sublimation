@@ -1,6 +1,24 @@
 {
-  "originHash" : "7958b55329765e55415847655566ddfb2dd94a7500820ab1db8731ad8c374073",
+  "originHash" : "85b4010ac0bee3198434d0713f7385fd6a0ec37c728016c19503a8f79d6c5384",
   "pins" : [
+    {
+      "identity" : "ngrokit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/brightdigit/Ngrokit",
+      "state" : {
+        "branch" : "v1.0.0",
+        "revision" : "d8d202a3e1155c47ce5daa6ff4a52d220f35340d"
+      }
+    },
+    {
+      "identity" : "sublimation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/brightdigit/Sublimation",
+      "state" : {
+        "branch" : "32-swift-service-lifecycle-ci",
+        "revision" : "c7629b93877c2f3c04e44f07b898b82fb11a23cc"
+      }
+    },
     {
       "identity" : "swift-http-types",
       "kind" : "remoteSourceControl",
