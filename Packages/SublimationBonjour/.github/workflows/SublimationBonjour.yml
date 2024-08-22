@@ -53,7 +53,7 @@ jobs:
         include:
           - xcode: "/Applications/Xcode_16.1.app"
             os: macos-14
-            iOSVersion: "18.0"
+            iOSVersion: "18.1"
             watchOSVersion: "11.0"
             watchName: "Apple Watch Ultra 2 (49mm)"
             iPhoneName: "iPhone 15 Pro Max"
