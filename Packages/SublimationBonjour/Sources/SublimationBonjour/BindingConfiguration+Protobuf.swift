@@ -13,6 +13,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
+/// Information to advertise how to access the current server.
 public struct BindingConfiguration {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -40,8 +41,10 @@ public struct BindingConfiguration {
 
   package var hosts: [String] = []
 
+  @_documentation(visibility: internal)
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  @_documentation(visibility: internal)
   public init() {}
 
   private var _isSecure: Bool?
