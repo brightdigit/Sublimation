@@ -38,15 +38,13 @@
     public import Logging
   #endif
 
-  public struct URLDefaultConfiguration {
-    public init(isSecure: Bool = false, port: Int = 8080) {
-      self.isSecure = isSecure
-      self.port = port
-    }
-    public let isSecure: Bool
-    public let port: Int
-  }
 
+
+/// Client for fetching the url of the host server.
+/// ```
+/// let depositor = BonjourClient(logger: app.logger)
+/// let hostURL = await depositor.first()
+/// ```
   public actor BonjourClient {
     private let browser: NWBrowser
     private let streams = StreamManager<UUID, URL>()

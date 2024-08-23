@@ -37,27 +37,25 @@
 
   public import Logging
 
-public struct BonjourSublimatory: Sublimatory {
-  public init(
-    bindingConfiguration: BindingConfiguration,
-    logger: Logger,
-    listener: NWListener,
-    name: String = Self.defaultName,
-    type: String = Self.defaultHttpTCPServiceType,
-    listenerQueue: DispatchQueue = .global(),
-    connectionQueue: DispatchQueue = .global()
-  ) {
-    self.bindingConfiguration = bindingConfiguration
-    self.logger = logger
-    self.listener = listener
-    self.name = name
-    self.type = type
-    self.listenerQueue = listenerQueue
-    self.connectionQueue = connectionQueue
-  }
-  
+  public struct BonjourSublimatory: Sublimatory {
+    public init(
+      bindingConfiguration: BindingConfiguration,
+      logger: Logger,
+      listener: NWListener,
+      name: String = Self.defaultName,
+      type: String = Self.defaultHttpTCPServiceType,
+      listenerQueue: DispatchQueue = .global(),
+      connectionQueue: DispatchQueue = .global()
+    ) {
+      self.bindingConfiguration = bindingConfiguration
+      self.logger = logger
+      self.listener = listener
+      self.name = name
+      self.type = type
+      self.listenerQueue = listenerQueue
+      self.connectionQueue = connectionQueue
+    }
 
-  
     public init(
       bindingConfiguration: BindingConfiguration,
       logger: Logger,
@@ -78,10 +76,9 @@ public struct BonjourSublimatory: Sublimatory {
         connectionQueue: connectionQueue
       )
     }
-  
-  let bindingConfiguration: BindingConfiguration
-  let logger: Logger
-  let listener: NWListener
+    let bindingConfiguration: BindingConfiguration
+    let logger: Logger
+    let listener: NWListener
     let name: String
     let type: String
     let listenerQueue: DispatchQueue
@@ -131,9 +128,7 @@ public struct BonjourSublimatory: Sublimatory {
     //      return addresses
     //    }
 
-    public func shutdown() {
-      listener.cancel()
-    }
+    public func shutdown() { listener.cancel() }
     public func run() async throws {
       let data = try self.bindingConfiguration.serializedData()
       let txtRecordValues = data.base64EncodedString().splitByMaxLength(199)

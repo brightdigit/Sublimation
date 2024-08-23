@@ -34,7 +34,7 @@
 
   extension Sublimation {
     /// Initializes a `Sublimation` instance with the provided parameters.
-    /// 
+    ///
     /// - Parameters:
     ///   - bindingConfiguration: A configuration with addresses, port and tls configuration.
     ///   - name: Service name.
@@ -64,7 +64,6 @@
       )
       self.init(sublimatory: sublimatory)
     }
-    
     public convenience init(
       bindingConfiguration: BindingConfiguration,
       logger: Logger,
