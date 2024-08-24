@@ -30,7 +30,7 @@
 #if canImport(Network)
   public import Foundation
 
-  public import Network
+   import Network
 
   #if canImport(os)
     public import os
@@ -41,6 +41,8 @@
 
 
 /// Client for fetching the url of the host server.
+///
+/// On the device, create a ``BonjourClient`` and either get an `AsyncStream` of `URL` objects or just ask for the first one:
 /// ```
 /// let depositor = BonjourClient(logger: app.logger)
 /// let hostURL = await depositor.first()
@@ -51,6 +53,8 @@
     private let logger: Logger?
     private let defaultURLConfiguration: URLDefaultConfiguration
 
+    
+    /// AsyncStream of `URL` from the network.
     public var urls: AsyncStream<URL> {
       get async {
         let browser = browser
@@ -71,6 +75,11 @@
       }
     }
 
+    
+    /// Creates a BonjourClient for fetching the host urls availab.e
+    /// - Parameters:
+    ///   - logger: Logger
+    ///   - defaultURLConfiguration: default ``URL`` configuration for missing properties.
     public init(logger: Logger? = nil, defaultURLConfiguration: URLDefaultConfiguration = .init()) {
       assert(logger != nil)
       let descriptor: NWBrowser.Descriptor
@@ -87,7 +96,7 @@
 
     private nonisolated func append(urls: [URL]) { Task { await self.append(urls: urls) } }
 
-    public nonisolated func parseResults(_ results: Set<NWBrowser.Result>) {
+    private nonisolated func parseResults(_ results: Set<NWBrowser.Result>) {
       Task { await self.addResults(results) }
     }
 
@@ -127,7 +136,7 @@
       }
       return try .init(serializedData: data)
     }
-    public func addResults(_ results: Set<NWBrowser.Result>) {
+    private func addResults(_ results: Set<NWBrowser.Result>) {
       for result in results {
         guard case .bonjour(let txtRecord) = result.metadata else {
           self.logger?.error("No TXT Record for \(result.endpoint.debugDescription)")
@@ -148,6 +157,9 @@
   }
 
   extension BonjourClient {
+    
+    /// First URL for the network.
+    /// - Returns: the first url
     public func first() async -> URL? {
       for await baseURL in await self.urls { return baseURL }
       return nil
