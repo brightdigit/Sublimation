@@ -1,6 +1,6 @@
 //
-//  Sublimatory.swift
-//  Sublimation
+//  NWListener.swift
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,16 +27,19 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-/// Different methods for Sublimation.
-public protocol Sublimatory: Sendable {
-  /// Runs the Sublimatory service.
-  /// -  Note: This method contains long running work, returning from it is seen as a failure.
-  func run() async throws
-  /// Shutdown any active services.
-  func shutdown()
-}
+#if canImport(Network)
+  import Foundation
+  public import Network
 
-extension Sublimatory {
-  /// Shutdown any active services.
-  public func shutdown() {}
-}
+  extension NWListener.State: @retroactive CustomDebugStringConvertible {
+    @_documentation(visibility: internal) public var debugDescription: String {
+      switch self { case .setup: "setup" case .waiting(let error):
+        "waiting: \(error.debugDescription)"
+        case .ready: "ready"
+        case .failed(let error): "failed: \(error.debugDescription)"
+        case .cancelled: "cancelled"
+        @unknown default: "unknown state"
+      }
+    }
+  }
+#endif

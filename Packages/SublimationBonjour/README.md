@@ -1,6 +1,6 @@
 # SublimationBonjour
 
-Share your local development server easily with your Apple devices via Ngrok.
+Use Bonjour for automatic discovery of your Swift Server.
 
 ```mermaid
 sequenceDiagram
@@ -22,12 +22,33 @@ sequenceDiagram
   App->>Server: Connect to server using discovered URL
 ```
 
+## Overview
+
+When the Swift Server begins it will tell Sublimation the ip addresses or host names which are available to access the server from (including the port number and whether to use https or http). This is called a `BonjourSublimatory`. The `BonjourSublimatory` then uses `NWListener` to advertise this information both by send the data encoded using Protocol Buffers as well as inside the Text Record advertised.
+
+The iPhone or Apple Watch then uses a `BonjourClient` to fetch either an  `AsyncStream` of `URL` via `BonjourClient.urls` or simply get the `BonjourClient.first()` one available.
+
+### Setting up your Server
+
+Create a `BindingConfiguration` with:
+
+
+* a list of host names and ip address
+* port number of the server
+* whether the server uses https or http
+
 ```swift
 let bindingConfiguration = BindingConfiguration(
   host: ["Leo's-Mac.local", "192.168.1.10"],
   port: 8080
   isSecure: false
 )
+```
+
+
+Create a `BonjourSublimatory` using that `BindingConfiguration` and include your server's logger. Then attach it to the `Sublimation` object:
+
+```swift
 let bonjour = BonjourSublimatory(
   bindingConfiguration: bindingConfiguration,
   logger: app.logger
@@ -35,69 +56,21 @@ let bonjour = BonjourSublimatory(
 let sublimation = Sublimation(sublimatory : bonjour)
 ```
 
-## Overview
+You can also just create a `Sublimation` object:
 
-Ngrok is a fantastic service for setting up local development server for outside access. Let's say you need to share your local development server because you're testing on an actual device which can't access your machine via your local network. You can run `ngrok` to setup an https address which tunnels to your local development server:
-
-```bash
-> vapor run serve -p 1337
-> ngrok http 1337
-```
-Now you'll get a message saying your vapor app is served through ngrok:
-
-```
-Forwarding https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io -> http://localhost:1337 
-```
-
-With Sublimation you save the address (such as `https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io`) to a key-value storage and pull that address from your Apple device during development.
-
-### Cloud Setup
-
-If you haven't already setup an account with ngrok and install the command-line tool via homebrew. Next let's setup a key-value storage with kvdb.io which is currently supported. _If you have another service, please create an issue in the repo. Your feedback is helpful._ 
-
-Sign up at kvdb.io and get a bucket name you'll use. You'll be using that for your setup. Essentially there are three components you'll need:
-
-* **ngrok executable path**
-    - if you installed via homebrew it's `/opt/homebrew/bin/ngrok` but you can find out using: `which ngrok` after installation
-* your kvdb.io **bucket name**
-* your kvdb.io **key**
-    - you just need to pick something unique for your server and client to use
-
-Save these somewhere in your shared configuration for both your server and client to access, such as an `enum`:
 
 ```swift
-public enum SublimationConfiguration {
-  public static let bucketName = "fdjf9012k20cv"
-  public static let key = "my-"
-}
-```
-
-### Server Setup
-
-When creating your `Sublimation` object you'll want to use the provided convenience initializers `TunnelSublimatory.init(ngrokPath:bucketName:key:application:isConnectionRefused:ngrokClient:)` to make it easier for **ngrok** integration with the `TunnelSublimatory`:
-
-```swift
-let tunnelSublimatory = TunnelSublimatory(
-  ngrokPath: "/opt/homebrew/bin/ngrok", // path to ngrok executable
-  bucketName: SublimationConfiguration.bucketName, // "fdjf9012k20cv"
-  key: SublimationConfiguration.key, // "dev-server"
-  application: { myVaporApplication }, // pass your Vapor.Application here
-  isConnectionRefused: {$.isConnectionRefused}, // supplied by `SublimationVapor`
-  transport: AsyncHTTPClientTransport() // ClientTransport for Vapor
+let sublimation = Sublimation(
+  bindingConfiguration: bindingConfiguration,
+  logger: app.logger
 )
-
-let sublimation = Sublimation(sublimatory: tunnelSublimatory)
 ```
 
-### Client Setup
+#### Setting up your Client
 
-For the client, you'll need to import the `SublimationKVdb` module and retrieve the url via:
+On the device, create a `BonjourClient` and either get an `AsyncStream` of `URL` objects via `BonjourClient.urls` or just ask for the first one using `BonjourClient.first()`:
 
 ```swift
-import SublimationKVdb
-
-let hostURL = try await KVdb.url(
-  withKey: SublimationConfiguration.key, 
-  atBucket: SublimationConfiguration.bucketName
-) 
+let client = BonjourClient(logger: app.logger)
+let hostURL = await client.first()
 ```

@@ -168,7 +168,10 @@ public actor TunnelSublimatory<
     Task { await self.onError(error) }
   }
   private func shutdownServer() { server.shutdown() }
+  /// Shutdown any active services.
   public nonisolated func shutdown() { Task { await self.shutdownServer() } }
+  /// Runs the Sublimatory service.
+  /// -  Note: This method contains long running work, returning from it is seen as a failure.
   public func run() async throws {
 
     let isConnectionRefused = self.isConnectionRefused

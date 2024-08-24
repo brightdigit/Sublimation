@@ -30,7 +30,7 @@
 #if canImport(Network)
   public import Foundation
 
-   import Network
+  import Network
 
   #if canImport(os)
     public import os
@@ -38,22 +38,19 @@
     public import Logging
   #endif
 
-
-
-/// Client for fetching the url of the host server.
-///
-/// On the device, create a ``BonjourClient`` and either get an `AsyncStream` of `URL` objects or just ask for the first one:
-/// ```
-/// let depositor = BonjourClient(logger: app.logger)
-/// let hostURL = await depositor.first()
-/// ```
+  /// Client for fetching the url of the host server.
+  ///
+  /// On the device, create a ``BonjourClient`` and either get an `AsyncStream` of `URL` objects or just ask for the first one:
+  /// ```
+  /// let depositor = BonjourClient(logger: app.logger)
+  /// let hostURL = await depositor.first()
+  /// ```
   public actor BonjourClient {
     private let browser: NWBrowser
     private let streams = StreamManager<UUID, URL>()
     private let logger: Logger?
     private let defaultURLConfiguration: URLDefaultConfiguration
 
-    
     /// AsyncStream of `URL` from the network.
     public var urls: AsyncStream<URL> {
       get async {
@@ -75,7 +72,6 @@
       }
     }
 
-    
     /// Creates a BonjourClient for fetching the host urls availab.e
     /// - Parameters:
     ///   - logger: Logger
@@ -100,42 +96,6 @@
       Task { await self.addResults(results) }
     }
 
-    enum TXTRecordError: Error {
-      case key(String)
-      case index(String)
-      case indexMismatch(Int)
-      case base64Decoding
-    }
-    private static func bindingConfiguration(txtRecordDictionary: [String: String]) throws
-      -> BindingConfiguration
-    {
-      let pairs =
-        try txtRecordDictionary.map { (key: String, value: String) in
-          let components = key.components(separatedBy: "_")
-          guard components.count == 2, components.first == "Sublimation",
-            let indexString = components.last
-          else { throw TXTRecordError.key(key) }
-          guard let index = Int(indexString) else { throw TXTRecordError.index(indexString) }
-          return (index, value)
-        }
-        .sorted { $0.0 < $1.0 }
-      let keys = pairs.map(\.0)
-      var lastIndex: Int?
-      for index in keys {
-        if let lastIndex {
-          guard index == lastIndex + 1 else { throw TXTRecordError.indexMismatch(index) }
-        }
-        else {
-          guard index == 0 else { throw TXTRecordError.indexMismatch(index) }
-        }
-        lastIndex = index
-      }
-      let values = pairs.map(\.1)
-      guard let data: Data = .init(base64Encoded: values.joined()) else {
-        throw TXTRecordError.base64Decoding
-      }
-      return try .init(serializedData: data)
-    }
     private func addResults(_ results: Set<NWBrowser.Result>) {
       for result in results {
         guard case .bonjour(let txtRecord) = result.metadata else {
@@ -144,7 +104,7 @@
         }
         let dictionary = txtRecord.dictionary
         let configuration: BindingConfiguration
-        do { configuration = try Self.bindingConfiguration(txtRecordDictionary: dictionary) }
+        do { configuration = try BindingConfiguration(txtRecordDictionary: dictionary) }
         catch {
           self.logger?
             .error("Failed to parse TXT Record for \(result.endpoint.debugDescription): \(error)")
@@ -157,7 +117,6 @@
   }
 
   extension BonjourClient {
-    
     /// First URL for the network.
     /// - Returns: the first url
     public func first() async -> URL? {

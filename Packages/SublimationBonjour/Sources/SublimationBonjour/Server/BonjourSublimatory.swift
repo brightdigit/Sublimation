@@ -37,7 +37,17 @@
 
   public import Logging
 
+  /// Sublimatory for using Bonjour auto-discovery.
   public struct BonjourSublimatory: Sublimatory {
+    /// Uses a `NWListener` to broadcast the server information.
+    /// - Parameters:
+    ///   - bindingConfiguration: A configuration with addresses, port and tls configuration.
+    ///   - logger: A logger.
+    ///   - listener: The `NWListener` to use.
+    ///   - name: Service name.
+    ///   - type: Service type.
+    ///   - listenerQueue: DispatchQueue for the listener.
+    ///   - connectionQueue: DispatchQueue for each new connection made.
     public init(
       bindingConfiguration: BindingConfiguration,
       logger: Logger,
@@ -56,16 +66,26 @@
       self.connectionQueue = connectionQueue
     }
 
+    /// Creates a `NWListener` to broadcast the server information.
+    /// - Parameters:
+    ///   - bindingConfiguration: A configuration with addresses, port and tls configuration.
+    ///   - logger: A logger.
+    ///   - listenerParameters: The network parameters to use for the listener. Default is `.tcp`.
+    ///   - name: Service name.
+    ///   - type: Service type.
+    ///   - listenerQueue: DispatchQueue for the listener.
+    ///   - connectionQueue: DispatchQueue for each new connection made.
+    /// - Throws: an error if the parameters are not compatible with the provided port.
     public init(
       bindingConfiguration: BindingConfiguration,
       logger: Logger,
-      parameters: NWParameters = Self.defaultParameters,
+      listenerParameters: NWParameters = Self.defaultParameters,
       name: String = Self.defaultName,
       type: String = Self.defaultHttpTCPServiceType,
       listenerQueue: DispatchQueue = .global(),
       connectionQueue: DispatchQueue = .global()
     ) throws {
-      let listener = try NWListener(using: parameters)
+      let listener = try NWListener(using: listenerParameters)
       self.init(
         bindingConfiguration: bindingConfiguration,
         logger: logger,
@@ -83,8 +103,11 @@
     let type: String
     let listenerQueue: DispatchQueue
     let connectionQueue: DispatchQueue
+    /// Default name for the listener service which is "Sublimation"
     public static let defaultName = "Sublimation"
+    /// Default service type which is "_sublimation._tcp".
     public static let defaultHttpTCPServiceType = "_sublimation._tcp"
+    /// Default parameters for the listener which is `NWParameters.tcp`
     public static let defaultParameters: NWParameters = .tcp
 
     //    @available(*, unavailable, message: "Temporary Code for pulling ipaddresses.")
@@ -128,7 +151,10 @@
     //      return addresses
     //    }
 
+    /// Shutdown any active services by cancelling the listener.
     public func shutdown() { listener.cancel() }
+    /// Runs the Sublimatory service.
+    /// -  Note: This method contains long running work, returning from it is seen as a failure.
     public func run() async throws {
       let data = try self.bindingConfiguration.serializedData()
       let txtRecordValues = data.base64EncodedString().splitByMaxLength(199)
