@@ -16,7 +16,7 @@ Using `Sublimation` as Lifecycle Service for application such as Hummingbird.
 [![Codecov](https://img.shields.io/codecov/c/github/brightdigit/SublimationService)](https://codecov.io/gh/brightdigit/SublimationService)
 -->
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/SublimationService)](https://www.codefactor.io/repository/github/brightdigit/SublimationService)
-[![codebeat badge](https://codebeat.co/badges/54695d4b-98c8-4f0f-855e-215500163094)](https://codebeat.co/projects/github-com-brightdigit-SublimationService-main)
+[![codebeat badge](https://codebeat.co/badges/88cc9ee4-5180-4ce5-93c6-a2e23dd532c3)](https://codebeat.co/projects/github-com-brightdigit-SublimationService-main)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/SublimationService)](https://codeclimate.com/github/brightdigit/SublimationService)
 [![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/brightdigit/SublimationService?label=debt)](https://codeclimate.com/github/brightdigit/SublimationService)
 [![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/SublimationService)](https://codeclimate.com/github/brightdigit/SublimationService)
