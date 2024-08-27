@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:brightdigit/SublimationVapor.git
 	branch = v1.0.0
-	commit = 255eefffe6f4da5b0d385d4320a6f6a43abbe32c
+	commit = ca13e3052c964e1158a54e331af2ecb2330d23d4
 	method = merge
 	cmdver = 0.4.9
-	parent = 6a5f932e5e461d695e916ec155f91e4734559116
+	parent = f3a9093db854cfa13827da0bb5b6b0fd7a793b97
