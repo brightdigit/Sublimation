@@ -27,18 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-/// A protocol representing a process for running Ngrok.
-///
-/// - Note: This protocol is `Sendable`, allowing it to be used in asynchronous contexts.
-///
-/// - Important: Implementations of this protocol
-/// must provide a `run` method that runs the Ngrok process.
-///
-/// - Parameter onError: A closure to handle any errors that occur during the process.
-///
-/// - Throws: An error if the process fails to run.
-///
-/// - SeeAlso: `NgrokProcessImplementation`
+/// A type representing a process created by the Ngrok CLI API.
 public protocol NgrokProcess: Sendable {
   ///   Runs the Ngrok process.
   ///

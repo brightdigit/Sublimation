@@ -31,14 +31,7 @@ public import Foundation
 
 #if os(macOS)
 
-  ///   A process that can be processed and executed.
-  ///
-  ///   - Note: This class is only available on macOS.
-  ///
-  ///   - Important: Make sure to set the `standardErrorPipe`
-  ///   property before executing the process.
-  ///
-  ///   - SeeAlso: `Processable`
+  ///   An abstract wrapper for `Process`.
   public final class ProcessableProcess: Processable {
 
     /// The type of pipe used for standard error.

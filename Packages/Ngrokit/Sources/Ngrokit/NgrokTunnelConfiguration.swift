@@ -27,20 +27,13 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-/// Represents the configuration for an Ngrok tunnel.
-///
-/// - Note: This struct is `Sendable`.
-///
-/// - Parameters:
-///   - addr: The URL of the tunnel.
-///   - inspect: A boolean value indicating whether to enable inspection of the tunnel.
-///
 public import Foundation
 
 #if canImport(FoundationNetworking)
   public import FoundationNetworking
 #endif
 
+/// Represents the configuration for an Ngrok tunnel.
 public struct NgrokTunnelConfiguration: Sendable {
   /// The URL of the tunnel.
   public let addr: URL

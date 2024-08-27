@@ -27,12 +27,17 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import Foundation
+import Foundation
 
+/// Non-specific errors thrown by running the process or call the REST API.
 public enum RuntimeError: Error {
+  /// Invalid URL from ``NgrokClient/startTunnel(_:)`` or ``NgrokClient/listTunnels()``
   case invalidURL(String)
-  case invalidErrorData(Data)
+  /// Unknown error thrown during early process termination from ``NgrokProcess/run(onError:)``
   case unknownEarlyTermination(String)
+  /// Unknown error.
   case unknownError
+  /// Unknown Ngrok Error Code.
+  /// - SeeAlso: ``NgrokError``
   case unknownNgrokErrorCode(Int)
 }

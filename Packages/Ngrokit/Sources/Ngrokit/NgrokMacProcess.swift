@@ -33,15 +33,8 @@ import Foundation
 ///
 /// This class conforms to the `NgrokProcess` protocol.
 ///
-/// - Note: This class is an actor,
-/// meaning it can be safely accessed from multiple concurrent tasks.
-///
-/// - Author: Leo Dion
-/// - Version: 2024
-/// - Copyright: © BrightDigit
-///
 /// - SeeAlso: `NgrokProcess`
-public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
+internal actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
 
   private var terminationHandler: (@Sendable (any Error) -> Void)?
   internal let process: ProcessType
@@ -53,7 +46,7 @@ public actor NgrokMacProcess<ProcessType: Processable>: NgrokProcess {
   ///     - ngrokPath: The path to the Ngrok executable.
   ///     - httpPort: The port to use for the HTTP connection.
   ///     - _: The type of process to use.
-  public init(ngrokPath: String, httpPort: Int, processType _: ProcessType.Type) {
+  public init(ngrokPath: String, httpPort: Int, processType: ProcessType.Type) {
     self.init(process: .init(executableFilePath: ngrokPath, scheme: "http", port: httpPort))
   }
 

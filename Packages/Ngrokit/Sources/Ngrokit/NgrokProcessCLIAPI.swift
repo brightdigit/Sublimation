@@ -29,16 +29,17 @@
 
 import Foundation
 
-/// A struct representing the Ngrok CLI API.
+/// Starts the CLI app process.
 ///
-/// Use this API to interact with Ngrok and create tunnels.
+/// ```swift
+/// let cliAPI = NgrokProcessCLIAPI(ngrokPath: "/usr/local/bin/ngrok")
+/// let process = api.process(forHTTPPort: 100)
+/// process.run { let error in
+///   print(error)
+/// }
+/// ```
 ///
 /// - Note: This API requires a valid Ngrok installation.
-///
-/// - Parameters:
-///   - ngrokPath: The path to the Ngrok executable.
-///
-/// - SeeAlso: `NgrokCLIAPI`
 public struct NgrokProcessCLIAPI<ProcessType: Processable> {
   /// The path to the Ngrok executable.
   public let ngrokPath: String
@@ -53,8 +54,6 @@ extension NgrokProcessCLIAPI: NgrokCLIAPI {
   ///   Creates a new `NgrokProcess` for the specified HTTP port.
   ///
   ///   - Parameter httpPort: The port number for the HTTP server.
-  ///
-  ///   - Returns: An instance of `NgrokProcess` for the specified HTTP port.
   public func process(forHTTPPort httpPort: Int) -> any NgrokProcess {
     NgrokMacProcess(ngrokPath: ngrokPath, httpPort: httpPort, processType: ProcessType.self)
   }
