@@ -1,4 +1,7 @@
-# SublimationBonjour
+<p align="center">
+    <img alt="Sublimation" title="Sublimation" src="Sources/SublimationBonjour/Documentation.docc/Resources/SublimationBonjour.svg" height="200">
+</p>
+<h1 align="center"> SublimationBonjour </h1>
 
 Use Bonjour for automatic discovery of your Swift Server.
 
@@ -12,9 +15,7 @@ Use Bonjour for automatic discovery of your Swift Server.
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimationBonjour%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/brightdigit/SublimationBonjour)
 
 
-<!--
 [![Codecov](https://img.shields.io/codecov/c/github/brightdigit/SublimationBonjour)](https://codecov.io/gh/brightdigit/SublimationBonjour)
--->
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/SublimationBonjour)](https://www.codefactor.io/repository/github/brightdigit/SublimationBonjour)
 [![codebeat badge](https://codebeat.co/badges/91d512f0-ab30-42f9-9791-02add3278171)](https://codebeat.co/projects/github-com-brightdigit-SublimationBonjour-main)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/SublimationBonjour)](https://codeclimate.com/github/brightdigit/SublimationBonjour)

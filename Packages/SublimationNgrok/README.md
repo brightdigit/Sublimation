@@ -1,4 +1,7 @@
-# SublimationNgrok
+<p align="center">
+    <img alt="Sublimation" title="Sublimation" src="Sources/SublimationNgrok/Documentation.docc/Resources/SublimationNgrok.svg" height="200">
+</p>
+<h1 align="center">SublimationNgrok</h1>
 
 Share your local development server easily with your Apple devices via Ngrok.
 
@@ -12,9 +15,7 @@ Share your local development server easily with your Apple devices via Ngrok.
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimationNgrok%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/brightdigit/SublimationNgrok)
 
 
-<!--
 [![Codecov](https://img.shields.io/codecov/c/github/brightdigit/SublimationNgrok)](https://codecov.io/gh/brightdigit/SublimationNgrok)
--->
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/SublimationNgrok)](https://www.codefactor.io/repository/github/brightdigit/SublimationNgrok)
 [![codebeat badge](https://codebeat.co/badges/30c1c6a6-c7f5-4c94-8e17-90d3fbd95475)](https://codebeat.co/projects/github-com-brightdigit-SublimationNgrok-main)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/SublimationNgrok)](https://codeclimate.com/github/brightdigit/SublimationNgrok)

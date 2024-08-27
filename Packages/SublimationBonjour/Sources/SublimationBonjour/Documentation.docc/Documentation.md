@@ -2,13 +2,17 @@
 
 Use Bonjour for automatic discovery of your Swift Server.
 
-![SublimationBonjour Diagram](SublimationBonjour.svg)
-
 ## Overview
 
-When the Swift Server begins it will tell Sublimation the ip addresses or host names which are available to access the server from (including the port number and whether to use https or http). This is called a ``BonjourSublimatory``. The ``BonjourSublimatory`` then uses `NWListener` to advertise this information both by send the data encoded using Protocol Buffers as well as inside the Text Record advertised.
+![SublimationBonjour Logo](SublimationBonjour.svg)
 
-The iPhone or Apple Watch then uses a ``BonjourClient`` to fetch either an  `AsyncStream` of `URL` via ``BonjourClient/urls`` or simply get the ``BonjourClient/first()` one available.
+When the Swift Server begins it will tell Sublimation the ip addresses or host names which are available to access the server from (including the port number and whether to use https or http). This is called a ``BonjourSublimatory``. 
+
+![SublimationBonjour Diagram](SublimationBonjour-Diagram.svg)
+
+The ``BonjourSublimatory`` then uses `NWListener` to advertise this information both by send the data encoded using Protocol Buffers as well as inside the Text Record advertised.
+
+The iPhone or Apple Watch then uses a ``BonjourClient`` to fetch either an  `AsyncStream` of `URL` via ``BonjourClient/urls`` or simply get the ``BonjourClient/first()`` one available.
 
 ### Setting up your Server
 

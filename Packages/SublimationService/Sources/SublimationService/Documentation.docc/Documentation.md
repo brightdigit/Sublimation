@@ -4,6 +4,8 @@ Using `Sublimation` as Lifecycle Service for application such as Hummingbird.
 
 ## Overview
 
+![SublimationService Logo](SublimationService.svg)
+
 For instance if you are using this with Hummingbird, you can just add it as a service:
 
 ```swift

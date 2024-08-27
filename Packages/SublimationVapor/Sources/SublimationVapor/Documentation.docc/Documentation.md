@@ -4,6 +4,8 @@ Using `Sublimation` as `LifecycleHandler` for `Vapor`.
 
 ## Overview
 
+![SublimationVapor Logo](SublimationVapor.svg)
+
 For `Vapor`, you add it to the lifecycle of the app:
 
 ```swift

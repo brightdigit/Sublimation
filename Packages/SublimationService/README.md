@@ -1,4 +1,7 @@
-# SublimationService
+<p align="center">
+    <img alt="Sublimation" title="Sublimation" src="Sources/SublimationService/Documentation.docc/Resources/SublimationService.svg" height="200">
+</p>
+<h1 align="center">SublimationService</h1>
 
 Using `Sublimation` as Lifecycle Service for application such as Hummingbird.
 
@@ -12,9 +15,7 @@ Using `Sublimation` as Lifecycle Service for application such as Hummingbird.
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimationService%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/brightdigit/SublimationService)
 
 
-<!--
 [![Codecov](https://img.shields.io/codecov/c/github/brightdigit/SublimationService)](https://codecov.io/gh/brightdigit/SublimationService)
--->
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/SublimationService)](https://www.codefactor.io/repository/github/brightdigit/SublimationService)
 [![codebeat badge](https://codebeat.co/badges/88cc9ee4-5180-4ce5-93c6-a2e23dd532c3)](https://codebeat.co/projects/github-com-brightdigit-SublimationService-main)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/SublimationService)](https://codeclimate.com/github/brightdigit/SublimationService)

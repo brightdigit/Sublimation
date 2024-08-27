@@ -2,9 +2,10 @@
 
 Share your local development server easily with your Apple devices via Ngrok.
 
-![SublimationNgrok Diagram](SublimationNgrok.svg)
 
 ## Overview
+
+![SublimationNgrok Logo](SublimationNgrok.svg)
 
 Ngrok is a fantastic service for setting up local development server for outside access. Let's say you need to share your local development server because you're testing on an actual device which can't access your machine via your local network. You can run `ngrok` to setup an https address which tunnels to your local development server:
 
@@ -17,6 +18,8 @@ Now you'll get a message saying your vapor app is served through ngrok:
 ```
 Forwarding https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io -> http://localhost:1337 
 ```
+
+![SublimationNgrok Diagram](SublimationNgrok-Diagram.svg)
 
 With Sublimation you save the address (such as `https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io`) to a key-value storage and pull that address from your Apple device during development.
 

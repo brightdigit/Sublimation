@@ -1,4 +1,7 @@
-# ``SublimationVapor``
+<p align="center">
+    <img alt="Sublimation" title="Sublimation" src="Sources/SublimationVapor/Documentation.docc/Resources/SublimationVapor.svg" height="200">
+</p>
+<h1 align="center">SublimationVapor</h1>
 
 Using `Sublimation` as `LifecycleHandler` for `Vapor`.
 
