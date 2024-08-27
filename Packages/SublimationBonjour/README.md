@@ -3,8 +3,9 @@
 </p>
 <h1 align="center">SublimationBonjour</h1>
 
-Use Bonjour for automatic discovery of your Swift Server.
+Use [Bonjour](https://developer.apple.com/bonjour/) for [Sublimation](https://github.com/brightdigit/Sublimation) for automatic discovery of your [Swift Server](https://www.swift.org/documentation/server/).
 
+[![](https://img.shields.io/badge/docc-read_documentation-blue)](https://swiftpackageindex.com/brightdigit/SublimationBonjour/documentation)
 [![SwiftPM](https://img.shields.io/badge/SPM-Linux%20%7C%20iOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-success?logo=swift)](https://swift.org)
 [![Twitter](https://img.shields.io/badge/twitter-@brightdigit-blue.svg?style=flat)](http://twitter.com/brightdigit)
 ![GitHub](https://img.shields.io/github/license/brightdigit/SublimationBonjour)
@@ -21,7 +22,6 @@ Use Bonjour for automatic discovery of your Swift Server.
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/SublimationBonjour)](https://codeclimate.com/github/brightdigit/SublimationBonjour)
 [![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/brightdigit/SublimationBonjour?label=debt)](https://codeclimate.com/github/brightdigit/SublimationBonjour)
 [![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/SublimationBonjour)](https://codeclimate.com/github/brightdigit/SublimationBonjour)
-[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 # Table of Contents
 
@@ -31,6 +31,7 @@ Use Bonjour for automatic discovery of your Swift Server.
 * [Usage](#usage)
   * [Setting up your Server](#setting-up-your-server)
   * [Setting up your Client](#setting-up-your-client)
+* [Documentation](#documentation)      
 * [License](#license)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
@@ -77,9 +78,7 @@ The iPhone or Apple Watch then uses a `BonjourClient` to fetch either an  `Async
 
 ## Installation
 
-Sublimation has two components: Server and Client. You can check out the SublimationDemoApp Xcode project for an example.
-
-To integrate **Sublimation** into your app using SPM, specify it in your Package.swift file:
+To integrate **SublimationBonjour** into your app using SPM, specify it in your Package.swift file:
 
 ```swift    
 let package = Package(
@@ -146,6 +145,10 @@ On the device, create a `BonjourClient` and either get an `AsyncStream` of `URL`
 let client = BonjourClient(logger: app.logger)
 let hostURL = await client.first()
 ```
+
+## Documentation
+
+To learn more, check out the full [documentation](https://swiftpackageindex.com/brightdigit/SublimationBonjour/documentation).
 
 # License 
 

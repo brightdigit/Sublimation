@@ -1,6 +1,6 @@
 # ``SublimationBonjour``
 
-Use Bonjour for automatic discovery of your Swift Server.
+Use [Bonjour](https://developer.apple.com/bonjour/) for [Sublimation](https://github.com/brightdigit/Sublimation) for automatic discovery of your [Swift Server](https://www.swift.org/documentation/server/).
 
 ## Overview
 

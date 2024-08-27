@@ -1,7 +1,8 @@
 # Ngrokit
 
-Swift API for Ngrok Agent API.
+Swift API for [Ngrok Agent API](https://ngrok.com/docs/agent/api/).
 
+[![](https://img.shields.io/badge/docc-read_documentation-blue)](https://swiftpackageindex.com/brightdigit/Ngrokit/documentation)
 [![SwiftPM](https://img.shields.io/badge/SPM-Linux%20%7C%20iOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-success?logo=swift)](https://swift.org)
 [![Twitter](https://img.shields.io/badge/twitter-@brightdigit-blue.svg?style=flat)](http://twitter.com/brightdigit)
 ![GitHub](https://img.shields.io/github/license/brightdigit/Ngrokit)
@@ -17,7 +18,6 @@ Swift API for Ngrok Agent API.
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/Ngrokit)](https://codeclimate.com/github/brightdigit/Ngrokit)
 [![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/brightdigit/Ngrokit?label=debt)](https://codeclimate.com/github/brightdigit/Ngrokit)
 [![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/Ngrokit)](https://codeclimate.com/github/brightdigit/Ngrokit)
-[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 # Table of Contents
 
@@ -26,6 +26,7 @@ Swift API for Ngrok Agent API.
 * [Usage](#usage)
     * [Connecting to the Local REST API](#connecting-to-the-local-rest-api)
     * [Starting the CLI Process](#starting-the-cli-process)
+* [Documentation](#documentation)        
 * [License](#license)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
@@ -70,7 +71,7 @@ Ngrokit is an easy to use Swift library for call the local Ngrok API as well as 
 
 ### Connecting to the Local REST API
 
-Using the ``NgrokClient`` to connect to your local development server:
+Using the `NgrokClient` to connect to your local development server:
 
 ```swift
 let client = NgrokClient(transport: URLSession.shared)
@@ -80,7 +81,7 @@ For using different transports see the client list at the [Swift OpenAPI Generat
 
 ### Starting the CLI Process
 
-Start the CLI process by using ``NgrokProcessCLIAPI``:
+Start the CLI process by using `NgrokProcessCLIAPI`:
 
 ```swift
 let cliAPI = NgrokProcessCLIAPI(ngrokPath: "/usr/local/bin/ngrok")
@@ -89,6 +90,11 @@ process.run { let error in
   print(error)
 }
 ```
+
+## Documentation
+
+To learn more, check out the full [documentation](https://swiftpackageindex.com/brightdigit/Ngrokit/documentation).
+
 # License 
 
 This code is distributed under the MIT license. See the [LICENSE](https://github.com/brightdigit/Ngrokit/LICENSE) file for more info.

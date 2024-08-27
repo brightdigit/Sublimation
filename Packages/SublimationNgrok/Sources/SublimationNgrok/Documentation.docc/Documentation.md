@@ -1,7 +1,6 @@
 # ``SublimationNgrok``
 
-Share your local development server easily with your Apple devices via Ngrok.
-
+Share your local development server easily with your Apple devices via [Sublimation](https://github.com/brightdigit/Sublimation) and [Ngrok](https://ngrok.com).
 
 ## Overview
 

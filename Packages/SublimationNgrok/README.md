@@ -3,8 +3,9 @@
 </p>
 <h1 align="center">SublimationNgrok</h1>
 
-Share your local development server easily with your Apple devices via Ngrok.
+Share your local development server easily with your Apple devices via [Sublimation](https://github.com/brightdigit/Sublimation) and [Ngrok](https://ngrok.com).
 
+[![](https://img.shields.io/badge/docc-read_documentation-blue)](https://swiftpackageindex.com/brightdigit/SublimationNgrok/documentation)
 [![SwiftPM](https://img.shields.io/badge/SPM-Linux%20%7C%20iOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-success?logo=swift)](https://swift.org)
 [![Twitter](https://img.shields.io/badge/twitter-@brightdigit-blue.svg?style=flat)](http://twitter.com/brightdigit)
 ![GitHub](https://img.shields.io/github/license/brightdigit/SublimationNgrok)
@@ -14,14 +15,12 @@ Share your local development server easily with your Apple devices via Ngrok.
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimationNgrok%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/brightdigit/SublimationNgrok)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimationNgrok%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/brightdigit/SublimationNgrok)
 
-
 [![Codecov](https://img.shields.io/codecov/c/github/brightdigit/SublimationNgrok)](https://codecov.io/gh/brightdigit/SublimationNgrok)
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/SublimationNgrok)](https://www.codefactor.io/repository/github/brightdigit/SublimationNgrok)
 [![codebeat badge](https://codebeat.co/badges/30c1c6a6-c7f5-4c94-8e17-90d3fbd95475)](https://codebeat.co/projects/github-com-brightdigit-SublimationNgrok-main)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/SublimationNgrok)](https://codeclimate.com/github/brightdigit/SublimationNgrok)
 [![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/brightdigit/SublimationNgrok?label=debt)](https://codeclimate.com/github/brightdigit/SublimationNgrok)
 [![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/SublimationNgrok)](https://codeclimate.com/github/brightdigit/SublimationNgrok)
-[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 # Table of Contents
 
@@ -32,6 +31,7 @@ Share your local development server easily with your Apple devices via Ngrok.
     * [Cloud Setup](#cloud-setup)
     * [Server Setup](#server-setup)
     * [Client Setup](#client-setup)
+* [Documentation](#documentation)    
 * [License](#license)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
@@ -163,6 +163,9 @@ let hostURL = try await KVdb.url(
 ) 
 ```
 
+# Documentation
+
+To learn more, check out the full [documentation](https://swiftpackageindex.com/brightdigit/Ngrokit/documentation).
 
 # License 
 

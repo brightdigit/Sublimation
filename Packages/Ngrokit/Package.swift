@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 
 import PackageDescription
 
@@ -15,16 +15,16 @@ let swiftSettings: [SwiftSetting] = [
   SwiftSetting.enableExperimentalFeature("VariadicGenerics"),
 
   SwiftSetting.enableUpcomingFeature("FullTypedThrows"),
-  SwiftSetting.enableUpcomingFeature("InternalImportsByDefault"),
+  SwiftSetting.enableUpcomingFeature("InternalImportsByDefault")
 
-  SwiftSetting.unsafeFlags([
-    "-Xfrontend",
-    "-warn-long-function-bodies=100"
-  ]),
-  SwiftSetting.unsafeFlags([
-    "-Xfrontend",
-    "-warn-long-expression-type-checking=100"
-  ])
+// SwiftSetting.unsafeFlags([
+//   "-Xfrontend",
+//   "-warn-long-function-bodies=100"
+// ]),
+// SwiftSetting.unsafeFlags([
+//   "-Xfrontend",
+//   "-warn-long-expression-type-checking=100"
+// ])
 ]
 
 let package = Package(

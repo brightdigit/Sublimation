@@ -1,10 +1,10 @@
 # ``Ngrokit``
 
-Swift API for Ngrok's Local API.
+Swift API for [Ngrok Agent API](https://ngrok.com/docs/agent/api/).
 
 ## Overview
 
-Ngrokit is an easy to use Swift library for call the local Ngrok API as well as running the `ngrok` command. 
+Ngrokit is an easy to use Swift library for call the Swift API for [Ngrok Agent API](https://ngrok.com/docs/agent/api/) as well as running the `ngrok` command. 
 
 ### Connecting to the Local REST API
 
