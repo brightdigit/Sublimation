@@ -1,35 +1,26 @@
-# SublimationVapor
+# ``SublimationVapor``
 
 Using `Sublimation` as `LifecycleHandler` for `Vapor`.
 
-# Table of Contents
+ [![SwiftPM](https://img.shields.io/badge/SPM-Linux%20%7C%20iOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-success?logo=swift)](https://swift.org)
+ [![Twitter](https://img.shields.io/badge/twitter-@brightdigit-blue.svg?style=flat)](http://twitter.com/brightdigit)
+ ![GitHub](https://img.shields.io/github/license/brightdigit/SublimationVapor)
+ ![GitHub issues](https://img.shields.io/github/issues/brightdigit/SublimationVapor)
+ ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/brightdigit/SublimationVapor/SublimationVapor.yml?label=actions&logo=github&?branch=main)
 
-* [Introduction](#introduction)
-   * [Requirements](#requirements)
-* [Installation](#installation)
-   * [Server Installation](#server-installation)
-   * [Client Installation](#client-installation)
-* [Bonjour vs Ngrok](#bonjour-vs-ngrok)
-   * [Using Bonjour](#using-bonjour)
-   * [Using Ngrok](#using-ngrok)
-* [License](#license)
+ [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimationVapor%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/brightdigit/SublimationVapor)
+ [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimationVapor%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/brightdigit/SublimationVapor)
 
-# Introduction
 
-For `Vapor`, you add it to the lifecycle of the app:
-
-```swift
-let sublimation = Sublimation(
-  bindingConfiguration: .init(
-    hosts: hosts, 
-    configuration: configuration.hosting
-  )
-)
-
-var app : Application
-
-app.lifecycle.use(sublimation)
-```
+ <!--
+ [![Codecov](https://img.shields.io/codecov/c/github/brightdigit/SublimationVapor)](https://codecov.io/gh/brightdigit/SublimationVapor)
+ -->
+ [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/SublimationVapor)](https://www.codefactor.io/repository/github/brightdigit/SublimationVapor)
+ [![codebeat badge](https://codebeat.co/badges/a0c6c5c9-4718-499d-9533-725572908e17)](https://codebeat.co/projects/github-com-brightdigit-SublimationVapor-main)
+ [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/SublimationVapor)](https://codeclimate.com/github/brightdigit/SublimationVapor)
+ [![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/brightdigit/SublimationVapor?label=debt)](https://codeclimate.com/github/brightdigit/SublimationVapor)
+ [![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/SublimationVapor)](https://codeclimate.com/github/brightdigit/SublimationVapor)
+ [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 ## Requirements 
 
@@ -67,7 +58,23 @@ let package = Package(
 )
 ```
 
+## Usage
+
+For `Vapor`, you add it to the lifecycle of the app:
+
+```swift
+let sublimation = Sublimation(
+  bindingConfiguration: .init(
+    hosts: hosts, 
+    configuration: configuration.hosting
+  )
+)
+
+var app : Application
+
+app.lifecycle.use(sublimation)
+```
+
 # License 
 
 This code is distributed under the MIT license. See the [LICENSE](https://github.com/brightdigit/SublimationVapor/LICENSE) file for more info.
-
