@@ -1,6 +1,6 @@
 # Ngrokit
 
-Swift API for Ngrok's Local API.
+Swift API for Ngrok Agent API.
 
 [![SwiftPM](https://img.shields.io/badge/SPM-Linux%20%7C%20iOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-success?logo=swift)](https://swift.org)
 [![Twitter](https://img.shields.io/badge/twitter-@brightdigit-blue.svg?style=flat)](http://twitter.com/brightdigit)
@@ -11,12 +11,9 @@ Swift API for Ngrok's Local API.
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FNgrokit%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/brightdigit/Ngrokit)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FNgrokit%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/brightdigit/Ngrokit)
 
-
-<!--
 [![Codecov](https://img.shields.io/codecov/c/github/brightdigit/Ngrokit)](https://codecov.io/gh/brightdigit/Ngrokit)
--->
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/Ngrokit)](https://www.codefactor.io/repository/github/brightdigit/Ngrokit)
-[![codebeat badge](https://codebeat.co/badges/91d512f0-ab30-42f9-9791-02add3278171)](https://codebeat.co/projects/github-com-brightdigit-Ngrokit-main)
+[![codebeat badge](https://codebeat.co/badges/c86641f5-fe51-4faa-ad5c-584740e9766b)](https://codebeat.co/projects/github-com-brightdigit-Ngrokit-main)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/Ngrokit)](https://codeclimate.com/github/brightdigit/Ngrokit)
 [![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/brightdigit/Ngrokit?label=debt)](https://codeclimate.com/github/brightdigit/Ngrokit)
 [![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/Ngrokit)](https://codeclimate.com/github/brightdigit/Ngrokit)
@@ -49,9 +46,7 @@ Swift API for Ngrok's Local API.
 
 # Installation
 
-Sublimation has two components: Server and Client. You can check out the SublimationDemoApp Xcode project for an example.
-
-To integrate **Sublimation** into your app using SPM, specify it in your Package.swift file:
+To integrate **Ngrokit** into your app using SPM, specify it in your Package.swift file:
 
 ```swift    
 let package = Package(
