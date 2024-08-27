@@ -2,6 +2,40 @@
 
 Share your local development server easily with your Apple devices via Ngrok.
 
+[![SwiftPM](https://img.shields.io/badge/SPM-Linux%20%7C%20iOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-success?logo=swift)](https://swift.org)
+[![Twitter](https://img.shields.io/badge/twitter-@brightdigit-blue.svg?style=flat)](http://twitter.com/brightdigit)
+![GitHub](https://img.shields.io/github/license/brightdigit/SublimationNgrok)
+![GitHub issues](https://img.shields.io/github/issues/brightdigit/SublimationNgrok)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/brightdigit/SublimationNgrok/SublimationNgrok.yml?label=actions&logo=github&?branch=main)
+
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimationNgrok%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/brightdigit/SublimationNgrok)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimationNgrok%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/brightdigit/SublimationNgrok)
+
+
+<!--
+[![Codecov](https://img.shields.io/codecov/c/github/brightdigit/SublimationNgrok)](https://codecov.io/gh/brightdigit/SublimationNgrok)
+-->
+[![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/SublimationNgrok)](https://www.codefactor.io/repository/github/brightdigit/SublimationNgrok)
+[![codebeat badge](https://codebeat.co/badges/54695d4b-98c8-4f0f-855e-215500163094)](https://codebeat.co/projects/github-com-brightdigit-SublimationNgrok-main)
+[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/SublimationNgrok)](https://codeclimate.com/github/brightdigit/SublimationNgrok)
+[![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/brightdigit/SublimationNgrok?label=debt)](https://codeclimate.com/github/brightdigit/SublimationNgrok)
+[![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/SublimationNgrok)](https://codeclimate.com/github/brightdigit/SublimationNgrok)
+[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
+
+# Table of Contents
+
+* [Introduction](#introduction)
+   * [Requirements](#requirements)
+* [Installation](#installation)
+   * [Server Installation](#server-installation)
+   * [Client Installation](#client-installation)
+* [Bonjour vs Ngrok](#bonjour-vs-ngrok)
+   * [Using Bonjour](#using-bonjour)
+   * [Using Ngrok](#using-ngrok)
+* [License](#license)
+
+# Introduction
+
 ```mermaid
 sequenceDiagram
     participant DevServer as Development Server
@@ -23,8 +57,6 @@ sequenceDiagram
     Ngrok->>DevServer: Forward request to local server
 ```
 
-## Overview
-
 Ngrok is a fantastic service for setting up local development server for outside access. Let's say you need to share your local development server because you're testing on an actual device which can't access your machine via your local network. You can run `ngrok` to setup an https address which tunnels to your local development server:
 
 ```bash
@@ -37,7 +69,45 @@ Now you'll get a message saying your vapor app is served through ngrok:
 Forwarding https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io -> http://localhost:1337 
 ```
 
-With Sublimation you save the address (such as `https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io`) to a key-value storage and pull that address from your Apple device during development.
+With SublimationNgrok you save the address (such as `https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io`) to a key-value storage and pull that address from your Apple device during development.
+
+## Requirements 
+
+**Apple Platforms**
+
+- Xcode 16.0 or later
+- Swift 6.0 or later
+- iOS 17 / watchOS 10.0 / tvOS 17 / macOS 14 or later deployment targets
+
+**Linux**
+
+- Ubuntu 20.04 or later
+- Swift 6.0 or later
+
+# Installation
+
+Sublimation has two components: Server and Client. You can check out the SublimationDemoApp Xcode project for an example.
+
+To integrate **Sublimation** into your app using SPM, specify it in your Package.swift file:
+
+```swift    
+let package = Package(
+  ...
+  dependencies: [
+    .package(url: "https://github.com/brightdigit/SublimationNgrok.git", from: "1.0.0")
+  ],
+  targets: [
+      .target(
+          name: "YourServerApp",
+          dependencies: [
+            .product(name: "SublimationNgrok", package: "SublimationNgrok"), ...
+          ]),
+      ...
+  ]
+)
+```
+
+# Configuration
 
 ### Cloud Setup
 
@@ -89,3 +159,8 @@ let hostURL = try await KVdb.url(
   atBucket: SublimationConfiguration.bucketName
 ) 
 ```
+
+
+# License 
+
+This code is distributed under the MIT license. See the [LICENSE](https://github.com/brightdigit/SublimationNgrok/LICENSE) file for more info.
