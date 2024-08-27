@@ -25,38 +25,12 @@ Using `Sublimation` as Lifecycle Service for application such as Hummingbird.
 
 # Table of Contents
 
-* [Introduction](#introduction)
-   * [Requirements](#requirements)
+* [Requirements](#requirements)
 * [Installation](#installation)
-   * [Server Installation](#server-installation)
-   * [Client Installation](#client-installation)
-* [Bonjour vs Ngrok](#bonjour-vs-ngrok)
-   * [Using Bonjour](#using-bonjour)
-   * [Using Ngrok](#using-ngrok)
+* [Usage](#usage)
 * [License](#license)
 
-# Introduction
-
-For instance if you are using this with Hummingbird, you can just add it as a service:
-
-```swift
-let sublimation = Sublimation(
-  bindingConfiguration: .init(
-    hosts: hosts, 
-    configuration: configuration.hosting
-  )
-)
-
-var app = Application(
-  router: router,
-  server: .http1WebSocketUpgrade(webSocketRouter: wsRouter),
-  configuration: .init(address: .init(setup: configuration.hosting))
-)
-
-app.addServices(sublimation)
-```
-
-## Requirements 
+# Requirements 
 
 **Apple Platforms**
 
@@ -90,6 +64,27 @@ let package = Package(
       ...
   ]
 )
+```
+
+# Usage
+
+For instance if you are using this with Hummingbird, you can just add it as a service:
+
+```swift
+let sublimation = Sublimation(
+  bindingConfiguration: .init(
+    hosts: hosts, 
+    configuration: configuration.hosting
+  )
+)
+
+var app = Application(
+  router: router,
+  server: .http1WebSocketUpgrade(webSocketRouter: wsRouter),
+  configuration: .init(address: .init(setup: configuration.hosting))
+)
+
+app.addServices(sublimation)
 ```
 
 # License 

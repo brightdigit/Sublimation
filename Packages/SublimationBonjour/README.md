@@ -1,7 +1,7 @@
 <p align="center">
     <img alt="Sublimation" title="Sublimation" src="Sources/SublimationBonjour/Documentation.docc/Resources/SublimationBonjour.svg" height="200">
 </p>
-<h1 align="center"> SublimationBonjour </h1>
+<h1 align="center">SublimationBonjour</h1>
 
 Use Bonjour for automatic discovery of your Swift Server.
 
@@ -26,14 +26,15 @@ Use Bonjour for automatic discovery of your Swift Server.
 # Table of Contents
 
 * [Introduction](#introduction)
-   * [Requirements](#requirements)
-* [Installation](#installation)
-   * [Server Installation](#server-installation)
-   * [Client Installation](#client-installation)
-* [Bonjour vs Ngrok](#bonjour-vs-ngrok)
-   * [Using Bonjour](#using-bonjour)
-   * [Using Ngrok](#using-ngrok)
+  * [Requirements](#requirements)
+  * [Installation](#installation)
+* [Usage](#usage)
+  * [Setting up your Server](#setting-up-your-server)
+  * [Setting up your Client](#setting-up-your-client)
 * [License](#license)
+
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+
 
 # Introduction
 
@@ -74,7 +75,7 @@ The iPhone or Apple Watch then uses a `BonjourClient` to fetch either an  `Async
 - Ubuntu 20.04 or later
 - Swift 6.0 or later
 
-# Installation
+## Installation
 
 Sublimation has two components: Server and Client. You can check out the SublimationDemoApp Xcode project for an example.
 
@@ -97,7 +98,7 @@ let package = Package(
 )
 ```
 
-# Configuration
+# Usage
 
 ## Setting up your Server
 

@@ -21,15 +21,14 @@ Swift API for Ngrok Agent API.
 
 # Table of Contents
 
-* [Introduction](#introduction)
-   * [Requirements](#requirements)
+* [Requirements](#requirements)
 * [Installation](#installation)
-   * [Server Installation](#server-installation)
-   * [Client Installation](#client-installation)
-* [Bonjour vs Ngrok](#bonjour-vs-ngrok)
-   * [Using Bonjour](#using-bonjour)
-   * [Using Ngrok](#using-ngrok)
+* [Usage](#usage)
+    * [Connecting to the Local REST API](#connecting-to-the-local-rest-api)
+    * [Starting the CLI Process](#starting-the-cli-process)
 * [License](#license)
+
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
 
 # Requirements 
 
@@ -79,7 +78,7 @@ let client = NgrokClient(transport: URLSession.shared)
 
 For using different transports see the client list at the [Swift OpenAPI Generator](https://github.com/apple/swift-openapi-generator?tab=readme-ov-file#package-ecosystem). 
 
-### Starting the CLI Process.
+### Starting the CLI Process
 
 Start the CLI process by using ``NgrokProcessCLIAPI``:
 

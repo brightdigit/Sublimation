@@ -25,7 +25,18 @@ Using `Sublimation` as `LifecycleHandler` for `Vapor`.
  [![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/SublimationVapor)](https://codeclimate.com/github/brightdigit/SublimationVapor)
  [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
-## Requirements 
+
+# Table of Contents
+
+* [Table of Contents](#table-of-contents)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Usage](#usage)
+* [License](#license)
+
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+
+# Requirements 
 
 **Apple Platforms**
 
@@ -61,7 +72,7 @@ let package = Package(
 )
 ```
 
-## Usage
+# Usage
 
 For `Vapor`, you add it to the lifecycle of the app:
 

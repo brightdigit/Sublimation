@@ -26,14 +26,16 @@ Share your local development server easily with your Apple devices via Ngrok.
 # Table of Contents
 
 * [Introduction](#introduction)
-   * [Requirements](#requirements)
-* [Installation](#installation)
-   * [Server Installation](#server-installation)
-   * [Client Installation](#client-installation)
-* [Bonjour vs Ngrok](#bonjour-vs-ngrok)
-   * [Using Bonjour](#using-bonjour)
-   * [Using Ngrok](#using-ngrok)
+  * [Requirements](#requirements)
+  * [Installation](#installation)
+* [Usage](#usage)
+    * [Cloud Setup](#cloud-setup)
+    * [Server Setup](#server-setup)
+    * [Client Setup](#client-setup)
 * [License](#license)
+
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+
 
 # Introduction
 
@@ -85,7 +87,7 @@ With SublimationNgrok you save the address (such as `https://c633-2600-1702-4050
 - Ubuntu 20.04 or later
 - Swift 6.0 or later
 
-# Installation
+## Installation
 
 Sublimation has two components: Server and Client. You can check out the SublimationDemoApp Xcode project for an example.
 
@@ -108,7 +110,7 @@ let package = Package(
 )
 ```
 
-# Configuration
+# Usage
 
 ### Cloud Setup
 
