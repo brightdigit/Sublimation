@@ -16,7 +16,7 @@ Share your local development server easily with your Apple devices via Ngrok.
 [![Codecov](https://img.shields.io/codecov/c/github/brightdigit/SublimationNgrok)](https://codecov.io/gh/brightdigit/SublimationNgrok)
 -->
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/SublimationNgrok)](https://www.codefactor.io/repository/github/brightdigit/SublimationNgrok)
-[![codebeat badge](https://codebeat.co/badges/54695d4b-98c8-4f0f-855e-215500163094)](https://codebeat.co/projects/github-com-brightdigit-SublimationNgrok-main)
+[![codebeat badge](https://codebeat.co/badges/30c1c6a6-c7f5-4c94-8e17-90d3fbd95475)](https://codebeat.co/projects/github-com-brightdigit-SublimationNgrok-main)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/SublimationNgrok)](https://codeclimate.com/github/brightdigit/SublimationNgrok)
 [![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/brightdigit/SublimationNgrok?label=debt)](https://codeclimate.com/github/brightdigit/SublimationNgrok)
 [![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/SublimationNgrok)](https://codeclimate.com/github/brightdigit/SublimationNgrok)
