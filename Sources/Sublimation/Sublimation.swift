@@ -33,7 +33,11 @@ public import SublimationCore
 
 /// Adds the ability to auto-discover development urls to your full stack applicaiton.
 public final class Sublimation: Sendable {
+  /// Implementation for publishing and discovering the development server url.
   public let sublimatory: any Sublimatory
 
+  
+  /// Creates an object to auto-discover development urls to your full stack applicaiton.
+  /// - Parameter sublimatory: Method for publishing and discovering the development server url.
   public init(sublimatory: any Sublimatory) { self.sublimatory = sublimatory }
 }

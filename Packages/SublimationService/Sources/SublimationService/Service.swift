@@ -31,7 +31,10 @@ public import ServiceLifecycle
 
 @_exported public import class Sublimation.Sublimation
 
+/// Implementation for `ServiceLifecycle`.
 extension Sublimation: @retroactive Service {
+  /// Implementation for `ServiceLifecycle`.
+  /// This method is called when the ServiceGroup is starting all the services.
   public func run() async throws {
     try await withGracefulShutdownHandler {
       try await self.sublimatory.run()
