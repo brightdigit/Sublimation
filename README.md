@@ -29,8 +29,32 @@ Enable automatic discovery of your local development server on the fly by turnin
 * [License](#license)
 
 # Introduction
+   
 
 When you are developing a full stack Swift application, you want to easily test and debug your application on both the device (iPhone, Apple Watch, iPad, etc...) as well as your development server. If you are using simulator then setting your host server to `localhost` will work but often we need to test on an actual device. 
+
+For the server and client we need a way to communicate that information without the client knowing where the server is initially.
+
+```mermaid
+flowchart TD
+%% Nodes for devices with Font Awesome icons
+    subgraph Devices
+    iPhone("fa:fa-mobile-alt iPhone")
+    Watch("fa:fa-square Apple Watch")
+    iPad("fa:fa-tablet-alt iPad")
+    VisionPro("fa:fa-vr-cardboard Vision Pro")
+    end
+    
+%% Node for Sublimation service with Font Awesome package icon
+    Sublimation("fa:fa-box Sublimation")
+
+%% Node for API server with Font Awesome icon
+    Server("fa:fa-server API Server")
+
+%% Edge connections
+    Devices <--> Sublimation
+    Sublimation <--> Server
+```
 
 ## Requirements 
 
@@ -45,151 +69,104 @@ When you are developing a full stack Swift application, you want to easily test 
 - Ubuntu 20.04 or later
 - Swift 6.0 or later
 
-<!--  # Installation
+For older operating systems or Swift versions, check out [the main branch and 1.0.0 releases](https://github.com/brightdigit/Sublimation).
 
-Sublimation has two components: Server and Client. You can check out the SublimationDemoApp Xcode project for an example.
+## Package Ecosystem
 
-## Server Installation
+| Repository                                                 | Description                                        |
+| ----------                                                 | -----------                                        |
+| [**SublimationBonjour**](https://github.com/brightdigit/SublimationBonjour) | `Sublimatory` for using [Bonjour](https://developer.apple.com/bonjour/) for auto-discovery for development server.                      |
+| [**SublimationNgrok**](https://github.com/brightdigit/SublimationNgrok) | `Sublimatory` for using [Ngrok](https://ngrok.com/) and [KVdb](https://kvdb.io) to create public urls and share them.   |
+| [**SublimationService**](https://github.com/brightdigit/SublimationService) | Use **Sublimation** as a [Lifecycle Service](https://github.com/swift-server/swift-service-lifecycle).   |
+| [**SublimationVapor**](https://github.com/brightdigit/SublimationVapor) |   Use **Sublimation** as a [Vapor Lifecycle Handler](https://docs.vapor.codes/advanced/services/#lifecycle).      |
 
-To integrate **Sublimation** into your Vapor app using SPM, specify it in your Package.swift file:
+```mermaid
+graph TD
+    A[Which Sublimation Packages to Use] --> B{Need to publicly share URL?}
+    B -->|Yes| C[Use **SublimationNgrok**]
+    B -->|No| D[Use **SublimationBonjour**]
+    C --> E{Which server framework?}
+    D --> E
+    E -->|*Vapor*| F[Use **SublimationVapor**]
+    E -->|*Hummingbird* or other *Lifecycle Service*| G[Use **SublimationService** ]
+```
 
-```swift    
+To use **Sublimation**, you'll need to choose:
+
+* **Sublimatory**, that is the method by which you advertise the development server
+  * [**Bonjour**](https://developer.apple.com/bonjour/) via [SublimationBonjour](https://github.com/brightdigit/SublimationBonjour)  
+  * [**Ngrok**](https://ngrok.com/) via [SublimationNgrok](https://github.com/brightdigit/SublimationBonjour) _which is only needed if you need to advertise your address publicaly_ 
+* How it connects to the server
+  * [Lifecycle Handler for Vapor](https://docs.vapor.codes/advanced/services/#lifecycle) via [SublimationVapor](https://github.com/brightdigit/SublimationBonjour)
+  * [Lifecycle Service](https://github.com/swift-server/swift-service-lifecycle) via [SublimationService](https://github.com/brightdigit/SublimationBonjour) _for server frameworks such as [Hummingbird](https://docs.hummingbird.codes/2.0/documentation/hummingbird/)_
+
+## Usage
+
+For instance if you were using Bonjour with Hummingbird and an iOS app your package may look something like this:
+
+```swift
 let package = Package(
   ...
   dependencies: [
-    .package(url: "https://github.com/brightdigit/Sublimation.git", from: "2.0.0-alpha.3")
+    .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.0.0-alpha.1"),
+    .package(url: "https://github.com/brightdigit/SublimationBonjour.git", from: "1.0.0"),
+    .package(url: "https://github.com/brightdigit/SublimationService.git", from: "1.0.0")
   ],
   targets: [
+
       .target(
-          name: "YourVaporServerApp",
+          name: "YouriOSApp",
           dependencies: [
-            .product(name: "SublimationVapor", package: "Sublimation"), ...
+            .product(name: "SublimationBonjour", package: "SublimationBonjour"),
+            ...
+          ]),
+      ...
+      .target(
+          name: "YourServerApp",
+          dependencies: [
+            .product(name: "Hummingbird", package: "hummingbird"),
+            .product(name: "SublimationBonjour", package: "SublimationBonjour"),
+            .product(name: "SublimationService", package: "SublimationService"), 
+            ...
           ]),
       ...
   ]
 )
 ```
 
-## Client Installation
-
-In your Xcode project, add the swift package for Sublimation at:
-
-```
-https://github.com/brightdigit/Sublimation.git
-```
-
-In your application target, you only need a reference to the `Sublimation` library. 
-
-# Bonjour vs Ngrok
-
-Unless you need public exposure for your development server, **your best bet is to use _Bonjour_ for letting your devices know about your server.** 
-
-## Using Bonjour
-
-In order to use Bonjour to notify your network devices of your server, you need to add Sublimation as part of [the lifecycle of your server application](https://docs.vapor.codes/advanced/services/#lifecycle). By default, Sublimation uses Bonjour and all the default parameters should be sufficient. Here's an example for Vapor:
+If you were to use Vapor and Ngrok instead, it'd look more like this:
 
 ```swift
-#if os(macOS) && DEBUG
-  app.lifecycle.use(
-    Sublimation()
-  )
-#endif
-```
+let package = Package(
+  ...
+  dependencies: [
+    .package(url: "https://github.com/vapor/vapor.git", from: "4.76.0"),
+    .package(url: "https://github.com/brightdigit/SublimationNgrok.git", from: "1.0.0"),
+    .package(url: "https://github.com/brightdigit/SublimationVapor.git", from: "1.0.0")
+  ],
+  targets: [
 
-Notice:
-1. You'll only want to **run this in development.**
-2. Sublimation **only works on macOS** and not Linux.
-
-### How it works 
-
-The `BonjourSublimatory` does 2 things:
-
-1. Gets the address of the server host.
-2. Start an [`NWListener`](https://developer.apple.com/documentation/network/nwlistener) to advertise those addresses.
-
-Once your server is started, it should automatically advertise these on your local network. 
-
-In your client application, you'll need to create a `BonjourDepositor`. The `BonjourDepositor` searches your network for you development server. You can call 'BonjourDepositor.urls' to get an [`AsyncStream`](https://developer.apple.com/documentation/swift/asyncstream) of urls. However in most cases `.first` should be sufficient:
-
-```swift
-let baseURL : URL
-#if os(macOS) && DEBUG
-  let depositor = BonjourDepositor()
-  // hostURL = http://192.168.0.1
-  guard let hostURL = await depositor.first() else {
-    // handle when no url is returned
-  }
-  // hostURL = http://192.168.0.1/api/v1/
-  baseURL = hostURL.appendPathComponent("/api/v1/")
-#else
-  // handle instances where the server is running 
-  //  outside of your development environment (i.e. staging, production, etc...)
-#endif
-```
-
-## Using Ngrok
-
-[Ngrok](https://ngrok.com) is a fantastic service for setting up local development server for outside access. Let's say you need to share your local development server because you're testing on an actual device which can't access your machine via your local network. You can run `ngrok` to setup an https address which tunnels to your local development server:
-
-```bash
-> vapor run serve -p 1337
-> ngrok http 1337
-```
-Now you'll get a message saying your vapor app is served through ngrok:
-
-```
-Forwarding https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io -> http://localhost:1337 
-```
-
-Sublimation can be used to automate this process and let your client devices automatically know.
-
-### Using the Cloud for Meta-Server Access
-
-With Sublimation and Ngrok you save the address (such as `https://c633-2600-1702-4050-7d30-cc59-3ffb-effa-6719.ngrok.io`) to a key-value storage and pull that address from your Apple device during development.
-
-### Cloud Setup
-
-If you haven't already setup an account with ngrok and install the command-line tool via homebrew. Next let's setup a key-value storage with kvdb.io which is currently supported. _If you have another service, please create an issue in the repo. Your feedback is helpful._ 
-
-Sign up at [kvdb.io](https://kvdb.io) and get a bucket name you'll use. You'll be using that for your setup. Essentially there are three components you'll need:
-
-* path to ngrok on your machine - if you installed via homebrew it's `/opt/homebrew/bin/ngrok` but you can find out using: `which ngrok` after installation
-* your kvdb.io bucket name 
-* your kvdb.io key - you just need to pick something unique for your server and client to use
-
-Now let's setup your Vapor server application...
-
-### On your server
-
-`Sublimation`  makes it easy to setup `Ngrok` by passing in the path to ngrok and the information from KVdb. Simply add `Sublimation` to your server application. In the case of Vapor add it to your lifecycle:
-
-```swift
-let app = Application(env)
-...
-app.lifecycle.use(
-  Sublimation(
-    ngrokPath: "/opt/homebrew/bin/ngrok",
-    bucketName: "bucket-name",
-    key: "application key name"
-  )
+      .target(
+          name: "YouriOSApp",
+          dependencies: [
+            .product(name: "SublimationKVdb", package: "SublimationNgrok"),
+            ...
+          ]),
+      ...
+      .target(
+          name: "YourServerApp",
+          dependencies: [
+            .product(name: "Vapor", package: "vapor"),
+            .product(name: "SublimationNgrok", package: "SublimationNgrok"),
+            .product(name: "SublimationVapor", package: "SublimationVapor"), 
+            ...
+          ]),
+      ...
+  ]
 )
 ```
 
-This will run `ngrok` and setup the forwarding address. Once it receives the address it saves it your kvdb bucket with key setup here.
-
-Remember the ngrok path is the path from your development machine while the bucket name is from kvdb.io. However, the key can be anything you want as long as it's consistent and used by your client. Speaking of your client, let's talk about setting this up in your iOS app.
-
-### On your device
-
-Now to pull the url saved by your service, all you have to call is:
-
-```swift
-import Sublimation
-
-let baseURL = try await KVdb.url(withKey: key, atBucket: bucketName)
-```
-
-At the point, you'll have the base url of your Vapor application and can begin using it in your application! -->
+Please check the respective package documentation from the [Package Ecosystem](#package-ecosystem) section.
 
 ## Documentation
 
