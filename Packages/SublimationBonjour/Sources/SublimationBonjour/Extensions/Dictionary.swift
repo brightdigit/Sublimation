@@ -1,5 +1,5 @@
 //
-//  NWListener.swift
+//  Dictionary.swift
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
@@ -27,19 +27,21 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
-  import Foundation
-  public import Network
+import Foundation
 
-  extension NWListener.State: @retroactive CustomDebugStringConvertible {
-    public var debugDescription: String {
-      switch self { case .setup: "setup" case .waiting(let error):
-        "waiting: \(error.debugDescription)"
-        case .ready: "ready"
-        case .failed(let error): "failed: \(error.debugDescription)"
-        case .cancelled: "cancelled"
-        @unknown default: "unknown state"
+extension Dictionary where Key == String, Value == String {
+  internal init(
+    txtRecordData: Data,
+    maximumValueSize: Int,
+    separator: String = "_",
+    keyPrefix: String? = nil
+  ) {
+    let txtRecordValues = txtRecordData.base64EncodedString().splitByMaxLength(maximumValueSize)
+    self = txtRecordValues.enumerated()
+      .reduce(into: [String: String]()) { result, value in
+        let key = [keyPrefix, value.offset.description].compactMap { $0 }
+          .joined(separator: separator)
+        result[key] = String(value.element)
       }
-    }
   }
-#endif
+}

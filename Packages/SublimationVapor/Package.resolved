@@ -1,5 +1,5 @@
 {
-  "originHash" : "49c1bb8aba22bf7b613b03664612493df9307c7e49583804aa9c4d8bf04edfc8",
+  "originHash" : "0c88b85ac6090de7062b91cb155ebaafb0e18b074ab2fe3b5426968ad093743b",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -44,6 +44,15 @@
       "state" : {
         "revision" : "8c9a227476555c55837e569be71944e02a056b72",
         "version" : "4.9.1"
+      }
+    },
+    {
+      "identity" : "sublimation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/brightdigit/Sublimation",
+      "state" : {
+        "branch" : "32-swift-service-lifecycle-ci",
+        "revision" : "c7629b93877c2f3c04e44f07b898b82fb11a23cc"
       }
     },
     {

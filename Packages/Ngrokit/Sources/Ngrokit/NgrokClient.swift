@@ -42,19 +42,12 @@ public import OpenAPIRuntime
 /// To create an instance of `NgrokClient`,
 /// you need to provide a transport and an optional server URL.
 ///
-/// Example usage:
-///
 /// ```swift
 /// let client = NgrokClient(transport: URLSession.shared)
 /// ```
-///
-/// - Note: The default server URL is `try! Servers.server1()`.
-///
-/// - SeeAlso: `TunnelRequest`
-/// - SeeAlso: `Tunnel`
 public struct NgrokClient: Sendable {
   // swift-format-ignore: NeverUseForceTry
-  /// The default server URL.
+  /// The default server URL which is `http://127.0.0.1:4040`N.
   public static let defaultServerURL = try! Servers.server1()
 
   private let underlyingClient: any APIProtocol

@@ -1,6 +1,15 @@
 {
-  "originHash" : "4b8f25c35c962841ff227e4288109e4be5517432d085d246b9e38b78053691fc",
+  "originHash" : "324068fd6ee6b7e9557628a9b3f2dc1278a1e9c76565625e94b09f9cfa474979",
   "pins" : [
+    {
+      "identity" : "sublimation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/brightdigit/Sublimation",
+      "state" : {
+        "branch" : "32-swift-service-lifecycle-ci",
+        "revision" : "c7629b93877c2f3c04e44f07b898b82fb11a23cc"
+      }
+    },
     {
       "identity" : "swift-log",
       "kind" : "remoteSourceControl",

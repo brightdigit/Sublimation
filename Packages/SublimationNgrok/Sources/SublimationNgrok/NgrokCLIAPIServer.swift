@@ -33,12 +33,7 @@ public import Ngrokit
 public import OpenAPIRuntime
 public import SublimationTunnel
 
-/// A server implementation for Ngrok CLI API.
-///
-/// - Note: This server conforms to the `NgrokServer` and `Sendable` protocols.
-///
-/// - SeeAlso: `NgrokServer`
-/// - SeeAlso: `Sendable`
+/// A `TunnelServer` server implementation using the Ngrok CLI API.
 public struct NgrokCLIAPIServer: TunnelServer, Sendable {
   public typealias ConnectionErrorType = ClientError
 

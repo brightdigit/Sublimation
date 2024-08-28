@@ -42,7 +42,7 @@ let package = Package(
     .library(name: "SublimationCore", targets: ["SublimationCore"])
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.26.0"),
+//    .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.26.0"),
     .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0")
   ],
   targets: [  

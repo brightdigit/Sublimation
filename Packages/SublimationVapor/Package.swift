@@ -15,16 +15,16 @@ let swiftSettings: [SwiftSetting] = [
   SwiftSetting.enableExperimentalFeature("VariadicGenerics"),
 
   SwiftSetting.enableUpcomingFeature("FullTypedThrows"),
-  SwiftSetting.enableUpcomingFeature("InternalImportsByDefault"),
+  SwiftSetting.enableUpcomingFeature("InternalImportsByDefault")
 
-  SwiftSetting.unsafeFlags([
-    "-Xfrontend",
-    "-warn-long-function-bodies=100"
-  ]),
-  SwiftSetting.unsafeFlags([
-    "-Xfrontend",
-    "-warn-long-expression-type-checking=100"
-  ])
+//  SwiftSetting.unsafeFlags([
+//    "-Xfrontend",
+//    "-warn-long-function-bodies=100"
+//  ]),
+//  SwiftSetting.unsafeFlags([
+//    "-Xfrontend",
+//    "-warn-long-expression-type-checking=100"
+//  ])
 ]
 
 let package = Package(
@@ -45,10 +45,6 @@ let package = Package(
     .package(
       url: "https://github.com/vapor/vapor.git",
       from: "4.92.0"
-    ),
-    .package(
-      url: "https://github.com/apple/swift-openapi-runtime",
-      from: "1.0.0"
     ),
     .package(
       url: "https://github.com/swift-server/swift-openapi-async-http-client",

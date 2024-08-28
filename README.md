@@ -1,9 +1,9 @@
 <p align="center">
-    <img alt="Sublimation" title="Sublimation" src="Assets/logo.svg" height="200">
+    <img alt="Sublimation" title="Sublimation" src="Sources/Sublimation/Documentation.docc/Resources/Sublimation.svg" height="200">
 </p>
 <h1 align="center"> Sublimation </h1>
 
-Share your local development server easily with your Apple devices.
+Enable automatic discovery of your local development server on the fly by turning your server-side swift app from a mysterious vapor to a tangible solid server to connect to.
 
 [![SwiftPM](https://img.shields.io/badge/SPM-Linux%20%7C%20iOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-success?logo=swift)](https://swift.org)
 [![Twitter](https://img.shields.io/badge/twitter-@brightdigit-blue.svg?style=flat)](http://twitter.com/brightdigit)
@@ -14,10 +14,7 @@ Share your local development server easily with your Apple devices.
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimation%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/brightdigit/Sublimation)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimation%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/brightdigit/Sublimation)
 
-
-<!--
 [![Codecov](https://img.shields.io/codecov/c/github/brightdigit/Sublimation)](https://codecov.io/gh/brightdigit/Sublimation)
--->
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/Sublimation)](https://www.codefactor.io/repository/github/brightdigit/Sublimation)
 [![codebeat badge](https://codebeat.co/badges/54695d4b-98c8-4f0f-855e-215500163094)](https://codebeat.co/projects/github-com-brightdigit-Sublimation-main)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/Sublimation)](https://codeclimate.com/github/brightdigit/Sublimation)
@@ -39,20 +36,20 @@ Share your local development server easily with your Apple devices.
 
 # Introduction
 
-When you are developing a full stack Swift application, you want to easily test and debug your application on both the device (iPhone, Apple Watch, iPad, etc...) as well as your development server. If you are using simulator then setting your host server to `localhost` will work but often we need to test on an actual device. You can either be an IT expert on your local network's DNS or you can use Sublimation to easily connect your local server to your device.
+When you are developing a full stack Swift application, you want to easily test and debug your application on both the device (iPhone, Apple Watch, iPad, etc...) as well as your development server. If you are using simulator then setting your host server to `localhost` will work but often we need to test on an actual device. 
 
 ## Requirements 
 
 **Apple Platforms**
 
-- Xcode 15.0 or later
-- Swift 5.9 or later
+- Xcode 16.0 or later
+- Swift 6.0 or later
 - iOS 17 / watchOS 10.0 / tvOS 17 / macOS 14 or later deployment targets
 
 **Linux**
 
 - Ubuntu 20.04 or later
-- Swift 5.9 or later
+- Swift 6.0 or later
 
 # Installation
 

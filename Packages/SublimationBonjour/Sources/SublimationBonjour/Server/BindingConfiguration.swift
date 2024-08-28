@@ -1,5 +1,5 @@
 //
-//  Sublimation+Bonjour.swift
+//  BindingConfiguration.swift
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
@@ -27,32 +27,31 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
-  public import Network
-  public import Sublimation
-
-  extension Sublimation {
-    /// Initializes a `Sublimation` instance with the provided parameters.
-    ///
-    /// - Parameters:
-    ///   - bindingConfiguration: A configuration with addresses, port and tls configuration.
-    ///   - name: Service name.
-    ///   - type: Service type.
-    ///   - listenerParameters: The network parameters to use for the listener. Default is `.tcp`.
-    ///
-    public convenience init(
-      bindingConfiguration: BindingConfiguration,
-      name: String = BonjourSublimatory.defaultName,
-      type: String = BonjourSublimatory.defaultHttpTCPServiceType,
-      listenerParameters: NWParameters = .tcp
-    ) {
-      let sublimatory = BonjourSublimatory(
-        serverConfiguration: bindingConfiguration,
-        name: name,
-        type: type,
-        parameters: listenerParameters
-      )
-      self.init(sublimatory: sublimatory)
-    }
+extension BindingConfiguration {
+  /// Information to advertise how to connect to the server.
+  ///
+  /// ```
+  /// let bindingConfiguration = BindingConfiguration(
+  ///   host: ["Leo's-Mac.local", "192.168.1.10"],
+  ///   port: 8080
+  ///   isSecure: false
+  /// )
+  /// let bonjour = BonjourSublimatory(
+  ///   bindingConfiguration: bindingConfiguration,
+  ///   logger: app.logger
+  /// )
+  /// let sublimation = Sublimation(sublimatory : bonjour)
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - hosts: List of host names and ip addresses.
+  ///   - port: The port number of the server.
+  ///   - isSecure: Whether to use https or http.
+  ///
+  public init(hosts: [String], port: Int = 8080, isSecure: Bool = false) {
+    self.init()
+    self.hosts = hosts
+    self.isSecure = isSecure
+    self.port = .init(port)
   }
-#endif
+}

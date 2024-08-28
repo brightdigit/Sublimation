@@ -29,7 +29,10 @@
 
 /// Different methods for Sublimation.
 public protocol Sublimatory: Sendable {
+  /// Runs the Sublimatory service.
+  /// -  Note: This method contains long running work, returning from it is seen as a failure.
   func run() async throws
+  /// Shutdown any active services.
   func shutdown()
 }
 

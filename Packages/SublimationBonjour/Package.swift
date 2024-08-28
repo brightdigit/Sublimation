@@ -17,14 +17,14 @@ let swiftSettings: [SwiftSetting] = [
   SwiftSetting.enableUpcomingFeature("FullTypedThrows"),
   SwiftSetting.enableUpcomingFeature("InternalImportsByDefault"),
 
-  SwiftSetting.unsafeFlags([
-    "-Xfrontend",
-    "-warn-long-function-bodies=100"
-  ]),
-  SwiftSetting.unsafeFlags([
-    "-Xfrontend",
-    "-warn-long-expression-type-checking=100"
-  ])
+//  SwiftSetting.unsafeFlags([
+//    "-Xfrontend",
+//    "-warn-long-function-bodies=100"
+//  ]),
+//  SwiftSetting.unsafeFlags([
+//    "-Xfrontend",
+//    "-warn-long-expression-type-checking=100"
+//  ])
 ]
 
 let package = Package(
@@ -51,7 +51,8 @@ let package = Package(
       dependencies: [
         .product(name: "Sublimation", package: "Sublimation"),
         .product(name: "SublimationCore", package: "Sublimation"),
-        .product(name: "SwiftProtobuf", package: "swift-protobuf")
+        .product(name: "SwiftProtobuf", package: "swift-protobuf"),
+        .product(name: "Logging", package: "swift-log")
       ],
       swiftSettings: swiftSettings
     ),

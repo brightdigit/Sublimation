@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import Foundation
+import Foundation
 
 extension String {
   internal func isLocalhost() -> Bool {
@@ -40,9 +40,6 @@ extension String {
     return self.withCString { cstring in inet_pton(AF_INET6, cstring, &sin6.sin6_addr) } == 1
   }
 
-}
-
-extension String {
   func splitByMaxLength(_ maxLength: Int) -> [String] {
     var result: [String] = []
     var currentIndex = self.startIndex
@@ -56,21 +53,5 @@ extension String {
     }
 
     return result
-  }
-}
-extension Dictionary where Key == String, Value == String {
-  public init(
-    txtRecordData: Data,
-    maximumValueSize: Int,
-    separator: String = "_",
-    keyPrefix: String? = nil
-  ) {
-    let txtRecordValues = txtRecordData.base64EncodedString().splitByMaxLength(maximumValueSize)
-    self = txtRecordValues.enumerated()
-      .reduce(into: [String: String]()) { result, value in
-        let key = [keyPrefix, value.offset.description].compactMap { $0 }
-          .joined(separator: separator)
-        result[key] = String(value.element)
-      }
   }
 }

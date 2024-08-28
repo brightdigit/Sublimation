@@ -30,7 +30,7 @@
 #if canImport(Network)
   public import Foundation
 
-  public import Network
+  import Network
 
   #if canImport(os)
     public import os
@@ -38,21 +38,20 @@
     public import Logging
   #endif
 
-  public struct URLDefaultConfiguration {
-    public init(isSecure: Bool = false, port: Int = 8080) {
-      self.isSecure = isSecure
-      self.port = port
-    }
-    public let isSecure: Bool
-    public let port: Int
-  }
-
+  /// Client for fetching the url of the host server.
+  ///
+  /// On the device, create a ``BonjourClient`` and either get an `AsyncStream` of `URL` objects or just ask for the first one:
+  /// ```
+  /// let depositor = BonjourClient(logger: app.logger)
+  /// let hostURL = await depositor.first()
+  /// ```
   public actor BonjourClient {
     private let browser: NWBrowser
     private let streams = StreamManager<UUID, URL>()
     private let logger: Logger?
     private let defaultURLConfiguration: URLDefaultConfiguration
 
+    /// AsyncStream of `URL` from the network.
     public var urls: AsyncStream<URL> {
       get async {
         let browser = browser
@@ -73,6 +72,10 @@
       }
     }
 
+    /// Creates a BonjourClient for fetching the host urls availab.e
+    /// - Parameters:
+    ///   - logger: Logger
+    ///   - defaultURLConfiguration: default ``URL`` configuration for missing properties.
     public init(logger: Logger? = nil, defaultURLConfiguration: URLDefaultConfiguration = .init()) {
       assert(logger != nil)
       let descriptor: NWBrowser.Descriptor
@@ -85,60 +88,15 @@
       browser.browseResultsChangedHandler = { results, _ in self.parseResults(results) }
     }
 
-    //    private static func descriptionFor(state: NWConnection.State) -> String {
-    //      switch state { case .setup: "setup" case .waiting: "waiting" case .preparing: "preparing"
-    //        case .ready: "ready"
-    //        case .failed: "failed"
-    //        case .cancelled: "cancelled"
-    //        default: "unknown"
-    //      }
-    //    }
-
     private func append(urls: [URL]) async { await self.streams.yield(urls, logger: self.logger) }
 
     private nonisolated func append(urls: [URL]) { Task { await self.append(urls: urls) } }
 
-    public nonisolated func parseResults(_ results: Set<NWBrowser.Result>) {
+    private nonisolated func parseResults(_ results: Set<NWBrowser.Result>) {
       Task { await self.addResults(results) }
     }
 
-    enum TXTRecordError: Error {
-      case key(String)
-      case index(String)
-      case indexMismatch(Int)
-      case base64Decoding
-    }
-    private static func bindingConfiguration(txtRecordDictionary: [String: String]) throws
-      -> BindingConfiguration
-    {
-      let pairs =
-        try txtRecordDictionary.map { (key: String, value: String) in
-          let components = key.components(separatedBy: "_")
-          guard components.count == 2, components.first == "Sublimation",
-            let indexString = components.last
-          else { throw TXTRecordError.key(key) }
-          guard let index = Int(indexString) else { throw TXTRecordError.index(indexString) }
-          return (index, value)
-        }
-        .sorted { $0.0 < $1.0 }
-      let keys = pairs.map(\.0)
-      var lastIndex: Int?
-      for index in keys {
-        if let lastIndex {
-          guard index == lastIndex + 1 else { throw TXTRecordError.indexMismatch(index) }
-        }
-        else {
-          guard index == 0 else { throw TXTRecordError.indexMismatch(index) }
-        }
-        lastIndex = index
-      }
-      let values = pairs.map(\.1)
-      guard let data: Data = .init(base64Encoded: values.joined()) else {
-        throw TXTRecordError.base64Decoding
-      }
-      return try .init(serializedData: data)
-    }
-    public func addResults(_ results: Set<NWBrowser.Result>) {
+    private func addResults(_ results: Set<NWBrowser.Result>) {
       for result in results {
         guard case .bonjour(let txtRecord) = result.metadata else {
           self.logger?.error("No TXT Record for \(result.endpoint.debugDescription)")
@@ -146,13 +104,12 @@
         }
         let dictionary = txtRecord.dictionary
         let configuration: BindingConfiguration
-        do { configuration = try Self.bindingConfiguration(txtRecordDictionary: dictionary) }
+        do { configuration = try BindingConfiguration(txtRecordDictionary: dictionary) }
         catch {
           self.logger?
             .error("Failed to parse TXT Record for \(result.endpoint.debugDescription): \(error)")
           continue
         }
-        #warning("Defaults should be passed to connection")
         let urls = configuration.urls(defaults: self.defaultURLConfiguration)
         self.append(urls: urls)
       }
@@ -160,6 +117,8 @@
   }
 
   extension BonjourClient {
+    /// First URL for the network.
+    /// - Returns: the first url
     public func first() async -> URL? {
       for await baseURL in await self.urls { return baseURL }
       return nil
