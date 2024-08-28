@@ -1,6 +1,6 @@
 //
 //  URL.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -34,7 +34,5 @@ import Foundation
 #endif
 
 extension URL {
-  package static func random() -> URL {
-    URL(fileURLWithPath: NSTemporaryDirectory())
-  }
+  package static func random() -> URL { URL(fileURLWithPath: NSTemporaryDirectory()) }
 }

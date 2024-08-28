@@ -37,33 +37,6 @@
       }
     },
     {
-      "identity" : "prch",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/brightdigit/Prch.git",
-      "state" : {
-        "revision" : "600b49cc7a77271ea3d2a9f9e449be081562a087",
-        "version" : "0.2.1"
-      }
-    },
-    {
-      "identity" : "prchnio",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/brightdigit/PrchNIO.git",
-      "state" : {
-        "revision" : "337d0b2f77b0c4ad5b5b3bad6768a9ecd70b003c",
-        "version" : "0.2.0-beta.1"
-      }
-    },
-    {
-      "identity" : "prchvapor",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/brightdigit/PrchVapor.git",
-      "state" : {
-        "revision" : "8c19c645f9c2763014885e42a42096ae61da636b",
-        "version" : "0.2.0-beta.2"
-      }
-    },
-    {
       "identity" : "routing-kit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/routing-kit.git",

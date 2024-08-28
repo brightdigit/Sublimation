@@ -1,6 +1,6 @@
 //
 //  Application.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,11 +27,11 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
-import Logging
+public import Foundation
+public import Logging
 
 /// Server Application
-public protocol Application {
+@available(*, deprecated, message: "Only used by SublimationNgrok.") public protocol Application {
   /// The port number for the HTTP server configuration.
   var httpServerConfigurationPort: Int { get }
 
@@ -45,10 +45,12 @@ public protocol Application {
   /// - Parameters:
   ///   - url: The url to post to.
   ///   - body: The optional data.
+  ///  - Throws: If there's an issue with the request.
   func post(to url: URL, body: Data?) async throws
 
   /// Makes a client call to a url.
   /// - Parameter url: The url to call.
-  /// - Returns: <#description#>
+  /// - Returns: The data returned from that request.
+  /// - Throws: If there's an issue with the request.
   func get(from url: URL) async throws -> Data?
 }

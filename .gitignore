@@ -119,7 +119,7 @@ fastlane/test_output
 iOSInjectionProject/
 
 ### SwiftPackageManager ###
-Packages
+# Packages
 xcuserdata
 *.xcodeproj
 
@@ -142,3 +142,6 @@ xcuserdata
 !Demo/SublimationDemoApp.xcodeproj
 .mint
 # End of https://www.toptal.com/developers/gitignore/api/swift,swiftpm,swiftpackagemanager,xcode,macos
+
+test_output.log
+.docc-build
