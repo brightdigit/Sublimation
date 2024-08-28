@@ -1,6 +1,6 @@
 //
 //  Application.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.

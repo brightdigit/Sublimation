@@ -16,7 +16,7 @@ if [ -z "$SRCROOT" ] || [ -n "$CHILD_PACKAGE" ]; then
 	PERIPHERY_OPTIONS=""
 else
 	PACKAGE_DIR="${SRCROOT}" 
-	PERIPHERY_OPTIONS="--skip-build"
+	PERIPHERY_OPTIONS=""
 fi
 
 
@@ -42,7 +42,7 @@ else
 	set -e
 fi
 
-$PACKAGE_DIR/scripts/header.sh -d  $PACKAGE_DIR/Sources -c "Leo Dion" -o "BrightDigit" -p "Sublimation"
+$PACKAGE_DIR/scripts/header.sh -d  $PACKAGE_DIR/Sources -c "Leo Dion" -o "BrightDigit" -p "SublimationBonjour"
 $MINT_RUN swift-format lint --recursive --parallel $SWIFTFORMAT_OPTIONS $PACKAGE_DIR/Sources
 
 pushd $PACKAGE_DIR
