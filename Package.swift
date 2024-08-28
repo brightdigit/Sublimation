@@ -15,16 +15,16 @@ let swiftSettings: [SwiftSetting] = [
   SwiftSetting.enableExperimentalFeature("VariadicGenerics"),
 
   SwiftSetting.enableUpcomingFeature("FullTypedThrows"),
-  SwiftSetting.enableUpcomingFeature("InternalImportsByDefault"),
+  SwiftSetting.enableUpcomingFeature("InternalImportsByDefault")
 
-  SwiftSetting.unsafeFlags([
-    "-Xfrontend",
-    "-warn-long-function-bodies=100"
-  ]),
-  SwiftSetting.unsafeFlags([
-    "-Xfrontend",
-    "-warn-long-expression-type-checking=100"
-  ])
+ // SwiftSetting.unsafeFlags([
+ //   "-Xfrontend",
+ //   "-warn-long-function-bodies=100"
+ // ]),
+ // SwiftSetting.unsafeFlags([
+ //   "-Xfrontend",
+ //   "-warn-long-expression-type-checking=100"
+ // ])
 ]
 
 let package = Package(
@@ -42,7 +42,6 @@ let package = Package(
     .library(name: "SublimationCore", targets: ["SublimationCore"])
   ],
   dependencies: [
-//    .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.26.0"),
     .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0")
   ],
   targets: [  

@@ -7,7 +7,7 @@ packages:
 aggregateTargets:
   Lint:
     buildScripts:
-      - path: Scripts/lints.sh
+      - path: Scripts/lint.sh
         name: Lint
         basedOnDependencyAnalysis: false
     schemes: {}
