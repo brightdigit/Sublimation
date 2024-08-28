@@ -3,7 +3,9 @@
 </p>
 <h1 align="center"> Sublimation </h1>
 
-Enable automatic discovery of your local development server on the fly by turning your server-side swift app from a mysterious vapor to a tangible solid server to connect to.
+Enable **automatic discovery of your local development server** on the fly
+
+Turn your Server-Side Swift app from a _mysterious vapor_ to a **tangible solid server**
 
 [![](https://img.shields.io/badge/docc-read_documentation-blue)](https://swiftpackageindex.com/brightdigit/Sublimation/documentation)
 [![SwiftPM](https://img.shields.io/badge/SPM-Linux%20%7C%20iOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-success?logo=swift)](https://swift.org)
@@ -30,10 +32,9 @@ Enable automatic discovery of your local development server on the fly by turnin
 
 # Introduction
    
+When you are developing a Full Stack Swift application, you want to easily test and debug your application on both the device (iPhone, Apple Watch, iPad, etc...) as well as your development server. If you are using simulator then setting your host server to `localhost` this may work but often you need to test on an actual device. 
 
-When you are developing a full stack Swift application, you want to easily test and debug your application on both the device (iPhone, Apple Watch, iPad, etc...) as well as your development server. If you are using simulator then setting your host server to `localhost` will work but often we need to test on an actual device. 
-
-For the server and client we need a way to communicate that information without the client knowing where the server is initially.
+For the server and client **we need a way to communicate that information** without the client knowing where the server is initially.
 
 ```mermaid
 flowchart TD
@@ -69,7 +70,7 @@ flowchart TD
 - Ubuntu 20.04 or later
 - Swift 6.0 or later
 
-For older operating systems or Swift versions, check out [the main branch and 1.0.0 releases](https://github.com/brightdigit/Sublimation).
+For **older operating systems or Swift versions**, check out [the main branch and 1.0.0 releases](https://github.com/brightdigit/Sublimation).
 
 ## Package Ecosystem
 
@@ -102,7 +103,7 @@ To use **Sublimation**, you'll need to choose:
 
 ## Usage
 
-For instance if you were using Bonjour with Hummingbird and an iOS app your package may look something like this:
+For instance if you were using **Bonjour** with **Hummingbird** and an iOS app your package may look something like this:
 
 ```swift
 let package = Package(
@@ -134,7 +135,7 @@ let package = Package(
 )
 ```
 
-If you were to use Vapor and Ngrok instead, it'd look more like this:
+If you were to use **Vapor** and **Ngrok** instead, it'd look more like this:
 
 ```swift
 let package = Package(
@@ -166,11 +167,13 @@ let package = Package(
 )
 ```
 
+* _[Why KVdb for the app?](https://github.com/brightdigit/SublimationNgrok#client-setup)_
+
 Please check the respective package documentation from the [Package Ecosystem](#package-ecosystem) section.
 
 ## Documentation
 
-To learn more, check out the full [documentation](https://swiftpackageindex.com/brightdigit/Sublimation/documentation).
+To learn more, check out the full [documentation](https://swiftpackageindex.com/brightdigit/Sublimation/2.0.0-beta.1/documentation/sublimation).
 
 # License 
 
