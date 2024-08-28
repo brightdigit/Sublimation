@@ -5,6 +5,7 @@
 
 Enable automatic discovery of your local development server on the fly by turning your server-side swift app from a mysterious vapor to a tangible solid server to connect to.
 
+[![](https://img.shields.io/badge/docc-read_documentation-blue)](https://swiftpackageindex.com/brightdigit/Sublimation/documentation)
 [![SwiftPM](https://img.shields.io/badge/SPM-Linux%20%7C%20iOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-success?logo=swift)](https://swift.org)
 [![Twitter](https://img.shields.io/badge/twitter-@brightdigit-blue.svg?style=flat)](http://twitter.com/brightdigit)
 ![GitHub](https://img.shields.io/github/license/brightdigit/Sublimation)
@@ -20,18 +21,11 @@ Enable automatic discovery of your local development server on the fly by turnin
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/Sublimation)](https://codeclimate.com/github/brightdigit/Sublimation)
 [![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/brightdigit/Sublimation?label=debt)](https://codeclimate.com/github/brightdigit/Sublimation)
 [![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/Sublimation)](https://codeclimate.com/github/brightdigit/Sublimation)
-[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 # Table of Contents
 
 * [Introduction](#introduction)
    * [Requirements](#requirements)
-* [Installation](#installation)
-   * [Server Installation](#server-installation)
-   * [Client Installation](#client-installation)
-* [Bonjour vs Ngrok](#bonjour-vs-ngrok)
-   * [Using Bonjour](#using-bonjour)
-   * [Using Ngrok](#using-ngrok)
 * [License](#license)
 
 # Introduction
@@ -51,7 +45,7 @@ When you are developing a full stack Swift application, you want to easily test 
 - Ubuntu 20.04 or later
 - Swift 6.0 or later
 
-# Installation
+<!--  # Installation
 
 Sublimation has two components: Server and Client. You can check out the SublimationDemoApp Xcode project for an example.
 
@@ -195,7 +189,12 @@ import Sublimation
 let baseURL = try await KVdb.url(withKey: key, atBucket: bucketName)
 ```
 
-At the point, you'll have the base url of your Vapor application and can begin using it in your application!
+At the point, you'll have the base url of your Vapor application and can begin using it in your application! -->
+
+## Documentation
+
+To learn more, check out the full [documentation](https://swiftpackageindex.com/brightdigit/Sublimation/documentation).
+
 # License 
 
 This code is distributed under the MIT license. See the [LICENSE](https://github.com/brightdigit/Sublimation/LICENSE) file for more info.

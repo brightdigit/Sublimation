@@ -1,5 +1,0 @@
-retain_public: true
-targets:
-- SublimationBonjour
-retain_files:
-- '**/*+Protobuf.swift'
