@@ -42,7 +42,7 @@ else
 	set -e
 fi
 
-$PACKAGE_DIR/scripts/header.sh -d  $PACKAGE_DIR/Sources -c "Leo Dion" -o "BrightDigit" -p "SublimationBonjour"
+$PACKAGE_DIR/scripts/header.sh -d  $PACKAGE_DIR/Sources -c "Leo Dion" -o "BrightDigit" -p "Sublimation"
 $MINT_RUN swift-format lint --recursive --parallel $SWIFTFORMAT_OPTIONS $PACKAGE_DIR/Sources
 
 pushd $PACKAGE_DIR
