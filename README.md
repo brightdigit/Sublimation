@@ -27,8 +27,13 @@ Turn your Server-Side Swift app from a _mysterious vapor_ to a **tangible solid 
 # Table of Contents
 
 * [Introduction](#introduction)
-   * [Requirements](#requirements)
+  * [Requirements](#requirements)
+* [Package Ecosystem](#package-ecosystem)
+* [Usage](#usage)
+* [Documentation](#documentation)
 * [License](#license)
+
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
 
 # Introduction
    
@@ -72,7 +77,7 @@ flowchart TD
 
 For **older operating systems or Swift versions**, check out [the main branch and 1.0.0 releases](https://github.com/brightdigit/Sublimation).
 
-## Package Ecosystem
+# Package Ecosystem
 
 | Repository                                                 | Description                                        |
 | ----------                                                 | -----------                                        |
@@ -101,7 +106,7 @@ To use **Sublimation**, you'll need to choose:
   * [Lifecycle Handler for Vapor](https://docs.vapor.codes/advanced/services/#lifecycle) via [SublimationVapor](https://github.com/brightdigit/SublimationBonjour)
   * [Lifecycle Service](https://github.com/swift-server/swift-service-lifecycle) via [SublimationService](https://github.com/brightdigit/SublimationBonjour) _for server frameworks such as [Hummingbird](https://docs.hummingbird.codes/2.0/documentation/hummingbird/)_
 
-## Usage
+# Usage
 
 For instance if you were using **Bonjour** with **Hummingbird** and an iOS app your package may look something like this:
 
@@ -171,7 +176,7 @@ let package = Package(
 
 Please check the respective package documentation from the [Package Ecosystem](#package-ecosystem) section.
 
-## Documentation
+# Documentation
 
 To learn more, check out the full [documentation](https://swiftpackageindex.com/brightdigit/Sublimation/2.0.0-beta.1/documentation/sublimation).
 
