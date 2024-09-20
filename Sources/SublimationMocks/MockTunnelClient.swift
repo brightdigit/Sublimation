@@ -1,6 +1,6 @@
 //
 //  MockTunnelClient.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -47,30 +47,19 @@ package actor MockTunnelClient<Key: Sendable>: TunnelClient {
 
   package private(set) var getValuesPassed = [GetParameters]()
   package private(set) var saveValuesPassed = [SaveParameters]()
-  package init(
-    getValueResult: Result<URL, any Error>? = nil, saveValueError: (any Error)? = nil
-  ) {
+  package init(getValueResult: Result<URL, any Error>? = nil, saveValueError: (any Error)? = nil) {
     self.getValueResult = getValueResult
     self.saveValueError = saveValueError
   }
 
-  package func getValue(
-    ofKey key: Key,
-    fromBucket bucketName: String
-  ) async throws -> URL {
+  package func getValue(ofKey key: Key, fromBucket bucketName: String) async throws -> URL {
     getValuesPassed.append(.init(key: key, bucketName: bucketName))
-    // swiftlint:disable:next force_unwrapping
+    // swift-format-ignore: NeverForceUnwrap
     return try getValueResult!.get()
   }
 
-  package func saveValue(
-    _ value: URL,
-    withKey key: Key,
-    inBucket bucketName: String
-  ) async throws {
+  package func saveValue(_ value: URL, withKey key: Key, inBucket bucketName: String) async throws {
     saveValuesPassed.append(.init(value: value, key: key, bucketName: bucketName))
-    if let saveValueError {
-      throw saveValueError
-    }
+    if let saveValueError { throw saveValueError }
   }
 }

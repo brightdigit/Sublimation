@@ -1,6 +1,6 @@
 //
 //  Sublimatory.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -27,18 +27,16 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+/// Different methods for Sublimation.
 public protocol Sublimatory: Sendable {
-  func willBoot(from application: @escaping @Sendable () -> any Application) async
-  func didBoot(from application: @escaping @Sendable () -> any Application) async
-  func shutdown(from application: @escaping @Sendable () -> any Application) async
+  /// Runs the Sublimatory service.
+  /// -  Note: This method contains long running work, returning from it is seen as a failure.
+  func run() async throws
+  /// Shutdown any active services.
+  func shutdown()
 }
 
 extension Sublimatory {
-  /// Empty implementation of ``didBoot(from:)-warq``
-  /// - Parameter _:  The Sever Application
-  public func didBoot(from _: @escaping @Sendable () -> any Application) async {}
-
-  /// Empty implementation of ``shutdown(from:)-warq``
-  /// - Parameter _:  The Sever Application
-  public func shutdown(from _: @escaping @Sendable () -> any Application) async {}
+  /// Shutdown any active services.
+  public func shutdown() {}
 }

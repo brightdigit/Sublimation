@@ -1,6 +1,6 @@
 //
 //  Sublimation.swift
-//  Sublimation
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2024 BrightDigit.
@@ -29,31 +29,14 @@
 
 import Foundation
 import Logging
-import OpenAPIRuntime
-import SublimationCore
+public import SublimationCore
 
+/// Adds the ability to auto-discover development urls to your full stack applicaiton.
 public final class Sublimation: Sendable {
+  /// Implementation for publishing and discovering the development server url.
   public let sublimatory: any Sublimatory
 
-  public init(sublimatory: any Sublimatory) {
-    self.sublimatory = sublimatory
-  }
-
-  public func willBoot(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.willBoot(from: application)
-    }
-  }
-
-  public func didBoot(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.didBoot(from: application)
-    }
-  }
-
-  public func shutdown(_ application: @Sendable @escaping () -> any Application) {
-    Task {
-      await self.sublimatory.shutdown(from: application)
-    }
-  }
+  /// Creates an object to auto-discover development urls to your full stack applicaiton.
+  /// - Parameter sublimatory: Method for publishing and discovering the development server url.
+  public init(sublimatory: any Sublimatory) { self.sublimatory = sublimatory }
 }
