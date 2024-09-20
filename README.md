@@ -75,7 +75,7 @@ flowchart TD
 - Ubuntu 20.04 or later
 - Swift 6.0 or later
 
-For **older operating systems or Swift versions**, check out [the main branch and 1.0.0 releases](https://github.com/brightdigit/Sublimation).
+For **older operating systems or Swift versions**, check out [the main branch and 1.0.0 releases](https://github.com/brightdigit/Sublimation/releases/tag/1.0.0-alpha.2).
 
 # Package Ecosystem
 
