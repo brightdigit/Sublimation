@@ -28,7 +28,6 @@
 //
 
 import Foundation
-import Logging
 public import SublimationCore
 
 /// Adds the ability to auto-discover development urls to your full stack applicaiton.
