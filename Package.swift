@@ -41,23 +41,16 @@ let package = Package(
     .library(name: "Sublimation", targets: ["Sublimation"]),
     .library(name: "SublimationCore", targets: ["SublimationCore"])
   ],
-  dependencies: [
-    .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0")
-  ],
   targets: [  
     .target(
       name: "Sublimation",
       dependencies: [
-        "SublimationCore",
-        .product(name: "Logging", package: "swift-log")
+        "SublimationCore"
       ],
       swiftSettings: swiftSettings
     ),
     .target(
       name: "SublimationCore",
-      dependencies: [
-        .product(name: "Logging", package: "swift-log")
-      ],
       swiftSettings: swiftSettings
     ),
     .testTarget(
