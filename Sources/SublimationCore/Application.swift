@@ -38,9 +38,6 @@ public import Foundation
   /// Whether the server is running on https or http.
   var httpServerTLS: Bool { get }
 
-//  /// The logger for the server application.
-//  var logger: Logger { get }
-
   /// Posts data to a url.
   /// - Parameters:
   ///   - url: The url to post to.
