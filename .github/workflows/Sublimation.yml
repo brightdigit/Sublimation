@@ -34,11 +34,12 @@ jobs:
     steps:
       - id: check
         name: Determine matrix scope
+        env:
+          REF: ${{ github.ref }}
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
         run: |
           FULL=false
-          REF="${{ github.ref }}"
-          EVENT="${{ github.event_name }}"
-          BASE_REF="${{ github.base_ref }}"
 
           # Full matrix on main
           if [[ "$REF" == "refs/heads/main" ]]; then

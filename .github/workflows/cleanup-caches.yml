@@ -4,6 +4,7 @@ on:
 
 jobs:
   cleanup:
+    if: github.event.ref_type == 'branch'
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -13,12 +14,16 @@ jobs:
         with:
           script: |
             const ref = `refs/heads/${context.payload.ref}`;
-            const caches = await github.rest.actions.getActionsCacheList({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: ref,
-            });
-            for (const cache of caches.data.actions_caches) {
+            const caches = await github.paginate(
+              github.rest.actions.getActionsCacheList,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: ref,
+                per_page: 100,
+              },
+            );
+            for (const cache of caches) {
               console.log(`Deleting cache: ${cache.key}`);
               await github.rest.actions.deleteActionsCacheById({
                 owner: context.repo.owner,
@@ -26,4 +31,4 @@ jobs:
                 cache_id: cache.id,
               });
             }
-            console.log(`Deleted ${caches.data.actions_caches.length} cache(s) for ${ref}`);
+            console.log(`Deleted ${caches.length} cache(s) for ${ref}`);

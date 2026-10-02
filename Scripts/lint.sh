@@ -45,7 +45,7 @@ if [ -z "$CI" ]; then
 fi
 
 if [ -z "$FORMAT_ONLY" ]; then
-	"$PACKAGE_DIR/Scripts/header.sh" -d "$PACKAGE_DIR/Sources" -c "Leo Dion" -o "BrightDigit" -p "Sublimation"
+	run_command "$PACKAGE_DIR/Scripts/header.sh" -d "$PACKAGE_DIR/Sources" -c "Leo Dion" -o "BrightDigit" -p "Sublimation"
 	run_command swift-format lint --recursive --parallel $SWIFTFORMAT_LINT_OPTIONS Sources
 	run_command swift build --build-tests
 fi
