@@ -313,9 +313,10 @@ jobs:
           # Xcode_27_beta_4.app path: the beta number changes on every image
           # refresh and would silently break these lanes.
           #
-          # tvOS uses "Apple TV 4K (3rd generation)" — this image has no plain
-          # "Apple TV" device, unlike macos-26 above. A wrong device name fails
-          # the simulator boot outright.
+          # Device names differ from macos-26 above: this image ships "iPhone 18
+          # Pro", "Apple Watch Ultra 4 (49mm)" and "Apple TV 4K (3rd generation)"
+          # (no plain "Apple TV"). A wrong device name fails the simulator boot
+          # outright (xcodebuild exit 70).
           - type: macos
             runs-on: xcode-27
             xcode: "/Applications/Xcode_27.0.app"
@@ -323,14 +324,14 @@ jobs:
           - type: ios
             runs-on: xcode-27
             xcode: "/Applications/Xcode_27.0.app"
-            deviceName: "iPhone 17 Pro"
+            deviceName: "iPhone 18 Pro"
             osVersion: "27.0"
             download-platform: true
 
           - type: watchos
             runs-on: xcode-27
             xcode: "/Applications/Xcode_27.0.app"
-            deviceName: "Apple Watch Ultra 3 (49mm)"
+            deviceName: "Apple Watch Ultra 4 (49mm)"
             osVersion: "27.0"
             download-platform: true
 
