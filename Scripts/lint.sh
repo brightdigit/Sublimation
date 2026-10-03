@@ -1,50 +1,67 @@
-#!/bin/sh
+#!/bin/bash
 
-if [ "$ACTION" == "install" ]; then 
-	if [ -n "$SRCROOT" ]; then
-		exit
-	fi
+# Lint tooling is pinned in mise.toml. Run `mise install` once so this script
+# can find swift-format and periphery locally; CI uses jdx/mise-action.
+#
+# LINT_MODE:
+#   NONE    skip linting entirely
+#   INSTALL exit after setup (used by the Xcode aggregate target on install)
+#   STRICT  treat swift-format warnings as errors
+
+ERRORS=0
+
+run_command() {
+	"$@" || ERRORS=$((ERRORS + 1))
+}
+
+if [ "$LINT_MODE" = "INSTALL" ] || [ "$LINT_MODE" = "NONE" ]; then
+	exit
 fi
 
-export MINT_PATH="$PWD/.mint"
-MINT_ARGS="-n -m Mintfile --silent"
-MINT_RUN="/opt/homebrew/bin/mint run $MINT_ARGS"
+echo "LintMode: $LINT_MODE"
 
-if [ -z "$SRCROOT" ] || [ -n "$CHILD_PACKAGE" ]; then
-	SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+if [ -z "$SRCROOT" ]; then
+	SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 	PACKAGE_DIR="${SCRIPT_DIR}/.."
-	PERIPHERY_OPTIONS=""
 else
-	PACKAGE_DIR="${SRCROOT}" 
-	PERIPHERY_OPTIONS=""
+	PACKAGE_DIR="${SRCROOT}"
 fi
 
-
-if [ "$LINT_MODE" == "NONE" ]; then
-	exit
-elif [ "$LINT_MODE" == "STRICT" ]; then
-	SWIFTFORMAT_OPTIONS="--strict"
-else 
-	SWIFTFORMAT_OPTIONS=""
+# Ensure mise-managed tools are on PATH outside CI (CI uses jdx/mise-action).
+if command -v mise >/dev/null 2>&1 && [ -z "$CI" ]; then
+	eval "$(mise -C "$PACKAGE_DIR" env -s bash)"
 fi
 
-/opt/homebrew/bin/mint bootstrap
-
-echo "LINT Mode is $LINT_MODE"
-
-if [ "$LINT_MODE" == "INSTALL" ]; then
-	exit
+if [ "$LINT_MODE" = "STRICT" ]; then
+	SWIFTFORMAT_LINT_OPTIONS="--configuration .swift-format --strict"
+else
+	SWIFTFORMAT_LINT_OPTIONS="--configuration .swift-format"
 fi
+
+pushd "$PACKAGE_DIR" >/dev/null || exit 1
 
 if [ -z "$CI" ]; then
-	$MINT_RUN swift-format format --recursive --parallel --in-place $PACKAGE_DIR/Sources
-else 
-	set -e
+	run_command swift-format format --configuration .swift-format --recursive --parallel --in-place Sources Tests
 fi
 
-$PACKAGE_DIR/scripts/header.sh -d  $PACKAGE_DIR/Sources -c "Leo Dion" -o "BrightDigit" -p "Sublimation"
-$MINT_RUN swift-format lint --recursive --parallel $SWIFTFORMAT_OPTIONS $PACKAGE_DIR/Sources
+if [ -z "$FORMAT_ONLY" ]; then
+	run_command "$PACKAGE_DIR/Scripts/header.sh" -d "$PACKAGE_DIR/Sources" -c "Leo Dion" -o "BrightDigit" -p "Sublimation"
+	run_command swift-format lint --recursive --parallel $SWIFTFORMAT_LINT_OPTIONS Sources
+	run_command swift build --build-tests
+fi
 
-pushd $PACKAGE_DIR
-$MINT_RUN periphery scan $PERIPHERY_OPTIONS --disable-update-check
-popd
+# Periphery is skipped in CI: it needs an index store from a full build, and
+# the build/test jobs already cover compilation.
+if [ -z "$FORMAT_ONLY" ] && [ -z "$CI" ]; then
+	run_command periphery scan --disable-update-check
+else
+	echo "Skipping periphery scan."
+fi
+
+popd >/dev/null
+
+if [ $ERRORS -gt 0 ]; then
+	echo "Linting completed with $ERRORS error(s)"
+	exit 1
+fi
+echo "Linting completed successfully"
